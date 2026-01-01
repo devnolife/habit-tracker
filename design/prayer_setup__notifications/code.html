@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Prayer Setup: Notifications</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&amp;family=Noto+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Theme Config -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#f48c25",
+              "background-light": "#f8f7f5",
+              "background-dark": "#221910",
+            },
+            fontFamily: {
+              "display": ["Plus Jakarta Sans", "sans-serif"],
+              "body": ["Noto Sans", "sans-serif"],
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        /* Custom scrollbar hide for cleaner UI */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display antialiased text-[#181411] dark:text-white pb-32">
+<!-- Top App Bar -->
+<div class="sticky top-0 z-50 flex items-center justify-between p-4 pb-2 bg-background-light/90 dark:bg-background-dark/90 backdrop-blur-md">
+<button class="flex size-12 shrink-0 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-[#181411] dark:text-white">
+<span class="material-symbols-outlined text-[24px]">arrow_back</span>
+</button>
+<h2 class="text-[#181411] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">Notifications</h2>
+<div class="size-12"></div> <!-- Spacer for centering -->
+</div>
+<!-- Main Content -->
+<div class="w-full max-w-md mx-auto flex flex-col px-4">
+<!-- Headline -->
+<h2 class="text-[#181411] dark:text-white tracking-tight text-[28px] font-extrabold leading-tight text-left pt-2 pb-2">
+            Customize Prayer Notifications
+        </h2>
+<!-- Body Text -->
+<p class="text-[#8a7560] dark:text-[#dccbbd] text-base font-normal leading-normal pb-6">
+            Manage Adhan sounds, vibrations, and reminders for each prayer time.
+        </p>
+<!-- Prayer List -->
+<div class="flex flex-col gap-4">
+<!-- Fajr Card (Expanded State) -->
+<div class="relative flex flex-col bg-white dark:bg-[#2d241b] rounded-2xl shadow-sm border border-transparent dark:border-[#3a2f26] overflow-hidden transition-all duration-300">
+<div class="flex items-center justify-between p-4">
+<div class="flex items-center gap-4">
+<div class="flex items-center justify-center rounded-full bg-[#f5f2f0] dark:bg-[#3a2f26] text-primary shrink-0 size-12">
+<span class="material-symbols-outlined text-[24px]">wb_twilight</span>
+</div>
+<div class="flex flex-col justify-center">
+<p class="text-[#181411] dark:text-white text-lg font-bold leading-normal">Fajr</p>
+<p class="text-primary text-sm font-medium leading-normal">Adhan Enabled</p>
+</div>
+</div>
+<div class="shrink-0">
+<label class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-[#f5f2f0] dark:bg-[#4a3b2f] p-0.5 has-[:checked]:justify-end has-[:checked]:bg-primary transition-all">
+<div class="h-full w-[27px] rounded-full bg-white shadow-sm"></div>
+<input checked="" class="invisible absolute" type="checkbox"/>
+</label>
+</div>
+</div>
+<!-- Expanded Settings Area -->
+<div class="px-4 pb-6 pt-2 space-y-5 animate-fade-in">
+<!-- Sound Selection -->
+<div class="space-y-2">
+<label class="flex items-center gap-2 text-[#8a7560] dark:text-[#a89b8d] text-sm font-medium">
+<span class="material-symbols-outlined text-[18px]">volume_up</span>
+                            Notification Sound
+                        </label>
+<div class="relative">
+<select class="w-full appearance-none rounded-xl bg-[#f8f7f5] dark:bg-[#221910] border border-[#e6e0db] dark:border-[#3a2f26] text-[#181411] dark:text-white h-12 px-4 pr-10 text-base font-medium focus:outline-none focus:ring-2 focus:ring-primary/50">
+<option>Makkah (Al-Afasy)</option>
+<option>Madina (Al-Surayhi)</option>
+<option>Al-Aqsa</option>
+<option>Soft Beep</option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-[#8a7560]">
+<span class="material-symbols-outlined">expand_more</span>
+</div>
+</div>
+</div>
+<!-- Vibration Selection -->
+<div class="space-y-2">
+<label class="flex items-center gap-2 text-[#8a7560] dark:text-[#a89b8d] text-sm font-medium">
+<span class="material-symbols-outlined text-[18px]">vibration</span>
+                            Vibration Pattern
+                        </label>
+<div class="flex gap-2">
+<button class="flex-1 py-2 px-3 rounded-lg bg-primary text-white text-sm font-medium shadow-md transition-all">
+                                Heartbeat
+                            </button>
+<button class="flex-1 py-2 px-3 rounded-lg bg-[#f8f7f5] dark:bg-[#221910] text-[#181411] dark:text-[#dccbbd] text-sm font-medium border border-[#e6e0db] dark:border-[#3a2f26]">
+                                Default
+                            </button>
+<button class="flex-1 py-2 px-3 rounded-lg bg-[#f8f7f5] dark:bg-[#221910] text-[#181411] dark:text-[#dccbbd] text-sm font-medium border border-[#e6e0db] dark:border-[#3a2f26]">
+                                None
+                            </button>
+</div>
+</div>
+<!-- Pre-Adhan Reminder -->
+<div class="space-y-3">
+<div class="flex justify-between items-center">
+<label class="flex items-center gap-2 text-[#8a7560] dark:text-[#a89b8d] text-sm font-medium">
+<span class="material-symbols-outlined text-[18px]">alarm</span>
+                                Pre-Adhan Reminder
+                            </label>
+<span class="text-primary font-bold text-sm">15 min</span>
+</div>
+<div class="relative w-full h-6 flex items-center">
+<div class="w-full h-2 bg-[#f0ebe6] dark:bg-[#221910] rounded-full">
+<div class="h-2 bg-primary rounded-full w-1/4 relative">
+<div class="absolute right-0 top-1/2 -translate-y-1/2 w-5 h-5 bg-white shadow-md rounded-full border-2 border-primary"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Dhuhr Card (Collapsed) -->
+<div class="flex flex-col bg-white dark:bg-[#2d241b] rounded-2xl shadow-sm border border-transparent dark:border-[#3a2f26]">
+<div class="flex items-center justify-between p-4">
+<div class="flex items-center gap-4">
+<div class="flex items-center justify-center rounded-full bg-[#f5f2f0] dark:bg-[#3a2f26] text-[#8a7560] dark:text-[#a89b8d] shrink-0 size-12">
+<span class="material-symbols-outlined text-[24px]">light_mode</span>
+</div>
+<div class="flex flex-col justify-center">
+<p class="text-[#181411] dark:text-white text-lg font-bold leading-normal">Dhuhr</p>
+<p class="text-[#8a7560] dark:text-[#a89b8d] text-sm font-normal leading-normal">Adhan Enabled</p>
+</div>
+</div>
+<div class="shrink-0">
+<label class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-[#f5f2f0] dark:bg-[#4a3b2f] p-0.5 has-[:checked]:justify-end has-[:checked]:bg-primary transition-all">
+<div class="h-full w-[27px] rounded-full bg-white shadow-sm"></div>
+<input checked="" class="invisible absolute" type="checkbox"/>
+</label>
+</div>
+</div>
+</div>
+<!-- Asr Card (Collapsed) -->
+<div class="flex flex-col bg-white dark:bg-[#2d241b] rounded-2xl shadow-sm border border-transparent dark:border-[#3a2f26]">
+<div class="flex items-center justify-between p-4">
+<div class="flex items-center gap-4">
+<div class="flex items-center justify-center rounded-full bg-[#f5f2f0] dark:bg-[#3a2f26] text-[#8a7560] dark:text-[#a89b8d] shrink-0 size-12">
+<span class="material-symbols-outlined text-[24px]">sunny</span>
+</div>
+<div class="flex flex-col justify-center">
+<p class="text-[#181411] dark:text-white text-lg font-bold leading-normal">Asr</p>
+<p class="text-[#8a7560] dark:text-[#a89b8d] text-sm font-normal leading-normal">Adhan Enabled</p>
+</div>
+</div>
+<div class="shrink-0">
+<label class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-[#f5f2f0] dark:bg-[#4a3b2f] p-0.5 has-[:checked]:justify-end has-[:checked]:bg-primary transition-all">
+<div class="h-full w-[27px] rounded-full bg-white shadow-sm"></div>
+<input checked="" class="invisible absolute" type="checkbox"/>
+</label>
+</div>
+</div>
+</div>
+<!-- Maghrib Card (Collapsed) -->
+<div class="flex flex-col bg-white dark:bg-[#2d241b] rounded-2xl shadow-sm border border-transparent dark:border-[#3a2f26]">
+<div class="flex items-center justify-between p-4">
+<div class="flex items-center gap-4">
+<div class="flex items-center justify-center rounded-full bg-[#f5f2f0] dark:bg-[#3a2f26] text-[#8a7560] dark:text-[#a89b8d] shrink-0 size-12">
+<span class="material-symbols-outlined text-[24px]">routine</span>
+</div>
+<div class="flex flex-col justify-center">
+<p class="text-[#181411] dark:text-white text-lg font-bold leading-normal">Maghrib</p>
+<p class="text-[#8a7560] dark:text-[#a89b8d] text-sm font-normal leading-normal">Adhan Enabled</p>
+</div>
+</div>
+<div class="shrink-0">
+<label class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-[#f5f2f0] dark:bg-[#4a3b2f] p-0.5 has-[:checked]:justify-end has-[:checked]:bg-primary transition-all">
+<div class="h-full w-[27px] rounded-full bg-white shadow-sm"></div>
+<input checked="" class="invisible absolute" type="checkbox"/>
+</label>
+</div>
+</div>
+</div>
+<!-- Isha Card (Disabled State) -->
+<div class="flex flex-col bg-white dark:bg-[#2d241b] rounded-2xl shadow-sm border border-transparent dark:border-[#3a2f26] opacity-80">
+<div class="flex items-center justify-between p-4">
+<div class="flex items-center gap-4">
+<div class="flex items-center justify-center rounded-full bg-[#f5f2f0] dark:bg-[#3a2f26] text-[#8a7560] dark:text-[#a89b8d] shrink-0 size-12">
+<span class="material-symbols-outlined text-[24px]">nights_stay</span>
+</div>
+<div class="flex flex-col justify-center">
+<p class="text-[#181411] dark:text-white text-lg font-bold leading-normal">Isha</p>
+<p class="text-[#8a7560] dark:text-[#a89b8d] text-sm font-normal leading-normal">Notifications Off</p>
+</div>
+</div>
+<div class="shrink-0">
+<label class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-[#f5f2f0] dark:bg-[#4a3b2f] p-0.5 has-[:checked]:justify-end has-[:checked]:bg-primary transition-all">
+<div class="h-full w-[27px] rounded-full bg-white shadow-sm translate-x-0 transition-transform"></div>
+<input class="invisible absolute" type="checkbox"/>
+</label>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Fixed Bottom Button -->
+<div class="fixed bottom-0 left-0 w-full p-4 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur border-t border-transparent z-40">
+<div class="max-w-md mx-auto">
+<button class="w-full flex items-center justify-center bg-primary hover:bg-orange-600 active:scale-[0.98] transition-all text-white font-bold text-lg h-14 rounded-full shadow-lg shadow-primary/30">
+                Finish Setup
+            </button>
+</div>
+</div>
+</body></html>

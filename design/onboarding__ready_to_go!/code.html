@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Onboarding: Ready to Go!</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200..800&amp;family=Noto+Sans:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+            extend: {
+                colors: {
+                "primary": "#f48c25",
+                "background-light": "#f8f7f5",
+                "background-dark": "#221910",
+                },
+                fontFamily: {
+                "display": ["Plus Jakarta Sans", "Noto Sans", "sans-serif"]
+                },
+                borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+            },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+          font-variation-settings:
+          'FILL' 0,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-[#181411] dark:text-white font-display overflow-hidden">
+<div class="relative flex h-screen w-full flex-col justify-between overflow-y-auto overflow-x-hidden">
+<!-- Top Section: Spacer / Decorative -->
+<div class="flex-none pt-8 px-6">
+<!-- Optional Skip or decorative element could go here, keeping it clean for now -->
+</div>
+<!-- Middle Section: Content -->
+<div class="flex flex-col items-center justify-center flex-grow px-6">
+<!-- Hero Illustration Container -->
+<div class="relative w-full max-w-[320px] aspect-square flex items-center justify-center mb-8">
+<!-- Abstract decorative background circles/blobs -->
+<div class="absolute inset-0 bg-primary/10 dark:bg-primary/20 rounded-full scale-110 animate-pulse"></div>
+<div class="absolute inset-4 bg-white dark:bg-[#2a2018] rounded-full shadow-sm flex items-center justify-center">
+<!-- Main Illustration -->
+<div class="w-full h-full bg-contain bg-center bg-no-repeat transform scale-75" data-alt="Abstract celebratory checkmark with geometric islamic patterns" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDr4kVB-C10jjJvam7tTx3m2CDAAPB-XAwb92VyxSOTL1pQ7FdFMr_BcFEWhhAId5ZPrzc4m1b385DoGwYGT9bCCI_Jxkz3ivHxjdrr3nDuutx18SK4f1aR5j-3GIgwtPMuRIPzPVDIDLeYkvymYVIOCyWOsfVXttaJnL9Jm-WWtJ3vV-0aPZ5YORGI-ooSq6a6gTTeWv7ATNvqVPXLRaOktFVf7-DWj41eP4LJV9PsbxzD1-9sOnqNHKRESc6EDcori3rXstUsn2g');">
+<!-- Using a div with background image to simulate the component structure requested, but creating a custom SVG visual -->
+<svg class="w-full h-full" fill="none" viewbox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+<circle cx="100" cy="100" fill="#f48c25" fill-opacity="0.1" r="90"></circle>
+<path d="M60 100L90 130L145 70" stroke="#f48c25" stroke-linecap="round" stroke-linejoin="round" stroke-width="12"></path>
+<!-- Floating icons representing categories -->
+<circle cx="40" cy="60" fill="#3b82f6" fill-opacity="0.2" r="15"></circle>
+<circle cx="160" cy="140" fill="#22c55e" fill-opacity="0.2" r="12"></circle>
+<circle cx="150" cy="50" fill="#a855f7" fill-opacity="0.2" r="8"></circle>
+</svg>
+</div>
+</div>
+</div>
+<!-- Text Content -->
+<div class="flex flex-col items-center text-center max-w-md mx-auto">
+<h1 class="text-[#181411] dark:text-white tracking-tight text-[32px] font-bold leading-tight pb-3">
+                    Bismillah, Let's Begin
+                </h1>
+<p class="text-[#181411]/70 dark:text-white/70 text-base font-normal leading-normal pb-6">
+                    Your prayer times, Quran goals, and habits are ready for you. We've personalized your schedule based on your preferences.
+                </p>
+</div>
+</div>
+<!-- Bottom Section: Actions -->
+<div class="flex-none flex flex-col gap-3 pb-8 px-6 w-full max-w-md mx-auto">
+<!-- Primary Action -->
+<button class="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-full h-14 bg-primary text-white text-base font-bold leading-normal tracking-[0.015em] shadow-lg shadow-primary/30 transition-transform active:scale-[0.98]">
+<span class="truncate">Start Using App</span>
+<span class="material-symbols-outlined ml-2 text-[20px]">arrow_forward</span>
+</button>
+<!-- Secondary Action -->
+<button class="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-full h-12 bg-transparent text-[#181411]/60 dark:text-white/60 hover:text-primary dark:hover:text-primary transition-colors text-sm font-bold leading-normal tracking-[0.015em]">
+<span class="truncate">Customize Experience</span>
+</button>
+<!-- Progress Indicator (Completed) -->
+<div class="flex justify-center gap-2 mt-2">
+<div class="w-2 h-2 rounded-full bg-primary/30"></div>
+<div class="w-2 h-2 rounded-full bg-primary/30"></div>
+<div class="w-2 h-2 rounded-full bg-primary/30"></div>
+<div class="w-6 h-2 rounded-full bg-primary"></div>
+</div>
+</div>
+</div>
+</body></html>

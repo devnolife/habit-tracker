@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Food &amp; Nutrition Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0df259",
+                        "primary-dark": "#0bbd45",
+                        "accent-yellow": "#FDE68A",
+                        "accent-mint": "#D1FAE5",
+                        "background-light": "#f5f8f6",
+                        "background-dark": "#102216",
+                        "text-main": "#111813",
+                        "text-sub": "#608a6e",
+                        "carbs": "#FACC15",
+                        "protein": "#0df259",
+                        "fat": "#FB923C",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"],
+                        "body": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "2xl": "2rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom gradient background */
+        .app-bg {
+            background: linear-gradient(180deg, #FEF9C3 0%, #ECFCCB 30%, #D1FAE5 100%);
+        }
+        .dark .app-bg {
+            background: linear-gradient(180deg, #1a2e1e 0%, #102216 100%);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+        }
+        .dark .glass-card {
+            background: rgba(30, 41, 59, 0.8);
+        }
+        /* Hide scrollbar for clean UI */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-display text-text-main antialiased selection:bg-primary selection:text-white">
+<div class="relative flex h-full min-h-screen w-full flex-col app-bg overflow-x-hidden transition-colors duration-300">
+<!-- Header -->
+<header class="flex flex-col px-6 pt-8 pb-4 sticky top-0 z-20 backdrop-blur-md bg-white/30 dark:bg-black/20">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="flex h-10 w-10 items-center justify-center rounded-full bg-white text-primary shadow-sm">
+<span class="material-symbols-outlined text-[24px]">restaurant</span>
+</div>
+<div>
+<h1 class="text-lg font-bold leading-tight dark:text-white">Food &amp; Nutrition</h1>
+<p class="text-xs font-medium text-text-sub dark:text-gray-400">Islamic Lifestyle Tracker</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="flex h-10 w-10 items-center justify-center rounded-full bg-white dark:bg-gray-800 text-text-main dark:text-white shadow-sm hover:bg-gray-50">
+<span class="material-symbols-outlined text-[22px]">calendar_month</span>
+</button>
+<button class="flex h-10 w-10 items-center justify-center rounded-full bg-black dark:bg-primary text-white dark:text-black shadow-sm">
+<span class="material-symbols-outlined text-[22px]">account_circle</span>
+</button>
+</div>
+</div>
+<!-- Date Scroller -->
+<div class="mt-6 flex items-center justify-between gap-4">
+<button class="text-text-sub dark:text-gray-400 hover:text-primary">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<div class="flex flex-col items-center">
+<span class="text-sm font-bold text-primary">Today</span>
+<span class="text-2xl font-bold dark:text-white">Wed, 16 Aug</span>
+</div>
+<button class="text-text-sub dark:text-gray-400 hover:text-primary">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-1 px-4 pb-24 pt-2 flex flex-col gap-6">
+<!-- Hero: Daily Calorie Goal -->
+<section class="glass-card dark:bg-gray-800 rounded-2xl p-6 shadow-sm relative overflow-hidden">
+<div class="absolute top-0 right-0 p-4 opacity-10">
+<span class="material-symbols-outlined text-9xl">nutrition</span>
+</div>
+<div class="flex flex-col items-center justify-center relative z-10">
+<div class="relative flex items-center justify-center h-48 w-48">
+<!-- Background Circle -->
+<svg class="h-full w-full rotate-[-90deg]" viewbox="0 0 36 36">
+<path class="text-gray-200 dark:text-gray-700" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3"></path>
+<!-- Progress Circle (Primary Green) -->
+<path class="text-primary drop-shadow-lg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="65, 100" stroke-linecap="round" stroke-width="3"></path>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-sm font-medium text-text-sub dark:text-gray-400">Remaining</span>
+<span class="text-4xl font-extrabold text-text-main dark:text-white tracking-tight">850</span>
+<span class="text-xs font-semibold text-text-sub dark:text-gray-400 mt-1">kcal</span>
+</div>
+</div>
+<div class="flex w-full justify-between mt-6 px-2">
+<div class="flex flex-col items-center">
+<span class="text-xs font-medium text-text-sub dark:text-gray-400">Carbs</span>
+<div class="h-1.5 w-16 bg-gray-200 dark:bg-gray-700 rounded-full mt-1 overflow-hidden">
+<div class="h-full bg-carbs w-3/4"></div>
+</div>
+<span class="text-sm font-bold mt-1 dark:text-white">120g</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-xs font-medium text-text-sub dark:text-gray-400">Protein</span>
+<div class="h-1.5 w-16 bg-gray-200 dark:bg-gray-700 rounded-full mt-1 overflow-hidden">
+<div class="h-full bg-protein w-1/2"></div>
+</div>
+<span class="text-sm font-bold mt-1 dark:text-white">85g</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-xs font-medium text-text-sub dark:text-gray-400">Fat</span>
+<div class="h-1.5 w-16 bg-gray-200 dark:bg-gray-700 rounded-full mt-1 overflow-hidden">
+<div class="h-full bg-fat w-1/4"></div>
+</div>
+<span class="text-sm font-bold mt-1 dark:text-white">40g</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Fasting Toggle -->
+<div class="flex items-center justify-between bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
+<div class="flex items-center gap-3">
+<div class="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400">
+<span class="material-symbols-outlined">nightlight</span>
+</div>
+<div>
+<p class="font-bold text-sm dark:text-white">Fasting Mode</p>
+<p class="text-xs text-text-sub dark:text-gray-400">Ramadan / Sunnah</p>
+</div>
+</div>
+<label class="inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox" value=""/>
+<div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+</label>
+</div>
+<!-- Hydration Tracker -->
+<section class="glass-card dark:bg-gray-800 rounded-2xl p-5 shadow-sm">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-blue-500">water_drop</span>
+<h3 class="font-bold text-text-main dark:text-white">Hydration</h3>
+</div>
+<span class="text-sm font-medium text-blue-500">5/8 Glasses</span>
+</div>
+<div class="flex justify-between items-center gap-2 px-1">
+<!-- 8 Glasses -->
+<button class="flex flex-col items-center gap-1 group">
+<div class="h-8 w-6 bg-blue-500 rounded-b-md rounded-t-sm opacity-100 shadow-sm transition-all hover:scale-110"></div>
+</button>
+<button class="flex flex-col items-center gap-1 group">
+<div class="h-8 w-6 bg-blue-500 rounded-b-md rounded-t-sm opacity-100 shadow-sm transition-all hover:scale-110"></div>
+</button>
+<button class="flex flex-col items-center gap-1 group">
+<div class="h-8 w-6 bg-blue-500 rounded-b-md rounded-t-sm opacity-100 shadow-sm transition-all hover:scale-110"></div>
+</button>
+<button class="flex flex-col items-center gap-1 group">
+<div class="h-8 w-6 bg-blue-500 rounded-b-md rounded-t-sm opacity-100 shadow-sm transition-all hover:scale-110"></div>
+</button>
+<button class="flex flex-col items-center gap-1 group">
+<div class="h-8 w-6 bg-blue-500 rounded-b-md rounded-t-sm opacity-100 shadow-sm transition-all hover:scale-110"></div>
+</button>
+<button class="flex flex-col items-center gap-1 group">
+<div class="h-8 w-6 bg-blue-100 dark:bg-gray-700 rounded-b-md rounded-t-sm shadow-inner transition-all hover:scale-110"></div>
+</button>
+<button class="flex flex-col items-center gap-1 group">
+<div class="h-8 w-6 bg-blue-100 dark:bg-gray-700 rounded-b-md rounded-t-sm shadow-inner transition-all hover:scale-110"></div>
+</button>
+<button class="flex flex-col items-center gap-1 group">
+<div class="h-8 w-6 bg-blue-100 dark:bg-gray-700 rounded-b-md rounded-t-sm shadow-inner transition-all hover:scale-110"></div>
+</button>
+</div>
+<div class="mt-3 flex items-center justify-between">
+<p class="text-xs text-text-sub dark:text-gray-400">Keep it up! You're almost there.</p>
+<button class="text-xs font-bold text-blue-500 hover:underline">Set Reminder</button>
+</div>
+</section>
+<!-- Meal Logging: Breakfast -->
+<section class="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border-l-4 border-l-orange-300">
+<div class="flex items-center justify-between mb-3">
+<div>
+<h3 class="font-bold text-lg dark:text-white">Breakfast</h3>
+<p class="text-xs text-text-sub dark:text-gray-400">Recommended: 400-600 kcal</p>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-bold text-lg text-text-main dark:text-white">350</span>
+<span class="text-xs text-text-sub dark:text-gray-400">kcal</span>
+</div>
+</div>
+<!-- Food Item List -->
+<div class="flex flex-col gap-3">
+<div class="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700 last:border-0">
+<div class="flex items-center gap-3">
+<div class="h-10 w-10 rounded-lg bg-cover bg-center" data-alt="Bowl of oatmeal with fruits" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCO8ASinU9b7t3lzsIcjBaPzU2ntVZmn-FDtYgR2KXh6_k41fkjK8DrJBExhdJOZ2e2ifSV4GAqq4-nbCHPLoibLzDEzVe89g1Z8QAX6hQp0x5siq7iD1C2i4QCN0H3l4076qZHAwgVZqOZDwAPPNnqlfLkOL-VkfRk9oi9e7P6dSwY7DHWgW2x2sA3BwhdwElUCtnkM-qijaM6QkZ8Jr8dYy-wIhjs5XBNnVp1LohXiq2v8JpOn6ppHLJf1ohj2g-SzkNK7a7Saqo');"></div>
+<div>
+<div class="flex items-center gap-1">
+<p class="text-sm font-semibold dark:text-gray-200">Oatmeal &amp; Berries</p>
+<span class="material-symbols-outlined text-green-600 text-[14px] ml-1" title="Halal Verified">verified</span>
+</div>
+<p class="text-xs text-text-sub dark:text-gray-500">1 bowl (medium)</p>
+</div>
+</div>
+<span class="text-sm font-medium dark:text-gray-300">250</span>
+</div>
+<div class="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700 last:border-0">
+<div class="flex items-center gap-3">
+<div class="h-10 w-10 rounded-lg bg-cover bg-center" data-alt="Dates fruit" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDVBn14QsM4mYnbkx4MhaCiKgKdAwMmTVudAjsBTb1oZvlrbkel5aQhHleu_LPpOrAFu6xrVMTlqJrO0R0qlm3YhFQSF3IOzv3DE_Tf4teiDRxyrTNn4Z8NApxA225XkwQyvgAJKm4NtDJQGs-zuhtrTV3b6qQHB0I8x6drhCQl_eSOK2Jfd4DxgtNNhOSizuvlmN5vzj0PDiJkS9LA_XjNis76Xg02itCKDZtIhXsQl2xbRqolSkyG9ETiV-Js2Y8WvPWgr4KMs24');"></div>
+<div>
+<div class="flex items-center gap-1">
+<p class="text-sm font-semibold dark:text-gray-200">Dates (Kurma)</p>
+<span class="material-symbols-outlined text-green-600 text-[14px] ml-1" title="Sunnah Food">spa</span>
+</div>
+<p class="text-xs text-text-sub dark:text-gray-500">3 pcs</p>
+</div>
+</div>
+<span class="text-sm font-medium dark:text-gray-300">100</span>
+</div>
+</div>
+<!-- Add Button -->
+<div class="mt-4 flex gap-3">
+<button class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-sm font-semibold text-text-sub dark:text-gray-300 transition-colors">
+<span class="material-symbols-outlined text-[20px]">add</span>
+                        Add Food
+                    </button>
+<button class="flex items-center justify-center h-10 w-10 rounded-xl bg-gray-50 dark:bg-gray-700 text-text-sub dark:text-gray-300 hover:text-primary">
+<span class="material-symbols-outlined text-[20px]">photo_camera</span>
+</button>
+</div>
+</section>
+<!-- Meal Logging: Lunch -->
+<section class="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border-l-4 border-l-primary">
+<div class="flex items-center justify-between mb-3">
+<div>
+<h3 class="font-bold text-lg dark:text-white">Lunch</h3>
+<p class="text-xs text-text-sub dark:text-gray-400">1:00 PM</p>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-bold text-lg text-text-main dark:text-white">600</span>
+<span class="text-xs text-text-sub dark:text-gray-400">kcal</span>
+</div>
+</div>
+<!-- Food Item List -->
+<div class="flex flex-col gap-3">
+<div class="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700 last:border-0">
+<div class="flex items-center gap-3">
+<div class="h-10 w-10 rounded-lg bg-cover bg-center" data-alt="Nasi Lemak dish" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDflxfcNE8wVzMw3tpsbbVne5et4TnucuXcftR31oEKG-x2DIvD2OrwRTrw_livqArP9Gjyw5Hvzp6YU4Iz0wBkPu457dgB_FeFgRyawxdklZy6sKCDEpZJvF52_q1FaYA89JUnln-Pdx1KBnIwDx0YPfs9tKR2OI0YvMFG5PJyjJUCGGa-vb9F2LfDtuNODVonq5qDxWBCYa0tzch-E8d4WCW2B3Laapdev5v_c44RTEbqIFZyHSrufDm0SbtrEMbdJ3AZ7JimK9U');"></div>
+<div>
+<div class="flex items-center gap-1">
+<p class="text-sm font-semibold dark:text-gray-200">Nasi Lemak</p>
+<span class="material-symbols-outlined text-green-600 text-[14px] ml-1" title="Halal Verified">verified</span>
+</div>
+<p class="text-xs text-text-sub dark:text-gray-500">1 serving</p>
+</div>
+</div>
+<span class="text-sm font-medium dark:text-gray-300">600</span>
+</div>
+</div>
+<!-- Add Button -->
+<div class="mt-4 flex gap-3">
+<button class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-sm font-semibold text-text-sub dark:text-gray-300 transition-colors">
+<span class="material-symbols-outlined text-[20px]">add</span>
+                        Add Food
+                    </button>
+<button class="flex items-center justify-center h-10 w-10 rounded-xl bg-gray-50 dark:bg-gray-700 text-text-sub dark:text-gray-300 hover:text-primary">
+<span class="material-symbols-outlined text-[20px]">photo_camera</span>
+</button>
+</div>
+</section>
+<!-- Meal Logging: Dinner (Empty State) -->
+<section class="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border-l-4 border-l-purple-400 opacity-90">
+<div class="flex items-center justify-between mb-3">
+<div>
+<h3 class="font-bold text-lg dark:text-white">Dinner</h3>
+<p class="text-xs text-text-sub dark:text-gray-400">Not logged yet</p>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-bold text-lg text-text-main dark:text-white">0</span>
+<span class="text-xs text-text-sub dark:text-gray-400">kcal</span>
+</div>
+</div>
+<div class="flex flex-col items-center justify-center py-6 text-center">
+<div class="h-12 w-12 rounded-full bg-gray-50 dark:bg-gray-700 flex items-center justify-center mb-2">
+<span class="material-symbols-outlined text-gray-400">restaurant_menu</span>
+</div>
+<p class="text-sm font-medium text-text-sub dark:text-gray-400">What's for dinner?</p>
+</div>
+<!-- Add Button -->
+<div class="mt-1 flex gap-3">
+<button class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary text-white dark:text-black hover:bg-primary-dark font-semibold transition-colors shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-[20px]">add</span>
+                        Log Dinner
+                    </button>
+</div>
+</section>
+<!-- Weight Tracker Widget -->
+<section class="flex gap-4">
+<div class="flex-1 bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-indigo-500">monitor_weight</span>
+<h4 class="font-bold text-sm dark:text-white">Weight</h4>
+</div>
+<div>
+<p class="text-2xl font-bold dark:text-white">70.5 <span class="text-sm font-normal text-text-sub dark:text-gray-400">kg</span></p>
+<p class="text-xs text-green-500 font-medium flex items-center mt-1">
+<span class="material-symbols-outlined text-[14px] mr-0.5">trending_down</span>
+                            -0.5 kg
+                        </p>
+</div>
+</div>
+<!-- Halal Restaurant Finder Widget -->
+<div class="flex-1 bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm flex flex-col justify-between relative overflow-hidden group cursor-pointer">
+<div class="absolute inset-0 bg-gradient-to-br from-green-50 to-transparent dark:from-green-900/20 opacity-50"></div>
+<div class="relative z-10 flex items-center justify-between mb-2">
+<h4 class="font-bold text-sm dark:text-white leading-tight">Halal<br/>Finder</h4>
+<span class="material-symbols-outlined text-primary bg-white dark:bg-gray-700 rounded-full p-1 shadow-sm">location_on</span>
+</div>
+<div class="relative z-10">
+<p class="text-xs text-text-sub dark:text-gray-400 mt-2">3 certified spots nearby</p>
+<div class="flex -space-x-2 mt-2">
+<div class="w-6 h-6 rounded-full border-2 border-white dark:border-gray-800 bg-gray-200 bg-cover" data-alt="Restaurant thumbnail" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCIDCE29UA-sbhcMtVP4d5WvM3HBzyJ0aBq6QpkvBtua2j9PBrtnftBJcvQd53HhcxYcnA8ZBURm9v9esJEHV5WtR_SGAVHTI4hbR_StCIzcED5SJqRe4P9L-6uzExXdiZs5AwBKxvAjKExmR6zuliOXJcWnP-hSyNLSvHj-Nlwpey1yp6Fv7rr4lURoI7pE-NzySE9ZuHzTE1GflXlXniznG5QULwZGNLIvQuDFlmfNZB0zFGKIXowIBoKHIVBVg1zEGy_HkpCCJ8');"></div>
+<div class="w-6 h-6 rounded-full border-2 border-white dark:border-gray-800 bg-gray-200 bg-cover" data-alt="Restaurant thumbnail" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCShsNIehfGrbclcP0N7n19PZF-MCvM8UQ4q6qX20BPY-LMymU51aTtydnwVak3gobL03lsdBgI71o5BrtowvGpxM2czNOQ2LmZcfJKz4tvUeaqVu4h4hByFEbJJgFSwD8yWNrKjlChZgXzvNlXa9wEuNQgQa8Bgk2B60-sfoOTWMgty9ihAbZ-ESmDT94mpMYJCZrC4BCTBQkTUQ95rd0FfWMvq-xgzPJxKrOii18SD_oa9uLKHTUmIlK5-zhyc08c9Jl-lo1ndd0');"></div>
+<div class="w-6 h-6 rounded-full border-2 border-white dark:border-gray-800 bg-primary flex items-center justify-center text-[8px] text-white font-bold">+1</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Floating Action Button -->
+<button class="fixed bottom-24 right-6 h-14 w-14 rounded-full bg-black dark:bg-primary text-white dark:text-black shadow-xl flex items-center justify-center z-30 transition-transform hover:scale-105 active:scale-95 group">
+<span class="material-symbols-outlined text-[28px] group-hover:rotate-90 transition-transform duration-300">add</span>
+</button>
+<!-- Bottom Navigation -->
+<nav class="fixed bottom-0 w-full bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 pb-6 pt-2 px-6 flex justify-between items-center z-40">
+<button class="flex flex-col items-center gap-1 text-gray-400 hover:text-primary">
+<span class="material-symbols-outlined">home</span>
+<span class="text-[10px] font-medium">Home</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined fill-1">restaurant</span>
+<span class="text-[10px] font-medium">Makanan</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-gray-400 hover:text-primary">
+<span class="material-symbols-outlined">mosque</span>
+<span class="text-[10px] font-medium">Ibadah</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-gray-400 hover:text-primary">
+<span class="material-symbols-outlined">bar_chart</span>
+<span class="text-[10px] font-medium">Stats</span>
+</button>
+</nav>
+</div>
+</body></html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Profile Management</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f48c25",
+                        "background-light": "#f8f7f5",
+                        "background-dark": "#221910",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .ios-switch {
+            appearance: none;
+            width: 3.25rem;
+            height: 2rem;
+            border-radius: 9999px;
+            background-color: #e5e7eb;
+            position: relative;
+            cursor: pointer;
+            outline: none;
+            transition: background-color 0.3s;
+        }
+        .ios-switch::after {
+            content: '';
+            position: absolute;
+            top: 0.125rem;
+            left: 0.125rem;
+            width: 1.75rem;
+            height: 1.75rem;
+            border-radius: 50%;
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+        .ios-switch:checked {
+            background-color: #f48c25;
+        }
+        .ios-switch:checked::after {
+            transform: translateX(1.25rem);
+        }
+        .dark .ios-switch {
+            background-color: #374151;
+        }
+        .dark .ios-switch:checked {
+            background-color: #f48c25;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display antialiased text-[#181411] dark:text-white transition-colors duration-200">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden max-w-md mx-auto bg-gradient-to-b from-[#fffaf5] to-background-light dark:from-background-dark dark:to-background-dark">
+<header class="sticky top-0 z-10 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-800">
+<div class="flex items-center px-4 py-3 justify-between">
+<button class="flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-[#181411] dark:text-white">
+<span class="material-symbols-outlined text-[24px]">arrow_back</span>
+</button>
+<h2 class="text-lg font-bold leading-tight tracking-tight text-center flex-1 pr-10">Profile Management</h2>
+</div>
+</header>
+<main class="flex-1 flex flex-col p-5 gap-6">
+<div class="flex flex-col items-center justify-center py-2">
+<div class="relative group cursor-pointer">
+<div class="size-28 rounded-full bg-cover bg-center border-[3px] border-white dark:border-[#2a221b] shadow-lg ring-1 ring-gray-100 dark:ring-gray-800" data-alt="Portrait of a woman wearing a hijab smiling gently" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuATsWoX1VMkF64RyGPP5ENyuPhLrU9LMzlNR8N0mM-NVFLJVqPHdV4k3_LResQ7ziQmr3JBdlAd9bKIIVXncLbhxv2sQG5n3ElFl-rk5HlNjPkrPk8BY1lWezX5OFPPYK8HDg8o4h3zF6VrwK7ByYGcxSy14r0aikORf7nd_wpe-hnbBVwWhDTSl5gNehqIyv6T55XeqQKmgZOxjbZZAOepAwc0m2Sm7rFiCmpxcYu4AqQs47CgeJxIQ1ymC-vEXWoXI_Ymn_vycCU");'></div>
+<div class="absolute bottom-1 right-1 bg-primary text-white p-2 rounded-full border-[3px] border-white dark:border-[#2a221b] shadow-sm flex items-center justify-center hover:bg-orange-600 transition-colors">
+<span class="material-symbols-outlined text-[18px]">photo_camera</span>
+</div>
+</div>
+<h3 class="mt-4 text-xl font-bold">Amina Rahman</h3>
+<p class="text-sm text-gray-500 dark:text-gray-400">Update your photo and personal details</p>
+</div>
+<form class="flex flex-col gap-5">
+<div class="space-y-1.5">
+<label class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 ml-1">Full Name</label>
+<div class="relative group">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors material-symbols-outlined">person</span>
+<input class="w-full pl-12 pr-4 py-3.5 bg-white dark:bg-[#2a221b] border border-gray-100 dark:border-gray-800 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all dark:text-white font-medium shadow-sm placeholder-gray-400" placeholder="Enter your full name" type="text" value="Amina Rahman"/>
+</div>
+</div>
+<div class="space-y-1.5">
+<label class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 ml-1">Username</label>
+<div class="relative group">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors material-symbols-outlined">alternate_email</span>
+<input class="w-full pl-12 pr-4 py-3.5 bg-white dark:bg-[#2a221b] border border-gray-100 dark:border-gray-800 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all dark:text-white font-medium shadow-sm placeholder-gray-400" placeholder="Choose a username" type="text" value="amina.r"/>
+</div>
+</div>
+<div class="space-y-1.5">
+<label class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 ml-1">Email Address</label>
+<div class="relative group">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors material-symbols-outlined">mail</span>
+<input class="w-full pl-12 pr-4 py-3.5 bg-white dark:bg-[#2a221b] border border-gray-100 dark:border-gray-800 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all dark:text-white font-medium shadow-sm placeholder-gray-400" placeholder="Enter your email" type="email" value="amina.rahman@example.com"/>
+</div>
+</div>
+<div class="space-y-1.5">
+<label class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 ml-1">Bio</label>
+<div class="relative group">
+<span class="absolute left-4 top-4 text-gray-400 group-focus-within:text-primary transition-colors material-symbols-outlined">edit_note</span>
+<textarea class="w-full pl-12 pr-4 py-3.5 bg-white dark:bg-[#2a221b] border border-gray-100 dark:border-gray-800 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all dark:text-white font-medium shadow-sm resize-none placeholder-gray-400" placeholder="Tell us a bit about yourself" rows="3">Striving for balance in deen and dunya. 🌸</textarea>
+</div>
+<p class="text-right text-xs text-gray-400">42/150</p>
+</div>
+</form>
+<div class="mt-auto pt-4 pb-2">
+<button class="w-full bg-primary text-white font-bold py-4 rounded-xl shadow-lg shadow-orange-500/20 hover:bg-orange-600 hover:shadow-orange-500/30 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">save</span>
+<span>Save Changes</span>
+</button>
+</div>
+</main>
+</div>
+
+</body></html>

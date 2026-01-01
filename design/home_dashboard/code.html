@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Home Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Noto+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f48c25",
+                        "background-light": "#FFFBF2", // Creamy off-white
+                        "background-dark": "#221910",
+                        "soft-green": "#E6F4EA",
+                        "soft-blue": "#E3F2FD",
+                        "soft-red": "#FCE8E6",
+                        "soft-yellow": "#FFF7E0",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "2xl": "2rem", "full": "9999px" },
+                    backgroundImage: {
+                        'pattern': "url('https://www.transparenttextures.com/patterns/arabesque.png')" // Example pattern URL, usually I'd use CSS radial gradients if external assets are restricted, but texture is requested. I will simulate with SVG data URI if needed, but for now relying on clean CSS.
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        /* Custom pattern simulation */
+        .bg-islamic-pattern {
+            background-image: radial-gradient(#f48c25 0.5px, transparent 0.5px), radial-gradient(#f48c25 0.5px, #FFFBF2 0.5px);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            opacity: 0.1;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-display text-[#181411] antialiased selection:bg-primary/20 selection:text-primary">
+<div class="relative flex h-screen w-full flex-col bg-background-light dark:bg-background-dark overflow-hidden">
+<!-- Background Elements -->
+<div class="absolute inset-0 bg-gradient-to-br from-[#FFFBF5] via-[#FFF9EE] to-[#FFEACC] z-0"></div>
+<div class="absolute inset-0 bg-islamic-pattern z-0 mix-blend-multiply pointer-events-none"></div>
+<!-- Main Scrollable Content -->
+<div class="flex-1 overflow-y-auto hide-scrollbar z-10 pb-24">
+<!-- Header Section -->
+<div class="px-6 pt-14 pb-4 flex items-start justify-between">
+<div class="flex flex-col gap-1">
+<p class="text-sm font-medium text-[#8a7560]">14 Ramadan 1445 H • 24 March 2024</p>
+<h1 class="text-2xl font-bold leading-tight text-[#181411]">Assalamualaikum,<br/>Yusuf</h1>
+<!-- Weather Widget Pill -->
+<div class="mt-2 inline-flex items-center gap-1.5 self-start rounded-full bg-white/60 backdrop-blur-sm border border-white/50 px-3 py-1 shadow-sm">
+<span class="material-symbols-outlined text-[18px] text-primary">partly_cloudy_day</span>
+<span class="text-xs font-semibold text-[#5c4a3d]">32°C Jakarta</span>
+</div>
+</div>
+<div class="relative">
+<div class="size-12 rounded-full border-2 border-white shadow-md bg-cover bg-center" data-alt="User profile avatar of a smiling man" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCeTw_tjHoEg4pdfRC2dLCZRD2U5mnRdlr98cwG3qYXurW7-ORPdMPjWkN8XM7Esr5N5hZvIV9_vX5RMnc-j_A1nqg6RGhLE-LjGoYCr-DJsIlacxpnpo1k91H_kTtTmYvN0dAXJsay8T_lj8calFXvLty2ahNUzeCryjyHOibuKjrgQloRA-xOV0-XNQQWBr656CEKKgJJhT8N5fGZNFXPXHnrtS08fnRQTSBCmUVptP99A4XHDMth-iVT9hroGZyieyJfUhVU0Fs');"></div>
+<div class="absolute bottom-0 right-0 size-3 rounded-full bg-green-500 border-2 border-white"></div>
+</div>
+</div>
+<!-- Prayer Times Carousel -->
+<div class="mt-2 pl-6 overflow-x-auto hide-scrollbar pb-6">
+<div class="flex gap-4 pr-6">
+<!-- Active Card: Asr -->
+<div class="relative min-w-[300px] snap-center overflow-hidden rounded-2xl bg-white p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-orange-50/50 group">
+<!-- Decorative bg -->
+<div class="absolute right-[-20px] top-[-20px] opacity-10">
+<span class="material-symbols-outlined text-[150px] text-primary">mosque</span>
+</div>
+<div class="flex justify-between items-start mb-6 relative z-10">
+<div>
+<h3 class="text-xl font-bold text-[#181411]">Asr</h3>
+<p class="text-sm text-[#8a7560]">Afternoon Prayer</p>
+</div>
+<div class="text-right">
+<p class="text-xl font-bold text-primary">03:30 PM</p>
+<div class="flex items-center gap-1 justify-end text-xs font-medium text-[#8a7560] bg-orange-50 px-2 py-0.5 rounded-md mt-1">
+<span class="material-symbols-outlined text-[14px]">timer</span>
+<span>-01:23:45</span>
+</div>
+</div>
+</div>
+<div class="relative z-10">
+<div class="mb-2 flex justify-between text-xs font-medium text-[#8a7560]">
+<span>Time Remaining</span>
+<span>65%</span>
+</div>
+<div class="h-2 w-full rounded-full bg-gray-100 overflow-hidden">
+<div class="h-full w-[65%] rounded-full bg-gradient-to-r from-orange-300 to-primary"></div>
+</div>
+</div>
+<div class="mt-6 flex items-center justify-between relative z-10">
+<button class="flex items-center gap-2 rounded-full bg-green-50 px-4 py-2 text-sm font-semibold text-green-700 hover:bg-green-100 transition-colors">
+<span class="material-symbols-outlined text-[18px] filled">check_circle</span>
+                                Mark Done
+                            </button>
+<span class="material-symbols-outlined text-gray-300">notifications_active</span>
+</div>
+</div>
+<!-- Next Card: Maghrib -->
+<div class="relative min-w-[300px] snap-center overflow-hidden rounded-2xl bg-white/60 p-5 border border-white shadow-sm backdrop-blur-sm">
+<div class="absolute right-[-20px] top-[-20px] opacity-5">
+<span class="material-symbols-outlined text-[150px]">mosque</span>
+</div>
+<div class="flex justify-between items-start mb-8">
+<div>
+<h3 class="text-xl font-bold text-[#181411]/60">Maghrib</h3>
+<p class="text-sm text-[#8a7560]">Sunset Prayer</p>
+</div>
+<div class="text-right">
+<p class="text-xl font-bold text-[#181411]/60">06:15 PM</p>
+<p class="text-xs text-[#8a7560] mt-1">Upcoming</p>
+</div>
+</div>
+<div class="mt-8 pt-4 border-t border-dashed border-gray-200 flex justify-between items-center text-[#8a7560]">
+<span class="text-sm">Turn on alerts</span>
+<span class="material-symbols-outlined">notifications_off</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Stats Grid -->
+<div class="px-6 mb-6">
+<h2 class="text-lg font-bold text-[#181411] mb-4">Quick Stats</h2>
+<div class="grid grid-cols-2 gap-4">
+<!-- Sholat -->
+<div class="flex flex-col gap-3 rounded-2xl bg-soft-green p-4 shadow-sm relative overflow-hidden">
+<div class="absolute right-[-10px] bottom-[-10px] opacity-10">
+<span class="material-symbols-outlined text-[80px] text-green-800">spa</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="bg-white/50 p-1.5 rounded-lg">
+<span class="material-symbols-outlined text-green-700 text-[20px]">prayer_times</span>
+</div>
+<p class="text-sm font-semibold text-green-800">Sholat</p>
+</div>
+<p class="text-2xl font-bold text-[#181411]">4/5 <span class="text-sm font-medium text-green-700">Done</span></p>
+</div>
+<!-- Work -->
+<div class="flex flex-col gap-3 rounded-2xl bg-soft-blue p-4 shadow-sm relative overflow-hidden">
+<div class="absolute right-[-10px] bottom-[-10px] opacity-10">
+<span class="material-symbols-outlined text-[80px] text-blue-800">work</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="bg-white/50 p-1.5 rounded-lg">
+<span class="material-symbols-outlined text-blue-700 text-[20px]">business_center</span>
+</div>
+<p class="text-sm font-semibold text-blue-800">Work</p>
+</div>
+<p class="text-2xl font-bold text-[#181411]">6.5 <span class="text-sm font-medium text-blue-700">hrs</span></p>
+</div>
+<!-- Pengeluaran -->
+<div class="flex flex-col gap-3 rounded-2xl bg-soft-red p-4 shadow-sm relative overflow-hidden">
+<div class="absolute right-[-10px] bottom-[-10px] opacity-10">
+<span class="material-symbols-outlined text-[80px] text-red-800">payments</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="bg-white/50 p-1.5 rounded-lg">
+<span class="material-symbols-outlined text-red-700 text-[20px]">account_balance_wallet</span>
+</div>
+<p class="text-sm font-semibold text-red-800">Expense</p>
+</div>
+<p class="text-xl font-bold text-[#181411]">150K <span class="text-sm font-medium text-red-700">IDR</span></p>
+</div>
+<!-- Makanan -->
+<div class="flex flex-col gap-3 rounded-2xl bg-soft-yellow p-4 shadow-sm relative overflow-hidden">
+<div class="absolute right-[-10px] bottom-[-10px] opacity-10">
+<span class="material-symbols-outlined text-[80px] text-yellow-800">restaurant</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="bg-white/50 p-1.5 rounded-lg">
+<span class="material-symbols-outlined text-yellow-700 text-[20px]">restaurant</span>
+</div>
+<p class="text-sm font-semibold text-yellow-800">Food</p>
+</div>
+<p class="text-xl font-bold text-[#181411]">1,450 <span class="text-sm font-medium text-yellow-700">cal</span></p>
+</div>
+</div>
+</div>
+<!-- Daily Insights Card -->
+<div class="px-6 mb-6">
+<div class="rounded-2xl bg-[#FFF4E6] p-5 shadow-sm flex items-center justify-between border border-orange-100">
+<div class="flex-1 pr-4">
+<div class="flex items-center gap-2 mb-1">
+<h3 class="text-base font-bold text-[#181411]">Daily Insights</h3>
+<span class="material-symbols-outlined text-primary text-[18px]">local_fire_department</span>
+</div>
+<p class="text-sm text-[#8a7560] leading-relaxed">Keep up the good work! You're on a 7-day streak.</p>
+</div>
+<div class="relative size-12 shrink-0 flex items-center justify-center">
+<!-- Simple CSS Ring -->
+<svg class="size-full -rotate-90 transform" viewbox="0 0 36 36">
+<path class="text-orange-200" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="4"></path>
+<path class="text-primary" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="75, 100" stroke-width="4"></path>
+</svg>
+<span class="material-symbols-outlined absolute text-primary text-[20px]">notifications</span>
+</div>
+</div>
+</div>
+<!-- Recent Activity Feed -->
+<div class="px-6 mb-8">
+<div class="flex items-center justify-between mb-4">
+<h2 class="text-lg font-bold text-[#181411]">Recent Activity</h2>
+<button class="text-xs font-semibold text-primary">View All</button>
+</div>
+<div class="flex flex-col gap-0 rounded-2xl bg-white p-2 shadow-sm border border-gray-100">
+<!-- Item 1 -->
+<div class="flex items-center gap-4 p-3 border-b border-gray-50 last:border-0">
+<div class="size-2 rounded-full bg-yellow-400 shrink-0"></div>
+<div class="flex-1">
+<p class="text-sm font-semibold text-[#181411]">Lunch (Ayam Bakar)</p>
+<p class="text-xs text-[#8a7560]">Makanan • 12:30 PM</p>
+</div>
+<span class="text-xs font-medium text-gray-400">1h ago</span>
+</div>
+<!-- Item 2 -->
+<div class="flex items-center gap-4 p-3 border-b border-gray-50 last:border-0">
+<div class="size-2 rounded-full bg-green-500 shrink-0"></div>
+<div class="flex-1">
+<p class="text-sm font-semibold text-[#181411]">Dhuhr Prayer</p>
+<p class="text-xs text-[#8a7560]">Sholat • 12:15 PM</p>
+</div>
+<span class="text-xs font-medium text-gray-400">1h ago</span>
+</div>
+<!-- Item 3 -->
+<div class="flex items-center gap-4 p-3 border-b border-gray-50 last:border-0">
+<div class="size-2 rounded-full bg-blue-500 shrink-0"></div>
+<div class="flex-1">
+<p class="text-sm font-semibold text-[#181411]">Deep Work Session</p>
+<p class="text-xs text-[#8a7560]">Work • 09:00 AM</p>
+</div>
+<span class="text-xs font-medium text-gray-400">4h ago</span>
+</div>
+<!-- Item 4 -->
+<div class="flex items-center gap-4 p-3 last:border-0">
+<div class="size-2 rounded-full bg-red-500 shrink-0"></div>
+<div class="flex-1">
+<p class="text-sm font-semibold text-[#181411]">Transport (Gojek)</p>
+<p class="text-xs text-[#8a7560]">Pengeluaran • 08:30 AM</p>
+</div>
+<span class="text-xs font-medium text-gray-400">5h ago</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Navigation -->
+<div class="absolute bottom-0 w-full bg-white border-t border-gray-100 px-2 py-3 pb-8 shadow-[0_-4px_20px_rgb(0,0,0,0.03)] z-50">
+<div class="flex justify-around items-center">
+<!-- Home (Active) -->
+<button class="flex flex-col items-center gap-1 min-w-[64px]">
+<div class="bg-orange-50 px-5 py-1 rounded-full mb-0.5">
+<span class="material-symbols-outlined text-primary font-bold">home</span>
+</div>
+<span class="text-[10px] font-bold text-primary">Home</span>
+</button>
+<!-- Sholat -->
+<button class="flex flex-col items-center gap-1 min-w-[64px] text-gray-400 hover:text-green-600 transition-colors">
+<span class="material-symbols-outlined">prayer_times</span>
+<span class="text-[10px] font-medium">Sholat</span>
+</button>
+<!-- Work -->
+<button class="flex flex-col items-center gap-1 min-w-[64px] text-gray-400 hover:text-blue-600 transition-colors">
+<span class="material-symbols-outlined">business_center</span>
+<span class="text-[10px] font-medium">Work</span>
+</button>
+<!-- Pengeluaran -->
+<button class="flex flex-col items-center gap-1 min-w-[64px] text-gray-400 hover:text-red-600 transition-colors">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="text-[10px] font-medium">Money</span>
+</button>
+<!-- Makanan -->
+<button class="flex flex-col items-center gap-1 min-w-[64px] text-gray-400 hover:text-yellow-600 transition-colors">
+<span class="material-symbols-outlined">restaurant</span>
+<span class="text-[10px] font-medium">Food</span>
+</button>
+</div>
+</div>
+</div>
+</body></html>

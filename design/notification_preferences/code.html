@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Notification Preferences</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#f48c25",
+              "background-light": "#f8f7f5",
+              "background-dark": "#221910",
+              "card-light": "#ffffff",
+              "card-dark": "#2d241b",
+              "text-main-light": "#181411",
+              "text-main-dark": "#f8f7f5",
+              "text-sub-light": "#8a7560",
+              "text-sub-dark": "#a89580",
+            },
+            fontFamily: {
+              "display": ["Manrope", "sans-serif"]
+            },
+            borderRadius: {
+              "DEFAULT": "0.25rem", 
+              "lg": "0.5rem", 
+              "xl": "0.75rem", 
+              "full": "9999px"
+            },
+          },
+        },
+      }
+    </script>
+<style>
+        /* Custom Toggle Switch */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #f48c25;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #f48c25;
+        }
+        
+        /* Custom Slider Thumb */
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #f48c25;
+            cursor: pointer;
+            margin-top: -8px; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #e6e0db;
+            border-radius: 2px;
+        }
+        .dark input[type=range]::-webkit-slider-runnable-track {
+            background: #4a3e32;
+        }
+        
+        /* Hide Scrollbar but allow scroll */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-text-main-light dark:text-text-main-dark selection:bg-primary/30">
+<!-- Warm Gradient Background Overlay -->
+<div class="fixed inset-0 pointer-events-none z-0">
+<div class="absolute top-0 left-0 w-full h-[50vh] bg-gradient-to-b from-primary/10 to-transparent"></div>
+<div class="absolute -top-[20%] -right-[20%] w-[80%] h-[50%] bg-primary/5 blur-[100px] rounded-full"></div>
+</div>
+<!-- Main Container -->
+<div class="relative z-10 flex flex-col h-screen w-full overflow-hidden max-w-md mx-auto bg-transparent">
+<!-- Header -->
+<header class="flex items-center p-4 pt-6 pb-2 justify-between shrink-0 bg-background-light/90 dark:bg-background-dark/90 backdrop-blur-sm sticky top-0 z-50">
+<button class="flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-text-main-light dark:text-text-main-dark" style="font-size: 24px;">arrow_back_ios_new</span>
+</button>
+<h1 class="text-lg font-bold leading-tight tracking-[-0.015em] text-center flex-1">Notification Preferences</h1>
+<div class="size-10"></div> <!-- Spacer for visual balance -->
+</header>
+<!-- Content Scroll Area -->
+<main class="flex-1 overflow-y-auto overflow-x-hidden p-4 space-y-6 pb-24 no-scrollbar">
+<!-- System Notification Warning (ActionPanel) -->
+<div class="rounded-xl border border-primary/20 bg-primary/5 p-4">
+<div class="flex flex-col gap-3">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary mt-0.5">notifications_off</span>
+<div class="flex flex-col gap-1">
+<p class="text-sm font-bold leading-tight">System Notifications Disabled</p>
+<p class="text-xs text-text-sub-light dark:text-text-sub-dark leading-normal">Enable notifications in iOS Settings to ensure you receive prayer and lifestyle alerts.</p>
+</div>
+</div>
+<a class="text-xs font-bold leading-normal tracking-wide flex items-center gap-1 text-primary hover:text-primary/80 ml-9" href="#">
+                        Open Settings
+                        <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</div>
+</div>
+<!-- Prayer Notifications Section -->
+<section class="rounded-xl bg-card-light dark:bg-card-dark shadow-sm border border-transparent dark:border-white/5 overflow-hidden">
+<!-- Section Header -->
+<div class="p-4 flex items-center justify-between border-b border-gray-100 dark:border-white/5">
+<div class="flex items-center gap-3">
+<div class="flex items-center justify-center rounded-lg bg-primary/10 text-primary shrink-0 size-10">
+<span class="material-symbols-outlined">mosque</span>
+</div>
+<div>
+<p class="text-base font-bold">Prayer Notifications</p>
+<p class="text-xs text-text-sub-light dark:text-text-sub-dark">Adhan and Iqama alerts</p>
+</div>
+</div>
+<!-- Master Toggle -->
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<!-- Granular Controls -->
+<div class="p-4 space-y-5">
+<!-- Slider -->
+<div class="space-y-3">
+<div class="flex justify-between items-center">
+<p class="text-sm font-medium">Remind me before</p>
+<span class="text-xs font-bold text-primary bg-primary/10 px-2 py-1 rounded">15 min</span>
+</div>
+<input class="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700" max="60" min="0" type="range" value="15"/>
+<div class="flex justify-between text-[10px] text-text-sub-light dark:text-text-sub-dark font-medium px-1">
+<span>0m</span>
+<span>15m</span>
+<span>30m</span>
+<span>45m</span>
+<span>60m</span>
+</div>
+</div>
+<!-- Prayer Checkboxes -->
+<div class="grid grid-cols-1 gap-1 pt-2">
+<!-- Reusing Checklist Logic -->
+<label class="flex items-center justify-between py-2 group cursor-pointer">
+<span class="text-sm font-medium group-hover:text-primary transition-colors">Fajr</span>
+<input checked="" class="form-checkbox h-5 w-5 rounded text-primary border-gray-300 focus:ring-primary/50 dark:border-gray-600 dark:bg-gray-800 transition duration-150 ease-in-out" type="checkbox"/>
+</label>
+<div class="h-px bg-gray-100 dark:bg-white/5"></div>
+<label class="flex items-center justify-between py-2 group cursor-pointer">
+<span class="text-sm font-medium group-hover:text-primary transition-colors">Dhuhr</span>
+<input checked="" class="form-checkbox h-5 w-5 rounded text-primary border-gray-300 focus:ring-primary/50 dark:border-gray-600 dark:bg-gray-800 transition duration-150 ease-in-out" type="checkbox"/>
+</label>
+<div class="h-px bg-gray-100 dark:bg-white/5"></div>
+<label class="flex items-center justify-between py-2 group cursor-pointer">
+<span class="text-sm font-medium group-hover:text-primary transition-colors">Asr</span>
+<input checked="" class="form-checkbox h-5 w-5 rounded text-primary border-gray-300 focus:ring-primary/50 dark:border-gray-600 dark:bg-gray-800 transition duration-150 ease-in-out" type="checkbox"/>
+</label>
+<div class="h-px bg-gray-100 dark:bg-white/5"></div>
+<label class="flex items-center justify-between py-2 group cursor-pointer">
+<span class="text-sm font-medium group-hover:text-primary transition-colors">Maghrib</span>
+<input checked="" class="form-checkbox h-5 w-5 rounded text-primary border-gray-300 focus:ring-primary/50 dark:border-gray-600 dark:bg-gray-800 transition duration-150 ease-in-out" type="checkbox"/>
+</label>
+<div class="h-px bg-gray-100 dark:bg-white/5"></div>
+<label class="flex items-center justify-between py-2 group cursor-pointer">
+<span class="text-sm font-medium group-hover:text-primary transition-colors">Isha</span>
+<input checked="" class="form-checkbox h-5 w-5 rounded text-primary border-gray-300 focus:ring-primary/50 dark:border-gray-600 dark:bg-gray-800 transition duration-150 ease-in-out" type="checkbox"/>
+</label>
+</div>
+</div>
+</section>
+<!-- Work Notifications Section -->
+<section class="rounded-xl bg-card-light dark:bg-card-dark shadow-sm border border-transparent dark:border-white/5 overflow-hidden">
+<div class="p-4 flex items-center justify-between border-b border-gray-100 dark:border-white/5">
+<div class="flex items-center gap-3">
+<div class="flex items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 shrink-0 size-10">
+<span class="material-symbols-outlined">work</span>
+</div>
+<div>
+<p class="text-base font-bold">Work &amp; Focus</p>
+<p class="text-xs text-text-sub-light dark:text-text-sub-dark">Session and break alerts</p>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="p-4 space-y-2 opacity-50 pointer-events-none grayscale-[0.5]"> <!-- Visual 'disabled' state since toggle is off -->
+<div class="flex items-center justify-between py-2">
+<span class="text-sm font-medium">Session Start/End</span>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="flex items-center justify-between py-2">
+<span class="text-sm font-medium">Break Reminders</span>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+</section>
+<!-- Expense Notifications Section -->
+<section class="rounded-xl bg-card-light dark:bg-card-dark shadow-sm border border-transparent dark:border-white/5 overflow-hidden">
+<div class="p-4 flex items-center justify-between border-b border-gray-100 dark:border-white/5">
+<div class="flex items-center gap-3">
+<div class="flex items-center justify-center rounded-lg bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 shrink-0 size-10">
+<span class="material-symbols-outlined">attach_money</span>
+</div>
+<div>
+<p class="text-base font-bold">Expenses</p>
+<p class="text-xs text-text-sub-light dark:text-text-sub-dark">Budget warnings</p>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="p-4 space-y-2">
+<div class="flex items-center justify-between py-2">
+<span class="text-sm font-medium">Daily Budget Limit</span>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="flex items-center justify-between py-2">
+<span class="text-sm font-medium">Log Entry Reminder</span>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+</section>
+<!-- Food Notifications Section -->
+<section class="rounded-xl bg-card-light dark:bg-card-dark shadow-sm border border-transparent dark:border-white/5 overflow-hidden">
+<div class="p-4 flex items-center justify-between border-b border-gray-100 dark:border-white/5">
+<div class="flex items-center gap-3">
+<div class="flex items-center justify-center rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 shrink-0 size-10">
+<span class="material-symbols-outlined">restaurant</span>
+</div>
+<div>
+<p class="text-base font-bold">Food &amp; Diet</p>
+<p class="text-xs text-text-sub-light dark:text-text-sub-dark">Meal logs and water</p>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</section>
+<!-- General Updates -->
+<section class="rounded-xl bg-card-light dark:bg-card-dark shadow-sm border border-transparent dark:border-white/5 overflow-hidden p-4 space-y-4">
+<h3 class="text-xs font-bold uppercase tracking-wider text-text-sub-light dark:text-text-sub-dark">Summaries</h3>
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-sm font-bold">Daily Recap</span>
+<span class="text-xs text-text-sub-light dark:text-text-sub-dark">Evening summary of your day</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="h-px bg-gray-100 dark:bg-white/5"></div>
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-sm font-bold">Weekly Report</span>
+<span class="text-xs text-text-sub-light dark:text-text-sub-dark">Weekly insights every Friday</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</section>
+</main>
+<!-- Fixed Footer -->
+<footer class="shrink-0 p-4 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-t border-gray-100 dark:border-white/5">
+<button class="w-full h-12 flex items-center justify-center gap-2 rounded-xl bg-primary hover:bg-primary/90 text-white font-bold text-base transition-all shadow-lg shadow-primary/30 active:scale-[0.98]">
+<span class="material-symbols-outlined text-[20px]">save</span>
+                Save Changes
+            </button>
+</footer>
+</div>
+</body></html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Expense Tracker Onboarding</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f48c25",
+                        "background-light": "#f8f7f5",
+                        "background-dark": "#221910",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom Safe Area adjustments for iOS */
+        .safe-area-top {
+            padding-top: env(safe-area-inset-top, 20px);
+        }
+        .safe-area-bottom {
+            padding-bottom: env(safe-area-inset-bottom, 20px);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display antialiased text-[#181411] dark:text-white transition-colors duration-200">
+<div class="relative flex h-screen w-full flex-col overflow-hidden bg-background-light dark:bg-background-dark group/design-root">
+<!-- Background Gradient Mesh -->
+<div class="absolute inset-0 z-0 pointer-events-none bg-[radial-gradient(circle_at_50%_0%,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent opacity-60 dark:opacity-30"></div>
+<!-- Top Navigation -->
+<div class="relative z-10 flex w-full items-center justify-end px-6 py-4 safe-area-top">
+<button class="flex items-center justify-center rounded-full px-3 py-1 hover:bg-[#e6e0db]/30 dark:hover:bg-[#3a2e24]/50 transition-colors">
+<p class="text-[#8a7560] dark:text-[#a08e7d] text-base font-bold leading-normal tracking-wide">Skip</p>
+</button>
+</div>
+<!-- Hero Illustration Area -->
+<div class="relative z-10 flex flex-1 flex-col items-center justify-center w-full px-6">
+<!-- Illustration Container -->
+<div class="w-full max-w-[320px] aspect-square relative flex items-center justify-center animate-fade-in">
+<!-- Main Illustration Image -->
+<div class="w-full h-full bg-contain bg-center bg-no-repeat drop-shadow-2xl" data-alt="3D minimalist illustration of a floating wallet with gold dinar coins and a growing green plant symbolizing barakah" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBDDxwa2W9rvRinRgQAVsoaiau1X9fYXF0xxzPDKqKoehk647mZef4o7UAkMZt1vNUcXFv3Urm6fbHNOSbJK9Y0wXqz3rk-DVeofsEHG6TI6ruAIeTjAwHtvmlRivfKdRoX6M4lDqsb_VauakFyu1bo5mFcrhjHoNY3j5n50YGYVYjmr6NrrAZYvWKFBn5o0DkhDHC-MVth9ihVkUsJ576JSo5-T4gIGTFm-UkQayfpSbMrE6XWr6bnxSZ0v1I772RLTINiIHUD2U8");'></div>
+<!-- Decorative Elements for "Islamic Art" vibe -->
+<div class="absolute -z-10 w-[120%] h-[120%] opacity-10 dark:opacity-5 bg-[url('https://www.transparenttextures.com/patterns/arabesque.png')] rounded-full mask-image-radial"></div>
+</div>
+</div>
+<!-- Content & Actions Sheet -->
+<div class="relative z-20 flex w-full flex-col items-center justify-end rounded-t-3xl bg-white/50 dark:bg-white/5 backdrop-blur-sm pt-2 pb-6 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.05)] ring-1 ring-white/20 dark:ring-white/5">
+<div class="flex w-full flex-col items-center px-6 pt-4 safe-area-bottom">
+<!-- Indicators -->
+<div class="flex w-full flex-row items-center justify-center gap-2 mb-6">
+<div class="h-1.5 w-6 rounded-full bg-primary"></div>
+<div class="h-1.5 w-1.5 rounded-full bg-[#e6e0db] dark:bg-[#3a2e24]"></div>
+<div class="h-1.5 w-1.5 rounded-full bg-[#e6e0db] dark:bg-[#3a2e24]"></div>
+</div>
+<!-- Headline -->
+<h1 class="text-[#181411] dark:text-white tracking-tight text-[32px] font-extrabold leading-tight text-center mb-3">
+                    Track Every Dinar
+                </h1>
+<!-- Body Text -->
+<p class="text-[#8a7560] dark:text-[#b0a194] text-base font-medium leading-relaxed text-center mb-8 max-w-xs">
+                    Gain full clarity on your finances. Categorize expenses, set budgets, and grow your wealth with mindfulness.
+                </p>
+<!-- Primary Action Button -->
+<button class="flex w-full items-center justify-center rounded-lg bg-primary px-4 py-4 hover:bg-primary/90 active:bg-primary/95 transition-all transform active:scale-[0.99] shadow-lg shadow-primary/20">
+<span class="text-white text-lg font-bold leading-none tracking-wide">Manage Your Money</span>
+<span class="material-symbols-outlined text-white ml-2 text-xl">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</body></html>

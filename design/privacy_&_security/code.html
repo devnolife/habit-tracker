@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Privacy &amp; Security</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f48c25",
+                        "background-light": "#f8f7f5",
+                        "background-dark": "#221910",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    backgroundImage: {
+                        'warm-gradient': 'linear-gradient(180deg, rgba(244,140,37,0.15) 0%, rgba(248,247,245,0) 100%)',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 antialiased overflow-x-hidden">
+<!-- Main Container with Warm Gradient Background -->
+<div class="relative min-h-screen w-full flex flex-col bg-warm-gradient dark:bg-none">
+<!-- Top App Bar -->
+<header class="sticky top-0 z-10 backdrop-blur-md bg-white/70 dark:bg-[#221910]/80 border-b border-gray-100 dark:border-gray-800">
+<div class="flex items-center justify-between px-4 py-3">
+<button class="flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-[#181411] dark:text-white" style="font-size: 24px;">arrow_back_ios_new</span>
+</button>
+<h1 class="text-[#181411] dark:text-white text-lg font-bold leading-tight tracking-tight flex-1 text-center">Privacy &amp; Security</h1>
+<div class="size-10 shrink-0"></div> <!-- Spacer to balance layout -->
+</div>
+</header>
+<!-- Content Scrollable Area -->
+<main class="flex-1 px-4 py-6 flex flex-col gap-6">
+<!-- Section: App Access -->
+<section>
+<h3 class="text-[#181411] dark:text-white/80 text-sm font-bold uppercase tracking-wider px-2 pb-3 opacity-70">App Access</h3>
+<div class="bg-white dark:bg-[#2c241b] rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden">
+<!-- Biometric Item -->
+<div class="flex items-center justify-between p-4 border-b border-gray-50 dark:border-gray-700/50">
+<div class="flex items-center gap-4">
+<div class="flex items-center justify-center rounded-full bg-primary/10 dark:bg-primary/20 shrink-0 size-10 text-primary">
+<span class="material-symbols-outlined" style="font-size: 22px;">face</span>
+</div>
+<div class="flex flex-col">
+<p class="text-[#181411] dark:text-white text-base font-medium leading-normal">Biometric Lock</p>
+<p class="text-gray-500 dark:text-gray-400 text-xs font-normal">Use Face ID to unlock app</p>
+</div>
+</div>
+<div class="shrink-0">
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+<!-- Passcode Item -->
+<button class="w-full flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors text-left group">
+<div class="flex items-center gap-4">
+<div class="flex items-center justify-center rounded-full bg-primary/10 dark:bg-primary/20 shrink-0 size-10 text-primary">
+<span class="material-symbols-outlined" style="font-size: 22px;">lock</span>
+</div>
+<p class="text-[#181411] dark:text-white text-base font-medium leading-normal">Change Passcode</p>
+</div>
+<div class="shrink-0 text-gray-400 group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined" style="font-size: 24px;">chevron_right</span>
+</div>
+</button>
+</div>
+</section>
+<!-- Section: Data Management -->
+<section>
+<h3 class="text-[#181411] dark:text-white/80 text-sm font-bold uppercase tracking-wider px-2 pb-3 opacity-70">Data Management</h3>
+<div class="bg-white dark:bg-[#2c241b] rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden">
+<!-- Share Diagnostics -->
+<div class="flex items-center justify-between p-4 border-b border-gray-50 dark:border-gray-700/50">
+<div class="flex items-center gap-4">
+<div class="flex items-center justify-center rounded-full bg-primary/10 dark:bg-primary/20 shrink-0 size-10 text-primary">
+<span class="material-symbols-outlined" style="font-size: 22px;">analytics</span>
+</div>
+<div class="flex flex-col">
+<p class="text-[#181411] dark:text-white text-base font-medium leading-normal">Share Diagnostics</p>
+<p class="text-gray-500 dark:text-gray-400 text-xs font-normal max-w-[200px] truncate">Help improve app performance</p>
+</div>
+</div>
+<div class="shrink-0">
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+<!-- Export Data -->
+<button class="w-full flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors text-left group">
+<div class="flex items-center gap-4">
+<div class="flex items-center justify-center rounded-full bg-primary/10 dark:bg-primary/20 shrink-0 size-10 text-primary">
+<span class="material-symbols-outlined" style="font-size: 22px;">download</span>
+</div>
+<p class="text-[#181411] dark:text-white text-base font-medium leading-normal">Export My Data</p>
+</div>
+<div class="shrink-0 text-gray-400 group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined" style="font-size: 24px;">chevron_right</span>
+</div>
+</button>
+</div>
+</section>
+<!-- Section: Legal -->
+<section>
+<h3 class="text-[#181411] dark:text-white/80 text-sm font-bold uppercase tracking-wider px-2 pb-3 opacity-70">Legal</h3>
+<div class="bg-white dark:bg-[#2c241b] rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden divide-y divide-gray-50 dark:divide-gray-700/50">
+<!-- Privacy Policy -->
+<button class="w-full flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors text-left group">
+<div class="flex items-center gap-4">
+<div class="flex items-center justify-center rounded-full bg-primary/10 dark:bg-primary/20 shrink-0 size-10 text-primary">
+<span class="material-symbols-outlined" style="font-size: 22px;">policy</span>
+</div>
+<p class="text-[#181411] dark:text-white text-base font-medium leading-normal">Privacy Policy</p>
+</div>
+<div class="shrink-0 text-gray-400 group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined" style="font-size: 24px;">open_in_new</span>
+</div>
+</button>
+<!-- Terms of Service -->
+<button class="w-full flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors text-left group">
+<div class="flex items-center gap-4">
+<div class="flex items-center justify-center rounded-full bg-primary/10 dark:bg-primary/20 shrink-0 size-10 text-primary">
+<span class="material-symbols-outlined" style="font-size: 22px;">gavel</span>
+</div>
+<p class="text-[#181411] dark:text-white text-base font-medium leading-normal">Terms of Service</p>
+</div>
+<div class="shrink-0 text-gray-400 group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined" style="font-size: 24px;">open_in_new</span>
+</div>
+</button>
+</div>
+</section>
+<!-- Danger Zone: Delete Account -->
+<section class="mt-4 mb-8">
+<button class="w-full bg-white dark:bg-[#2c241b] rounded-xl p-4 flex items-center justify-center gap-2 border border-red-100 dark:border-red-900/30 shadow-sm group hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors">
+<span class="material-symbols-outlined text-red-500 group-hover:text-red-600 transition-colors" style="font-size: 20px;">delete_forever</span>
+<span class="text-red-500 font-bold text-base group-hover:text-red-600 transition-colors">Delete Account</span>
+</button>
+<p class="text-center text-xs text-gray-400 mt-3 px-4">
+                    Deleting your account will permanently remove all your data, logs, and preferences. This action cannot be undone.
+                </p>
+</section>
+</main>
+<!-- Bottom Bar (Example Navigation context) -->
+<div class="bg-white dark:bg-[#2c241b] border-t border-gray-100 dark:border-gray-800 px-6 py-4 flex justify-around items-center sticky bottom-0 z-20 pb-8">
+<button class="flex flex-col items-center gap-1 text-gray-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined" style="font-size: 24px;">home</span>
+<span class="text-[10px] font-medium">Home</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-gray-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined" style="font-size: 24px;">menu_book</span>
+<span class="text-[10px] font-medium">Log</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined filled" style="font-size: 24px; font-variation-settings: 'FILL' 1;">person</span>
+<span class="text-[10px] font-medium">Profile</span>
+</button>
+</div>
+</div>
+</body></html>

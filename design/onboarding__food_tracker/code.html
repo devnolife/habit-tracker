@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Onboarding: Food Tracker</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#f48c25",
+              "background-light": "#f8f7f5",
+              "background-dark": "#221910",
+              "text-main": "#181411",
+              "text-secondary": "#8a7560",
+            },
+            fontFamily: {
+              "display": ["Plus Jakarta Sans", "Noto Sans", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+            backgroundImage: {
+                'warm-gradient': 'linear-gradient(180deg, rgba(244, 140, 37, 0.12) 0%, rgba(248, 247, 245, 0.5) 100%)',
+                'warm-gradient-dark': 'linear-gradient(180deg, rgba(34, 25, 16, 1) 0%, rgba(34, 25, 16, 1) 100%)',
+            }
+          },
+        },
+      }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-display bg-background-light dark:bg-background-dark text-text-main dark:text-white antialiased selection:bg-primary selection:text-white">
+<!-- Main Container -->
+<div class="relative flex h-screen w-full flex-col overflow-hidden bg-warm-gradient dark:bg-background-dark group/design-root">
+<!-- Top Header / Skip -->
+<div class="flex items-center p-6 justify-end w-full z-20">
+<button class="flex items-center justify-end hover:opacity-70 transition-opacity">
+<span class="text-primary text-base font-bold leading-normal tracking-[0.015em]">Skip</span>
+</button>
+</div>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col items-center justify-center w-full px-6 -mt-10">
+<!-- Hero Illustration -->
+<div class="@container w-full max-w-[340px] aspect-[4/5] max-h-[45vh] relative mb-8 flex items-center justify-center">
+<!-- Decorative Blur Background -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] h-[90%] bg-primary/20 dark:bg-primary/10 rounded-full blur-3xl pointer-events-none"></div>
+<!-- Main Image Container -->
+<div class="relative w-full h-full rounded-[2.5rem] overflow-hidden shadow-[0_20px_40px_-15px_rgba(244,140,37,0.15)] dark:shadow-none bg-white dark:bg-white/5 ring-1 ring-white/50 dark:ring-white/10">
+<div class="w-full h-full bg-center bg-no-repeat bg-cover" data-alt="3D stylized illustration of healthy halal food plate with dates, olives, and water" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA_X8L2lwoYspSv-04LyWUszOBHOuLvBs14hDenjVyP0Kxxyt-4GOa26xVErBQkMKMBjlH__CNgxDJHDcxvtTm3KKtknqR_pzh066lCO5OT-L6HSGjeoK4AlojhEYs6D0XUSt0wsTHzcx_FMtv1wnJ1zKI3Cdh3jaiUeaCqS-_wTI-pvMOEMx1D5ZRK3GFPCsSqq0oQv2xuxwqaX17Cd9c0LLjlknMjjWKHXw9KLU4aKRA0ybnUaprywfGnK0iTdtdZsoIx65c-ZC0");'>
+</div>
+<!-- Floating Badge (Optional decorative element) -->
+<div class="absolute bottom-6 right-6 bg-white dark:bg-background-dark/90 backdrop-blur-sm p-3 rounded-2xl shadow-lg border border-primary/10 flex items-center gap-2 animate-bounce" style="animation-duration: 3s;">
+<span class="material-symbols-outlined text-primary text-[20px]">eco</span>
+<span class="text-xs font-bold text-text-main dark:text-white">Sunnah Foods</span>
+</div>
+</div>
+</div>
+<!-- Typography Block -->
+<div class="w-full max-w-sm text-center flex flex-col gap-3 z-10">
+<h1 class="text-[#181411] dark:text-white tracking-tight text-[32px] font-extrabold leading-[1.15]">
+                    Nourish Your <br/> Body &amp; Soul
+                </h1>
+<p class="text-[#8a7560] dark:text-[#a89b8f] text-base font-normal leading-relaxed px-2">
+                    Track your calories, macros, and Sunnah foods effortlessly to maintain a balanced, healthy lifestyle.
+                </p>
+</div>
+</div>
+<!-- Bottom Actions -->
+<div class="w-full pb-10 pt-2 px-6 flex flex-col items-center gap-8 z-20">
+<!-- Page Indicators -->
+<div class="flex flex-row items-center justify-center gap-2">
+<!-- Active Dot -->
+<div class="h-2 w-8 rounded-full bg-primary transition-all duration-300"></div>
+<!-- Inactive Dots -->
+<div class="h-2 w-2 rounded-full bg-[#e6e0db] dark:bg-white/20"></div>
+<div class="h-2 w-2 rounded-full bg-[#e6e0db] dark:bg-white/20"></div>
+</div>
+<!-- Primary Button -->
+<button class="group relative w-full max-w-sm h-14 bg-primary hover:bg-[#e07b1a] text-white text-lg font-bold rounded-full shadow-lg shadow-primary/30 transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2 overflow-hidden">
+<span class="relative z-10">Start Tracking</span>
+<span class="material-symbols-outlined relative z-10 text-[20px] transition-transform group-hover:translate-x-1">arrow_forward</span>
+<!-- Button Shine Effect -->
+<div class="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent z-0"></div>
+</button>
+</div>
+</div>
+</body></html>
