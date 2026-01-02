@@ -1,5 +1,6 @@
 import { TouchableOpacity, Text, ActivityIndicator, ViewStyle } from "react-native";
 import { ReactNode } from "react";
+import { PRIMARY } from "@/config/colors";
 
 interface ButtonProps {
   children: ReactNode;
@@ -14,14 +15,14 @@ interface ButtonProps {
 
 const variantStyles = {
   primary: "bg-primary",
-  secondary: "bg-gray-100",
+  secondary: "bg-secondary",
   outline: "bg-transparent border border-primary",
   ghost: "bg-transparent",
 };
 
 const textVariantStyles = {
   primary: "text-white",
-  secondary: "text-gray-900",
+  secondary: "text-white",
   outline: "text-primary",
   ghost: "text-primary",
 };
@@ -57,7 +58,7 @@ export function Button({
     >
       {loading ? (
         <ActivityIndicator
-          color={variant === "primary" ? "white" : "#f48c25"}
+          color={variant === "primary" ? PRIMARY.contrast : PRIMARY.main}
           size="small"
         />
       ) : typeof children === "string" ? (

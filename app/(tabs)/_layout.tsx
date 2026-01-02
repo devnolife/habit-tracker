@@ -1,12 +1,6 @@
 import { Tabs } from "expo-router";
-import { View, StyleSheet } from "react-native";
-import {
-  Home,
-  Utensils,
-  Moon,
-  Briefcase,
-  Wallet,
-} from "lucide-react-native";
+import { View } from "react-native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 export default function TabLayout() {
   return (
@@ -44,8 +38,8 @@ export default function TabLayout() {
         options={{
           title: "Home",
           tabBarIcon: ({ color, focused }) => (
-            <View style={focused ? styles.activeIcon : undefined}>
-              <Home size={24} color={color} strokeWidth={focused ? 2.5 : 2} />
+            <View className={focused ? "bg-orange-100 p-2 rounded-xl" : ""}>
+              <MaterialCommunityIcons name="home" size={24} color={color} />
             </View>
           ),
         }}
@@ -55,8 +49,8 @@ export default function TabLayout() {
         options={{
           title: "Sholat",
           tabBarIcon: ({ color, focused }) => (
-            <View style={focused ? styles.activeIcon : undefined}>
-              <Moon size={24} color={color} strokeWidth={focused ? 2.5 : 2} />
+            <View className={focused ? "bg-orange-100 p-2 rounded-xl" : ""}>
+              <MaterialCommunityIcons name="mosque" size={24} color={color} />
             </View>
           ),
         }}
@@ -66,8 +60,8 @@ export default function TabLayout() {
         options={{
           title: "Makanan",
           tabBarIcon: ({ color, focused }) => (
-            <View style={focused ? styles.activeIcon : undefined}>
-              <Utensils size={24} color={color} strokeWidth={focused ? 2.5 : 2} />
+            <View className={focused ? "bg-orange-100 p-2 rounded-xl" : ""}>
+              <MaterialCommunityIcons name="food-apple" size={24} color={color} />
             </View>
           ),
         }}
@@ -77,8 +71,8 @@ export default function TabLayout() {
         options={{
           title: "Kerja",
           tabBarIcon: ({ color, focused }) => (
-            <View style={focused ? styles.activeIcon : undefined}>
-              <Briefcase size={24} color={color} strokeWidth={focused ? 2.5 : 2} />
+            <View className={focused ? "bg-orange-100 p-2 rounded-xl" : ""}>
+              <MaterialCommunityIcons name="briefcase" size={24} color={color} />
             </View>
           ),
         }}
@@ -88,8 +82,8 @@ export default function TabLayout() {
         options={{
           title: "Keuangan",
           tabBarIcon: ({ color, focused }) => (
-            <View style={focused ? styles.activeIcon : undefined}>
-              <Wallet size={24} color={color} strokeWidth={focused ? 2.5 : 2} />
+            <View className={focused ? "bg-orange-100 p-2 rounded-xl" : ""}>
+              <MaterialCommunityIcons name="wallet" size={24} color={color} />
             </View>
           ),
         }}
@@ -97,11 +91,3 @@ export default function TabLayout() {
     </Tabs>
   );
 }
-
-const styles = StyleSheet.create({
-  activeIcon: {
-    backgroundColor: "#FEF3E7",
-    padding: 8,
-    borderRadius: 12,
-  },
-});

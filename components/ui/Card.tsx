@@ -26,11 +26,11 @@ interface CardHeaderProps {
 
 export function CardHeader({ title, subtitle, rightElement }: CardHeaderProps) {
   return (
-    <View className="flex-row justify-between items-start mb-3">
+    <View className="flex-row items-start justify-between mb-3">
       <View className="flex-1">
         <Text className="text-lg font-semibold text-gray-900">{title}</Text>
         {subtitle && (
-          <Text className="text-sm text-gray-500 mt-1">{subtitle}</Text>
+          <Text className="mt-1 text-sm text-gray-500">{subtitle}</Text>
         )}
       </View>
       {rightElement}
