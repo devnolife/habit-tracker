@@ -1,7 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    "./App.{js,jsx,ts,tsx}",
     "./app/**/*.{js,jsx,ts,tsx}",
     "./components/**/*.{js,jsx,ts,tsx}",
   ],
@@ -16,6 +15,7 @@ module.exports = {
         "soft-blue": "#E3F2FD",
         "soft-red": "#FCE8E6",
         "soft-yellow": "#FFF7E0",
+        "soft-purple": "#F3E8FF",
       },
     },
   },
