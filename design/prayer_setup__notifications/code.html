@@ -58,7 +58,7 @@
 <div class="size-12"></div> <!-- Spacer for centering -->
 </div>
 <!-- Main Content -->
-<div class="w-full max-w-md mx-auto flex flex-col px-4">
+<div class="flex flex-col w-full max-w-md px-4 mx-auto">
 <!-- Headline -->
 <h2 class="text-[#181411] dark:text-white tracking-tight text-[28px] font-extrabold leading-tight text-left pt-2 pb-2">
             Customize Prayer Notifications
@@ -78,18 +78,18 @@
 </div>
 <div class="flex flex-col justify-center">
 <p class="text-[#181411] dark:text-white text-lg font-bold leading-normal">Fajr</p>
-<p class="text-primary text-sm font-medium leading-normal">Adhan Enabled</p>
+<p class="text-sm font-medium leading-normal text-primary">Adhan Enabled</p>
 </div>
 </div>
 <div class="shrink-0">
 <label class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-[#f5f2f0] dark:bg-[#4a3b2f] p-0.5 has-[:checked]:justify-end has-[:checked]:bg-primary transition-all">
 <div class="h-full w-[27px] rounded-full bg-white shadow-sm"></div>
-<input checked="" class="invisible absolute" type="checkbox"/>
+<input checked="" class="absolute invisible" type="checkbox"/>
 </label>
 </div>
 </div>
 <!-- Expanded Settings Area -->
-<div class="px-4 pb-6 pt-2 space-y-5 animate-fade-in">
+<div class="px-4 pt-2 pb-6 space-y-5 animate-fade-in">
 <!-- Sound Selection -->
 <div class="space-y-2">
 <label class="flex items-center gap-2 text-[#8a7560] dark:text-[#a89b8d] text-sm font-medium">
@@ -115,7 +115,7 @@
                             Vibration Pattern
                         </label>
 <div class="flex gap-2">
-<button class="flex-1 py-2 px-3 rounded-lg bg-primary text-white text-sm font-medium shadow-md transition-all">
+<button class="flex-1 px-3 py-2 text-sm font-medium text-white transition-all rounded-lg shadow-md bg-primary">
                                 Heartbeat
                             </button>
 <button class="flex-1 py-2 px-3 rounded-lg bg-[#f8f7f5] dark:bg-[#221910] text-[#181411] dark:text-[#dccbbd] text-sm font-medium border border-[#e6e0db] dark:border-[#3a2f26]">
@@ -128,17 +128,17 @@
 </div>
 <!-- Pre-Adhan Reminder -->
 <div class="space-y-3">
-<div class="flex justify-between items-center">
+<div class="flex items-center justify-between">
 <label class="flex items-center gap-2 text-[#8a7560] dark:text-[#a89b8d] text-sm font-medium">
 <span class="material-symbols-outlined text-[18px]">alarm</span>
                                 Pre-Adhan Reminder
                             </label>
-<span class="text-primary font-bold text-sm">15 min</span>
+<span class="text-sm font-bold text-primary">15 min</span>
 </div>
-<div class="relative w-full h-6 flex items-center">
+<div class="relative flex items-center w-full h-6">
 <div class="w-full h-2 bg-[#f0ebe6] dark:bg-[#221910] rounded-full">
-<div class="h-2 bg-primary rounded-full w-1/4 relative">
-<div class="absolute right-0 top-1/2 -translate-y-1/2 w-5 h-5 bg-white shadow-md rounded-full border-2 border-primary"></div>
+<div class="relative w-1/4 h-2 rounded-full bg-primary">
+<div class="absolute right-0 w-5 h-5 -translate-y-1/2 bg-white border-2 rounded-full shadow-md top-1/2 border-primary"></div>
 </div>
 </div>
 </div>
@@ -160,7 +160,7 @@
 <div class="shrink-0">
 <label class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-[#f5f2f0] dark:bg-[#4a3b2f] p-0.5 has-[:checked]:justify-end has-[:checked]:bg-primary transition-all">
 <div class="h-full w-[27px] rounded-full bg-white shadow-sm"></div>
-<input checked="" class="invisible absolute" type="checkbox"/>
+<input checked="" class="absolute invisible" type="checkbox"/>
 </label>
 </div>
 </div>
@@ -180,7 +180,7 @@
 <div class="shrink-0">
 <label class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-[#f5f2f0] dark:bg-[#4a3b2f] p-0.5 has-[:checked]:justify-end has-[:checked]:bg-primary transition-all">
 <div class="h-full w-[27px] rounded-full bg-white shadow-sm"></div>
-<input checked="" class="invisible absolute" type="checkbox"/>
+<input checked="" class="absolute invisible" type="checkbox"/>
 </label>
 </div>
 </div>
@@ -200,7 +200,7 @@
 <div class="shrink-0">
 <label class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-[#f5f2f0] dark:bg-[#4a3b2f] p-0.5 has-[:checked]:justify-end has-[:checked]:bg-primary transition-all">
 <div class="h-full w-[27px] rounded-full bg-white shadow-sm"></div>
-<input checked="" class="invisible absolute" type="checkbox"/>
+<input checked="" class="absolute invisible" type="checkbox"/>
 </label>
 </div>
 </div>
@@ -220,7 +220,7 @@
 <div class="shrink-0">
 <label class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-[#f5f2f0] dark:bg-[#4a3b2f] p-0.5 has-[:checked]:justify-end has-[:checked]:bg-primary transition-all">
 <div class="h-full w-[27px] rounded-full bg-white shadow-sm translate-x-0 transition-transform"></div>
-<input class="invisible absolute" type="checkbox"/>
+<input class="absolute invisible" type="checkbox"/>
 </label>
 </div>
 </div>
@@ -228,7 +228,7 @@
 </div>
 </div>
 <!-- Fixed Bottom Button -->
-<div class="fixed bottom-0 left-0 w-full p-4 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur border-t border-transparent z-40">
+<div class="fixed bottom-0 left-0 z-40 w-full p-4 border-t border-transparent bg-background-light/95 dark:bg-background-dark/95 backdrop-blur">
 <div class="max-w-md mx-auto">
 <button class="w-full flex items-center justify-center bg-primary hover:bg-orange-600 active:scale-[0.98] transition-all text-white font-bold text-lg h-14 rounded-full shadow-lg shadow-primary/30">
                 Finish Setup

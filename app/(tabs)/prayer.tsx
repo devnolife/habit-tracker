@@ -1,476 +1,351 @@
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, TextInput } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Dimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
+import { router } from "expo-router";
 
-// Prayer colors (green theme for sholat)
-const PRAYER_GREEN = "#13ec5b";
+const { width } = Dimensions.get("window");
+const CARD_WIDTH = width - 48;
 
-// Mock data for prayers
-const PRAYERS_DATA = [
-  {
-    id: "fajr",
-    name: "Fajr",
-    arabic: "الفجر",
-    time: "04:45 AM",
-    adhan: "04:30 AM",
-    iqamah: "04:40 AM",
-    completed: true,
-    isNext: false,
-  },
-  {
-    id: "dhuhr",
-    name: "Dhuhr",
-    arabic: "الظهر",
-    time: "12:05 PM",
-    adhan: "11:55 AM",
-    iqamah: "12:15 PM",
-    completed: false,
-    isNext: true,
-  },
-  {
-    id: "asr",
-    name: "Asr",
-    arabic: "العصر",
-    time: "03:20 PM",
-    adhan: "03:10 PM",
-    iqamah: "03:25 PM",
-    completed: false,
-    isNext: false,
-  },
-  {
-    id: "maghrib",
-    name: "Maghrib",
-    arabic: "المغرب",
-    time: "06:10 PM",
-    adhan: "06:05 PM",
-    iqamah: "06:15 PM",
-    completed: false,
-    isNext: false,
-  },
-  {
-    id: "isha",
-    name: "Isha",
-    arabic: "العشاء",
-    time: "07:25 PM",
-    adhan: "07:20 PM",
-    iqamah: "07:30 PM",
-    completed: false,
-    isNext: false,
-  },
+// Gen Z Color Palette - Fresh & Vibrant
+const COLORS = {
+  primary: "#10b981", // Emerald green
+  primaryLight: "#d1fae5",
+  primaryDark: "#059669",
+  accent: "#06b6d4", // Cyan accent
+  background: "#fafafa",
+  card: "#ffffff",
+  text: "#0f172a",
+  textMuted: "#64748b",
+  textLight: "#94a3b8",
+  success: "#22c55e",
+  warning: "#f59e0b",
+  border: "#e2e8f0",
+};
+
+// Prayer Data dengan nama Indonesia
+const PRAYERS = [
+  { id: "subuh", name: "Subuh", time: "04:32", icon: "weather-sunset-up", done: true, emoji: "🌅" },
+  { id: "dzuhur", name: "Dzuhur", time: "12:05", icon: "white-balance-sunny", done: false, isNext: true, emoji: "☀️" },
+  { id: "ashar", name: "Ashar", time: "15:22", icon: "weather-sunny", done: false, emoji: "🌤️" },
+  { id: "maghrib", name: "Maghrib", time: "18:02", icon: "weather-sunset", done: false, emoji: "🌅" },
+  { id: "isya", name: "Isya", time: "19:15", icon: "weather-night", done: false, emoji: "🌙" },
 ];
 
-// Calendar mock data
-const CALENDAR_DAYS = [
-  { day: 1, prayers: [1, 1, 1, 1, 1] },
-  { day: 2, prayers: [1, 1, 0, 1, 1] },
-  { day: 3, prayers: [1, 1, 1, 1, 1] },
-  { day: 4, prayers: [1, 1, 1, 1, 1] },
-  { day: 5, prayers: [1, 1, 1, 0, 1] },
-  { day: 6, prayers: [1, 1, 1, 1, 1] },
-  { day: 7, prayers: [1, 1, 1, 1, 1] },
-  { day: 8, prayers: [1, 1, 1, 1, 1] },
-  { day: 9, prayers: [1, 1, 1, 1, 1] },
-  { day: 10, prayers: [1, 1, 1, 1, 1] },
-  { day: 11, prayers: [1, 1, 1, 1, 1] },
-  { day: 12, prayers: [1, 1, 1, 1, 1] },
-  { day: 13, prayers: [1, 1, 1, 1, 1] },
-  { day: 14, prayers: [1, 0, 0, 0, 0], isToday: true },
+// Weekly streak data
+const WEEK_DATA = [
+  { day: "Sen", completed: 5, total: 5 },
+  { day: "Sel", completed: 5, total: 5 },
+  { day: "Rab", completed: 4, total: 5 },
+  { day: "Kam", completed: 5, total: 5 },
+  { day: "Jum", completed: 5, total: 5 },
+  { day: "Sab", completed: 3, total: 5 },
+  { day: "Min", completed: 1, total: 5, isToday: true },
 ];
 
-// Achievement badges
-const ACHIEVEMENTS = [
-  { id: 1, title: "Fajr Fighter", icon: "medal", color: "#EAB308", bgColor: "#FEF3C7", progress: 70, level: "Level 2" },
-  { id: 2, title: "7 Day Streak", icon: "chart-timeline-variant", color: "#3B82F6", bgColor: "#DBEAFE", progress: 100, level: "Completed" },
-  { id: 3, title: "Night Warrior", icon: "weather-night", color: "#8B5CF6", bgColor: "#EDE9FE", progress: 20, level: "In Progress", locked: true },
-];
+// Quick Stats Component
+const QuickStat = ({ value, label, icon, color }: { value: string; label: string; icon: string; color: string }) => (
+  <View className="flex-1 items-center">
+    <View
+      className="w-12 h-12 rounded-2xl items-center justify-center mb-2"
+      style={{ backgroundColor: `${color}15` }}
+    >
+      <MaterialCommunityIcons name={icon as any} size={24} color={color} />
+    </View>
+    <Text className="text-2xl font-bold text-slate-900">{value}</Text>
+    <Text className="text-xs text-slate-500 mt-0.5">{label}</Text>
+  </View>
+);
 
-// Prayer Card Component
-const PrayerCard = ({ prayer, expanded, onToggle }: {
-  prayer: typeof PRAYERS_DATA[0];
-  expanded: boolean;
+// Prayer Time Card - Minimalist Gen Z Style
+const PrayerTimeCard = ({
+  prayer,
+  onToggle
+}: {
+  prayer: typeof PRAYERS[0];
   onToggle: () => void;
 }) => {
-  const [prayerType, setPrayerType] = useState<"individual" | "jamaah">("individual");
-
   return (
-    <View
-      style={[
-        styles.prayerCard,
-        prayer.completed && styles.prayerCardCompleted,
-        prayer.isNext && styles.prayerCardNext,
-      ]}
+    <TouchableOpacity
+      onPress={onToggle}
+      activeOpacity={0.7}
+      className={`flex-row items-center justify-between p-4 rounded-2xl mb-3 ${prayer.isNext ? "bg-emerald-50 border-2 border-emerald-200" : "bg-white"
+        }`}
+      style={[styles.card, prayer.isNext && styles.nextCard]}
     >
-      <TouchableOpacity
-        onPress={onToggle}
-        className="flex-row items-center justify-between p-4"
-        activeOpacity={0.7}
-      >
-        <View className="flex-row items-center gap-4">
-          {/* Checkbox */}
-          <View className={`w-8 h-8 rounded-full items-center justify-center ${prayer.completed
-              ? "bg-[#13ec5b]"
-              : "border-2 border-gray-300"
-            }`} style={prayer.completed ? styles.checkboxShadow : undefined}>
-            {prayer.completed && (
-              <MaterialCommunityIcons name="check" size={18} color="#FFF" />
-            )}
-          </View>
-
-          {/* Prayer Info */}
-          <View>
-            <View className="flex-row items-center gap-2">
-              <Text className="text-base font-bold text-[#111813]">{prayer.name}</Text>
-              <Text className="text-xs text-[#61896f]">{prayer.arabic}</Text>
-            </View>
-            <Text className={`text-sm ${prayer.isNext ? "font-semibold text-[#13ec5b]" : "text-[#61896f]"}`}>
-              {prayer.time} {prayer.isNext && "(Next)"}
-            </Text>
-          </View>
-        </View>
-
-        <View className="flex-row items-center gap-3">
-          {prayer.completed && (
-            <View className="bg-[#13ec5b]/10 px-2 py-1 rounded">
-              <Text className="text-xs font-semibold text-[#13ec5b]">Done</Text>
-            </View>
+      <View className="flex-row items-center gap-4">
+        {/* Checkbox / Status */}
+        <TouchableOpacity
+          onPress={onToggle}
+          className={`w-11 h-11 rounded-full items-center justify-center ${prayer.done
+            ? "bg-emerald-500"
+            : prayer.isNext
+              ? "bg-emerald-100 border-2 border-emerald-400"
+              : "bg-slate-100"
+            }`}
+          style={prayer.done ? styles.checkDone : undefined}
+        >
+          {prayer.done ? (
+            <MaterialCommunityIcons name="check" size={22} color="#fff" />
+          ) : (
+            <Text className="text-lg">{prayer.emoji}</Text>
           )}
-          <MaterialCommunityIcons
-            name={expanded ? "chevron-up" : "chevron-down"}
-            size={24}
-            color="#9CA3AF"
-          />
+        </TouchableOpacity>
+
+        {/* Prayer Info */}
+        <View>
+          <Text className={`text-lg font-bold ${prayer.isNext ? "text-emerald-700" : "text-slate-800"}`}>
+            {prayer.name}
+          </Text>
+          <Text className={`text-sm ${prayer.isNext ? "text-emerald-600" : "text-slate-500"}`}>
+            {prayer.time}
+          </Text>
         </View>
-      </TouchableOpacity>
+      </View>
 
-      {/* Expanded Content */}
-      {expanded && (
-        <View className="px-4 pb-4 border-t border-gray-100">
-          {/* Adhan & Iqamah Times */}
-          <View className="flex-row gap-4 mt-3">
-            <View className="flex-1 bg-gray-50 p-3 rounded-lg">
-              <Text className="text-xs text-gray-400">Adhan</Text>
-              <Text className="font-medium text-[#111813]">{prayer.adhan}</Text>
-            </View>
-            <View className="flex-1 bg-gray-50 p-3 rounded-lg">
-              <Text className="text-xs text-gray-400">Iqamah</Text>
-              <Text className="font-medium text-[#111813]">{prayer.iqamah}</Text>
-            </View>
+      {/* Right Side */}
+      <View className="items-end">
+        {prayer.done && (
+          <View className="bg-emerald-100 px-3 py-1 rounded-full">
+            <Text className="text-xs font-semibold text-emerald-600">Selesai ✓</Text>
           </View>
-
-          {/* Notes Input (for next prayer) */}
-          {prayer.isNext && (
-            <View className="mt-4">
-              <TextInput
-                className="w-full bg-gray-50 rounded-lg text-sm p-3 text-[#111813]"
-                placeholder="Add notes..."
-                placeholderTextColor="#9CA3AF"
-              />
-            </View>
-          )}
-
-          {/* Prayer Type Toggle */}
-          <View className="flex-row items-center justify-between mt-4">
-            <View className="flex-row bg-gray-100 rounded-lg p-1">
-              <TouchableOpacity
-                className={`px-3 py-1.5 rounded ${prayerType === "individual" ? "bg-white" : ""}`}
-                onPress={() => setPrayerType("individual")}
-                style={prayerType === "individual" ? styles.toggleShadow : undefined}
-              >
-                <Text className={`text-xs font-medium ${prayerType === "individual" ? "text-[#13ec5b]" : "text-gray-500"}`}>
-                  Individual
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                className={`px-3 py-1.5 rounded ${prayerType === "jamaah" ? "bg-white" : ""}`}
-                onPress={() => setPrayerType("jamaah")}
-                style={prayerType === "jamaah" ? styles.toggleShadow : undefined}
-              >
-                <Text className={`text-xs font-medium ${prayerType === "jamaah" ? "text-[#13ec5b]" : "text-gray-500"}`}>
-                  Jamaah
-                </Text>
-              </TouchableOpacity>
-            </View>
-
-            {prayer.completed && (
-              <TouchableOpacity className="bg-red-50 px-3 py-1.5 rounded-lg">
-                <Text className="text-xs font-medium text-red-500">Mark as Missed</Text>
-              </TouchableOpacity>
-            )}
+        )}
+        {prayer.isNext && !prayer.done && (
+          <View className="bg-emerald-500 px-3 py-1.5 rounded-full" style={styles.nextBadge}>
+            <Text className="text-xs font-bold text-white">Berikutnya</Text>
           </View>
-        </View>
-      )}
-    </View>
+        )}
+        {!prayer.done && !prayer.isNext && (
+          <MaterialCommunityIcons name="chevron-right" size={20} color="#94a3b8" />
+        )}
+      </View>
+    </TouchableOpacity>
   );
 };
 
+// Mini Week View
+const WeekView = () => (
+  <View className="flex-row justify-between px-2">
+    {WEEK_DATA.map((day, index) => {
+      const percentage = (day.completed / day.total) * 100;
+      return (
+        <View key={index} className="items-center">
+          <View
+            className={`w-10 h-10 rounded-xl items-center justify-center mb-1 ${day.isToday ? "bg-emerald-500" : percentage === 100 ? "bg-emerald-100" : "bg-slate-100"
+              }`}
+            style={day.isToday ? styles.todayCircle : undefined}
+          >
+            <Text className={`text-sm font-bold ${day.isToday ? "text-white" : percentage === 100 ? "text-emerald-600" : "text-slate-500"
+              }`}>
+              {day.completed}
+            </Text>
+          </View>
+          <Text className={`text-[10px] font-medium ${day.isToday ? "text-emerald-600" : "text-slate-400"}`}>
+            {day.day}
+          </Text>
+        </View>
+      );
+    })}
+  </View>
+);
+
 export default function PrayerScreen() {
-  const [expandedPrayer, setExpandedPrayer] = useState<string | null>("dhuhr");
+  const [prayers, setPrayers] = useState(PRAYERS);
+
+  const togglePrayer = (id: string) => {
+    setPrayers(prev => prev.map(p =>
+      p.id === id ? { ...p, done: !p.done } : p
+    ));
+  };
+
+  const completedCount = prayers.filter(p => p.done).length;
+  const streakDays = 7;
+  const nextPrayer = prayers.find(p => p.isNext);
 
   return (
-    <View className="flex-1 bg-[#f6f8f6]">
+    <View className="flex-1 bg-slate-50">
       <SafeAreaView className="flex-1" edges={["top"]}>
         <ScrollView
           className="flex-1"
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 120 }}
+          contentContainerStyle={{ paddingBottom: 100 }}
         >
-          {/* Header */}
-          <LinearGradient
-            colors={["#FFFFFF", "#f0fdf4"]}
-            className="pb-6 pt-2 rounded-b-[32px]"
-            style={styles.headerShadow}
-          >
-            <View className="px-4 pt-4 pb-2">
-              {/* Top Row */}
-              <View className="flex-row items-center justify-between mb-4">
-                <MaterialCommunityIcons name="mosque" size={36} color={PRAYER_GREEN} />
-                <View className="flex-row gap-3">
-                  <TouchableOpacity className="bg-white/50 p-2 rounded-xl" style={styles.iconButton}>
-                    <MaterialCommunityIcons name="bell-outline" size={24} color="#111813" />
-                  </TouchableOpacity>
-                  <TouchableOpacity className="bg-white/50 p-2 rounded-xl" style={styles.iconButton}>
-                    <MaterialCommunityIcons name="cog-outline" size={24} color="#111813" />
-                  </TouchableOpacity>
-                </View>
+          {/* Header - Clean & Minimal */}
+          <View className="px-6 pt-4 pb-2">
+            <View className="flex-row items-center justify-between">
+              <View>
+                <Text className="text-sm font-medium text-slate-500">Assalamu'alaikum 👋</Text>
+                <Text className="text-2xl font-bold text-slate-900 mt-0.5">Tracker Sholat</Text>
               </View>
-
-              {/* Title */}
-              <View className="items-center">
-                <Text className="text-3xl font-bold tracking-tight text-[#111813]">Prayer Tracker</Text>
-                <Text className="text-sm font-medium text-[#61896f] mt-1">14 Ramadhan 1445 AH</Text>
-
-                {/* Location Pill */}
-                <View className="flex-row items-center gap-1 mt-2 bg-white px-3 py-1.5 rounded-full border border-gray-100" style={styles.locationPill}>
-                  <MaterialCommunityIcons name="map-marker" size={16} color={PRAYER_GREEN} />
-                  <Text className="text-xs font-semibold text-[#111813]">Jakarta, Indonesia</Text>
-                  <MaterialCommunityIcons name="compass-outline" size={14} color="#61896f" style={{ marginLeft: 4 }} />
-                </View>
-              </View>
-            </View>
-          </LinearGradient>
-
-          {/* Main Content */}
-          <View className="px-4 -mt-4">
-            {/* Streak & Stats Mini-Bar */}
-            <View className="flex-row gap-3 mb-6">
-              <View className="flex-1 bg-white rounded-xl p-3 border border-gray-100" style={styles.statCard}>
-                <View className="flex-row items-center justify-between">
-                  <View>
-                    <Text className="text-xs text-[#61896f]">Streak</Text>
-                    <Text className="text-xl font-bold text-[#111813]">12 Days</Text>
-                  </View>
-                  <View className="w-10 h-10 rounded-full bg-orange-50 items-center justify-center">
-                    <MaterialCommunityIcons name="fire" size={22} color="#F97316" />
-                  </View>
-                </View>
-              </View>
-              <View className="flex-1 bg-white rounded-xl p-3 border border-gray-100" style={styles.statCard}>
-                <View className="flex-row items-center justify-between">
-                  <View>
-                    <Text className="text-xs text-[#61896f]">Completion</Text>
-                    <Text className="text-xl font-bold text-[#13ec5b]">80%</Text>
-                  </View>
-                  <View className="w-10 h-10 rounded-full bg-[#13ec5b]/10 items-center justify-center">
-                    <MaterialCommunityIcons name="chart-pie" size={22} color={PRAYER_GREEN} />
-                  </View>
-                </View>
-              </View>
-            </View>
-
-            {/* Today's Prayers */}
-            <Text className="text-lg font-bold text-[#111813] mb-3 pl-1">Today's Prayers</Text>
-            <View className="gap-3 mb-6">
-              {PRAYERS_DATA.map((prayer) => (
-                <PrayerCard
-                  key={prayer.id}
-                  prayer={prayer}
-                  expanded={expandedPrayer === prayer.id}
-                  onToggle={() => setExpandedPrayer(expandedPrayer === prayer.id ? null : prayer.id)}
-                />
-              ))}
-            </View>
-
-            {/* Qibla Compass Widget */}
-            <View className="bg-white rounded-2xl p-4 border border-gray-100 mb-6" style={styles.card}>
-              <View className="flex-row items-center gap-6">
-                {/* Compass Visual */}
-                <View className="w-24 h-24 rounded-full bg-slate-100 items-center justify-center border-4 border-white" style={styles.compassShadow}>
-                  {/* Kaaba Icon */}
-                  <View className="w-8 h-8 bg-black rounded items-center justify-center">
-                    <View className="w-6 h-1 bg-yellow-400 absolute top-1" />
-                  </View>
-                  {/* Compass Needle Indicator */}
-                  <View className="absolute top-0 w-1 h-4 bg-red-500 rounded-full" />
-                </View>
-
-                <View className="flex-1">
-                  <View className="flex-row items-center justify-between">
-                    <Text className="text-lg font-bold text-[#111813]">Qibla Direction</Text>
-                    <View className="bg-[#13ec5b]/10 px-2 py-1 rounded-md">
-                      <Text className="text-xs font-bold text-[#13ec5b]">Live</Text>
-                    </View>
-                  </View>
-                  <Text className="text-2xl font-bold text-gray-800 mt-1">
-                    295° <Text className="text-lg text-gray-500 font-normal">NW</Text>
-                  </Text>
-                  <View className="flex-row items-center gap-1 mt-1">
-                    <MaterialCommunityIcons name="ruler" size={14} color="#61896f" />
-                    <Text className="text-sm text-[#61896f]">7,900km to Mecca</Text>
-                  </View>
-                </View>
-              </View>
-            </View>
-
-            {/* Monthly Calendar */}
-            <View className="bg-white rounded-2xl p-5 border border-gray-100 mb-6" style={styles.card}>
-              <View className="flex-row items-center justify-between mb-4">
-                <Text className="text-lg font-bold text-[#111813]">Ramadhan 1445</Text>
-                <View className="flex-row gap-2">
-                  <TouchableOpacity className="w-8 h-8 rounded-full items-center justify-center bg-gray-50">
-                    <MaterialCommunityIcons name="chevron-left" size={20} color="#111813" />
-                  </TouchableOpacity>
-                  <TouchableOpacity className="w-8 h-8 rounded-full items-center justify-center bg-gray-50">
-                    <MaterialCommunityIcons name="chevron-right" size={20} color="#111813" />
-                  </TouchableOpacity>
-                </View>
-              </View>
-
-              {/* Day Headers */}
-              <View className="flex-row mb-2">
-                {["S", "M", "T", "W", "T", "F", "S"].map((day, i) => (
-                  <View key={i} className="flex-1 items-center">
-                    <Text className="text-xs text-gray-400">{day}</Text>
-                  </View>
-                ))}
-              </View>
-
-              {/* Calendar Grid */}
-              <View className="flex-row flex-wrap">
-                {/* Previous month placeholder */}
-                {[28, 29, 30].map((day) => (
-                  <View key={`prev-${day}`} className="w-[14.28%] items-center py-2 opacity-25">
-                    <Text className="text-sm">{day}</Text>
-                  </View>
-                ))}
-
-                {/* Current month days */}
-                {CALENDAR_DAYS.map((item) => (
-                  <View
-                    key={item.day}
-                    className={`w-[14.28%] items-center py-2 ${item.isToday ? "bg-[#13ec5b]/5 rounded-lg border border-[#13ec5b]" : ""}`}
-                  >
-                    <Text className={`text-sm font-medium ${item.isToday ? "text-[#13ec5b] font-bold" : ""}`}>
-                      {item.day}
-                    </Text>
-                    <View className="flex-row gap-[1px] mt-1">
-                      {item.prayers.map((done, i) => (
-                        <View
-                          key={i}
-                          className={`w-1 h-1 rounded-full ${done ? "bg-[#13ec5b]" : "border border-red-400"
-                            }`}
-                        />
-                      ))}
-                    </View>
-                  </View>
-                ))}
-              </View>
-            </View>
-
-            {/* Statistics */}
-            <View className="bg-white rounded-2xl p-5 border border-gray-100 mb-6" style={styles.card}>
-              <Text className="text-lg font-bold text-[#111813] mb-4">Statistics</Text>
-              <View className="flex-row gap-4">
-                {/* Bar Chart */}
-                <View className="flex-1">
-                  <View className="flex-row items-end justify-between h-24 gap-1">
-                    {[90, 70, 100, 60, 85].map((height, i) => (
-                      <View key={i} className="flex-1 bg-gray-100 rounded-t-sm h-full items-end">
-                        <View
-                          className="w-full bg-[#13ec5b] rounded-t-sm"
-                          style={{ height: `${height}%` }}
-                        />
-                      </View>
-                    ))}
-                  </View>
-                  <View className="flex-row justify-between mt-2">
-                    {["F", "D", "A", "M", "I"].map((label, i) => (
-                      <View key={i} className="flex-1 items-center">
-                        <Text className="text-[10px] text-gray-400 font-medium">{label}</Text>
-                      </View>
-                    ))}
-                  </View>
-                </View>
-
-                {/* Best Performance */}
-                <View className="border-l border-gray-100 pl-4">
-                  <Text className="text-xs text-gray-500">Best Performance</Text>
-                  <Text className="text-xl font-bold text-[#13ec5b]">Asr</Text>
-                  <Text className="text-xs text-gray-400">100% on-time</Text>
-                  <View className="w-full h-1 bg-gray-100 rounded-full mt-2 overflow-hidden">
-                    <View className="w-full h-full bg-[#13ec5b]" />
-                  </View>
-                </View>
-              </View>
-            </View>
-
-            {/* Achievements */}
-            <View className="mb-6">
-              <View className="flex-row items-center justify-between mb-3">
-                <Text className="text-lg font-bold text-[#111813]">Achievements</Text>
-                <TouchableOpacity>
-                  <Text className="text-sm font-medium text-[#13ec5b]">View All</Text>
+              <View className="flex-row gap-2">
+                <TouchableOpacity
+                  className="w-10 h-10 bg-white rounded-xl items-center justify-center"
+                  style={styles.iconBtn}
+                  onPress={() => router.push("/prayer-setup/notifications")}
+                >
+                  <MaterialCommunityIcons name="bell-outline" size={20} color="#64748b" />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  className="w-10 h-10 bg-white rounded-xl items-center justify-center"
+                  style={styles.iconBtn}
+                  onPress={() => router.push("/prayer-setup")}
+                >
+                  <MaterialCommunityIcons name="cog-outline" size={20} color="#64748b" />
                 </TouchableOpacity>
               </View>
+            </View>
+          </View>
 
-              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                <View className="flex-row gap-4 pr-4">
-                  {ACHIEVEMENTS.map((badge) => (
-                    <View
-                      key={badge.id}
-                      className={`w-[140px] bg-white rounded-xl p-3 border border-gray-100 items-center ${badge.locked ? "opacity-60" : ""}`}
-                      style={styles.card}
-                    >
-                      <View
-                        className="w-10 h-10 rounded-full items-center justify-center mb-2"
-                        style={{ backgroundColor: badge.bgColor }}
-                      >
-                        <MaterialCommunityIcons name={badge.icon as any} size={22} color={badge.color} />
-                      </View>
-                      <Text className="text-sm font-bold text-center text-[#111813]">{badge.title}</Text>
-                      <View className="w-full h-1.5 bg-gray-100 rounded-full mt-2 overflow-hidden">
-                        <View
-                          className="h-full rounded-full"
-                          style={{ width: `${badge.progress}%`, backgroundColor: badge.color }}
-                        />
-                      </View>
-                      <Text className="text-[10px] text-gray-400 mt-1">{badge.level}</Text>
-                    </View>
-                  ))}
+          {/* Hero Card - Next Prayer */}
+          <View className="px-6 mt-4">
+            <LinearGradient
+              colors={["#10b981", "#059669"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              className="rounded-3xl p-6 overflow-hidden"
+              style={styles.heroCard}
+            >
+              {/* Background Pattern */}
+              <View className="absolute -right-8 -top-8 opacity-10">
+                <MaterialCommunityIcons name="mosque" size={160} color="#fff" />
+              </View>
+
+              <View className="relative z-10">
+                <Text className="text-emerald-100 text-sm font-medium mb-1">Sholat Berikutnya</Text>
+                <Text className="text-white text-4xl font-bold">{nextPrayer?.name}</Text>
+
+                <View className="flex-row items-baseline mt-2">
+                  <Text className="text-white text-5xl font-bold tracking-tight">{nextPrayer?.time}</Text>
+                  <Text className="text-emerald-200 text-lg ml-2">WIB</Text>
                 </View>
-              </ScrollView>
+
+                <View className="flex-row items-center mt-4 bg-white/20 self-start px-4 py-2 rounded-full">
+                  <MaterialCommunityIcons name="map-marker" size={16} color="#fff" />
+                  <Text className="text-white text-sm font-medium ml-1">Jakarta, Indonesia</Text>
+                </View>
+              </View>
+            </LinearGradient>
+          </View>
+
+          {/* Quick Stats */}
+          <View className="flex-row px-6 mt-6 gap-4">
+            <View className="flex-1 bg-white rounded-2xl p-4" style={styles.statCard}>
+              <View className="flex-row items-center justify-between">
+                <View>
+                  <Text className="text-3xl font-bold text-slate-900">{completedCount}/5</Text>
+                  <Text className="text-sm text-slate-500 mt-0.5">Hari Ini</Text>
+                </View>
+                <View className="w-12 h-12 bg-emerald-100 rounded-2xl items-center justify-center">
+                  <Text className="text-xl">🕌</Text>
+                </View>
+              </View>
             </View>
 
-            {/* Resources Grid */}
-            <View className="flex-row gap-3 mb-6">
-              <TouchableOpacity className="flex-1 bg-white p-4 rounded-xl flex-row items-center gap-3 border border-gray-100" style={styles.card}>
-                <View className="w-10 h-10 rounded-full bg-[#f0fdf4] items-center justify-center">
-                  <MaterialCommunityIcons name="book-open-variant" size={22} color={PRAYER_GREEN} />
-                </View>
+            <View className="flex-1 bg-white rounded-2xl p-4" style={styles.statCard}>
+              <View className="flex-row items-center justify-between">
                 <View>
-                  <Text className="text-sm font-bold text-[#111813]">Daily Dua</Text>
-                  <Text className="text-[10px] text-gray-400">Essential supplications</Text>
+                  <Text className="text-3xl font-bold text-slate-900">{streakDays}</Text>
+                  <Text className="text-sm text-slate-500 mt-0.5">Hari Streak 🔥</Text>
                 </View>
+                <View className="w-12 h-12 bg-amber-100 rounded-2xl items-center justify-center">
+                  <Text className="text-xl">⭐</Text>
+                </View>
+              </View>
+            </View>
+          </View>
+
+          {/* Week Overview */}
+          <View className="mx-6 mt-6 bg-white rounded-2xl p-4" style={styles.card}>
+            <View className="flex-row items-center justify-between mb-4">
+              <Text className="text-base font-bold text-slate-900">Minggu Ini</Text>
+              <TouchableOpacity>
+                <Text className="text-sm font-semibold text-emerald-600">Lihat Semua</Text>
               </TouchableOpacity>
-              <TouchableOpacity className="flex-1 bg-white p-4 rounded-xl flex-row items-center gap-3 border border-gray-100" style={styles.card}>
-                <View className="w-10 h-10 rounded-full bg-[#f0fdf4] items-center justify-center">
-                  <MaterialCommunityIcons name="counter" size={22} color={PRAYER_GREEN} />
+            </View>
+            <WeekView />
+          </View>
+
+          {/* Prayer Times Section */}
+          <View className="px-6 mt-6">
+            <View className="flex-row items-center justify-between mb-4">
+              <Text className="text-lg font-bold text-slate-900">Waktu Sholat</Text>
+              <Text className="text-sm text-slate-500">14 Ramadan 1447 H</Text>
+            </View>
+
+            {prayers.map((prayer) => (
+              <PrayerTimeCard
+                key={prayer.id}
+                prayer={prayer}
+                onToggle={() => togglePrayer(prayer.id)}
+              />
+            ))}
+          </View>
+
+          {/* Motivation Card */}
+          <View className="mx-6 mt-4 mb-4">
+            <LinearGradient
+              colors={["#f0fdf4", "#ecfdf5"]}
+              className="rounded-2xl p-5 border border-emerald-100"
+            >
+              <View className="flex-row items-start gap-3">
+                <Text className="text-2xl">💡</Text>
+                <View className="flex-1">
+                  <Text className="text-sm font-bold text-emerald-800 mb-1">Tips Hari Ini</Text>
+                  <Text className="text-sm text-emerald-700 leading-5">
+                    "Sholat adalah tiang agama. Barangsiapa menegakkannya, maka ia telah menegakkan agama."
+                  </Text>
                 </View>
-                <View>
-                  <Text className="text-sm font-bold text-[#111813]">Dhikr</Text>
-                  <Text className="text-[10px] text-gray-400">Digital Counter</Text>
+              </View>
+            </LinearGradient>
+          </View>
+
+          {/* Quick Actions */}
+          <View className="px-6 mt-2">
+            <Text className="text-base font-bold text-slate-900 mb-3">Aksi Cepat</Text>
+            <View className="flex-row gap-3">
+              <TouchableOpacity
+                className="flex-1 bg-white rounded-2xl p-4 items-center"
+                style={styles.actionCard}
+                onPress={() => router.push("/prayer-actions/qibla")}
+              >
+                <View className="w-12 h-12 bg-cyan-100 rounded-2xl items-center justify-center mb-2">
+                  <MaterialCommunityIcons name="compass" size={24} color="#06b6d4" />
                 </View>
+                <Text className="text-sm font-semibold text-slate-800">Kiblat</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                className="flex-1 bg-white rounded-2xl p-4 items-center"
+                style={styles.actionCard}
+                onPress={() => router.push("/prayer-actions/dzikir")}
+              >
+                <View className="w-12 h-12 bg-violet-100 rounded-2xl items-center justify-center mb-2">
+                  <MaterialCommunityIcons name="book-open-variant" size={24} color="#8b5cf6" />
+                </View>
+                <Text className="text-sm font-semibold text-slate-800">Dzikir</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                className="flex-1 bg-white rounded-2xl p-4 items-center"
+                style={styles.actionCard}
+                onPress={() => router.push("/prayer-actions/doa")}
+              >
+                <View className="w-12 h-12 bg-rose-100 rounded-2xl items-center justify-center mb-2">
+                  <MaterialCommunityIcons name="heart-outline" size={24} color="#f43f5e" />
+                </View>
+                <Text className="text-sm font-semibold text-slate-800">Doa</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                className="flex-1 bg-white rounded-2xl p-4 items-center"
+                style={styles.actionCard}
+                onPress={() => router.push("/prayer-actions/jadwal")}
+              >
+                <View className="w-12 h-12 bg-amber-100 rounded-2xl items-center justify-center mb-2">
+                  <MaterialCommunityIcons name="calendar-month" size={24} color="#f59e0b" />
+                </View>
+                <Text className="text-sm font-semibold text-slate-800">Jadwal</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -481,33 +356,12 @@ export default function PrayerScreen() {
 }
 
 const styles = StyleSheet.create({
-  headerShadow: {
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.03,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  iconButton: {
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
-  },
-  locationPill: {
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 1,
-  },
-  statCard: {
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    elevation: 2,
+  heroCard: {
+    shadowColor: "#10b981",
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.3,
+    shadowRadius: 24,
+    elevation: 12,
   },
   card: {
     shadowColor: "#000",
@@ -516,50 +370,53 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 2,
   },
-  prayerCard: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: "#F3F4F6",
+  statCard: {
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.04,
     shadowRadius: 8,
     elevation: 2,
-    overflow: "hidden",
   },
-  prayerCardCompleted: {
-    backgroundColor: "rgba(19, 236, 91, 0.03)",
-    borderColor: "rgba(19, 236, 91, 0.2)",
-  },
-  prayerCardNext: {
-    borderLeftWidth: 4,
-    borderLeftColor: "#13ec5b",
+  actionCard: {
     shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  nextCard: {
+    shadowColor: "#10b981",
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 20,
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
     elevation: 4,
   },
-  checkboxShadow: {
-    shadowColor: "#13ec5b",
+  checkDone: {
+    shadowColor: "#10b981",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
     elevation: 3,
   },
-  toggleShadow: {
+  nextBadge: {
+    shadowColor: "#10b981",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  todayCircle: {
+    shadowColor: "#10b981",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  iconBtn: {
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
     elevation: 1,
-  },
-  compassShadow: {
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
   },
 });

@@ -187,7 +187,8 @@ export default function HomeScreen() {
 
           {/* Quick Stats Grid */}
           <View className="px-6 mt-6">
-            <Text className="text-lg font-bold text-[#181411] mb-4">Quick Stats</Text>              <View className="flex-row flex-wrap justify-between">
+            <Text className="text-lg font-bold text-[#181411] mb-4">Quick Stats</Text>
+            <View className="flex-row flex-wrap justify-between">
               {/* Sholat */}
               <View className="w-[48%] bg-[#E6F4EA] rounded-2xl p-4 mb-4 overflow-hidden relative" style={styles.statCard}>
                 {/* Decorative Icon */}

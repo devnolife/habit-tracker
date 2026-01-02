@@ -51,31 +51,31 @@
   </style>
   </head>
 <body class="bg-background-light dark:bg-background-dark min-h-screen text-[#181411] dark:text-white">
-<div class="relative flex h-full min-h-screen w-full flex-col overflow-x-hidden max-w-md mx-auto shadow-2xl bg-background-light dark:bg-background-dark">
+<div class="relative flex flex-col w-full h-full max-w-md min-h-screen mx-auto overflow-x-hidden shadow-2xl bg-background-light dark:bg-background-dark">
 <!-- Subtle warm gradient background accent -->
-<div class="absolute top-0 left-0 w-full h-64 bg-gradient-to-b from-primary/10 to-transparent pointer-events-none z-0"></div>
+<div class="absolute top-0 left-0 z-0 w-full h-64 pointer-events-none bg-gradient-to-b from-primary/10 to-transparent"></div>
 <!-- Top App Bar -->
 <div class="relative z-10 flex items-center justify-between p-4 pb-2">
-<button class="flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
+<button class="flex items-center justify-center transition-colors rounded-full size-10 shrink-0 hover:bg-black/5 dark:hover:bg-white/10">
 <span class="material-symbols-outlined text-[#181411] dark:text-white" style="font-size: 24px;">arrow_back_ios_new</span>
 </button>
 <div class="w-10"></div> <!-- Spacer for centering if needed, currently empty -->
 </div>
 <!-- Progress Bar -->
 <div class="relative z-10 px-6 py-2">
-<div class="flex justify-between items-center mb-2">
+<div class="flex items-center justify-between mb-2">
 <span class="text-sm font-semibold text-primary">Step 1 of 3</span>
 <span class="text-xs text-gray-500 dark:text-gray-400">Location Setup</span>
 </div>
 <div class="h-1.5 w-full bg-gray-200 dark:bg-white/10 rounded-full overflow-hidden">
-<div class="h-full bg-primary rounded-full" style="width: 33%"></div>
+<div class="h-full rounded-full bg-primary" style="width: 33%"></div>
 </div>
 </div>
 <!-- Content Container -->
-<div class="relative z-10 flex-1 flex flex-col px-6 pt-4 pb-24 overflow-y-auto no-scrollbar">
+<div class="relative z-10 flex flex-col flex-1 px-6 pt-4 pb-24 overflow-y-auto no-scrollbar">
 <!-- Hero Image / Illustration -->
-<div class="w-full h-40 mb-6 flex items-center justify-center">
-<div class="w-full h-full bg-center bg-contain bg-no-repeat rounded-xl" data-alt="Minimalist illustration of a compass pointing towards Mecca with soft orange hues" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBso128ubIIOUZcL74BGP5yg9fiG1qAkYDrlHsOwZBWRp0NtMaP-FrEo-Nlxv810vGGg17RwiVkwDyTUsZnAvZAk8f9Zg3zf2IQ_GsFO4HLN37jHMEe1Hg0P4HFKVrsTKg88qdZ_NvXmWkq6Wckr1vqKiyCbX77VHAe3RdJRckl-i8k-fpTeL6xbZ9ysWepC7pvvCmVMvvtX75ft8eNf2o3OBffeeyXtRGiQ3h5W0KWIG78YgCE2bypmRU_bYtmG85uPMyb0coybRY'); opacity: 0.9;">
+<div class="flex items-center justify-center w-full h-40 mb-6">
+<div class="w-full h-full bg-center bg-no-repeat bg-contain rounded-xl" data-alt="Minimalist illustration of a compass pointing towards Mecca with soft orange hues" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBso128ubIIOUZcL74BGP5yg9fiG1qAkYDrlHsOwZBWRp0NtMaP-FrEo-Nlxv810vGGg17RwiVkwDyTUsZnAvZAk8f9Zg3zf2IQ_GsFO4HLN37jHMEe1Hg0P4HFKVrsTKg88qdZ_NvXmWkq6Wckr1vqKiyCbX77VHAe3RdJRckl-i8k-fpTeL6xbZ9ysWepC7pvvCmVMvvtX75ft8eNf2o3OBffeeyXtRGiQ3h5W0KWIG78YgCE2bypmRU_bYtmG85uPMyb0coybRY'); opacity: 0.9;">
 </div>
 </div>
 <!-- Headline -->
@@ -83,7 +83,7 @@
                 Set Up Prayer Times
             </h1>
 <!-- Body Text -->
-<p class="font-display text-base text-gray-500 dark:text-gray-400 text-center mb-8">
+<p class="mb-8 text-base text-center text-gray-500 font-display dark:text-gray-400">
                 We need your location to calculate accurate prayer times specifically for your area.
             </p>
 <!-- Form Elements -->
@@ -94,7 +94,7 @@
 <div class="relative flex items-center">
 <span class="absolute left-4 material-symbols-outlined text-primary">location_on</span>
 <input class="w-full h-14 pl-12 pr-12 rounded-full border-0 bg-white dark:bg-[#342a22] shadow-sm ring-1 ring-inset ring-gray-200 dark:ring-white/10 focus:ring-2 focus:ring-primary text-[#181411] dark:text-white placeholder:text-gray-400" placeholder="Search City, Country..." type="text"/>
-<button class="absolute right-2 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-white/5 text-primary transition-colors">
+<button class="absolute p-2 transition-colors rounded-full right-2 hover:bg-gray-100 dark:hover:bg-white/5 text-primary">
 <span class="material-symbols-outlined">my_location</span>
 </button>
 </div>
@@ -108,7 +108,7 @@
 <span class="font-medium text-[#181411] dark:text-white text-sm">Muslim World League</span>
 <span class="text-[10px] text-gray-400 mt-0.5">Recommended for Europe &amp; Middle East</span>
 </div>
-<span class="material-symbols-outlined text-gray-400">expand_more</span>
+<span class="text-gray-400 material-symbols-outlined">expand_more</span>
 </button>
 </div>
 </div>
@@ -117,16 +117,16 @@
 <label class="font-display text-sm font-semibold text-[#181411] dark:text-white ml-2">Asr Juristic Method (Madhab)</label>
 <div class="grid grid-cols-2 gap-3 p-1 bg-gray-100 dark:bg-[#2a2018] rounded-[1.5rem]">
 <!-- Option 1: Standard -->
-<label class="cursor-pointer relative">
-<input checked="" class="peer sr-only" name="madhab" type="radio"/>
+<label class="relative cursor-pointer">
+<input checked="" class="sr-only peer" name="madhab" type="radio"/>
 <div class="flex flex-col items-center justify-center py-4 px-2 rounded-2xl bg-transparent peer-checked:bg-white dark:peer-checked:bg-[#342a22] peer-checked:shadow-sm border-2 border-transparent peer-checked:border-primary/10 transition-all">
 <span class="text-sm font-bold text-[#181411] dark:text-white mb-1">Standard</span>
 <span class="text-[10px] text-center text-gray-500 dark:text-gray-400 leading-tight">Shafi, Maliki, Hanbali</span>
 </div>
 </label>
 <!-- Option 2: Hanafi -->
-<label class="cursor-pointer relative">
-<input class="peer sr-only" name="madhab" type="radio"/>
+<label class="relative cursor-pointer">
+<input class="sr-only peer" name="madhab" type="radio"/>
 <div class="flex flex-col items-center justify-center py-4 px-2 rounded-2xl bg-transparent peer-checked:bg-white dark:peer-checked:bg-[#342a22] peer-checked:shadow-sm border-2 border-transparent peer-checked:border-primary/10 transition-all">
 <span class="text-sm font-bold text-[#181411] dark:text-white mb-1">Hanafi</span>
 <span class="text-[10px] text-center text-gray-500 dark:text-gray-400 leading-tight">Later Asr time</span>
@@ -137,7 +137,7 @@
 </div>
 </div>
 <!-- Sticky Bottom Action -->
-<div class="fixed bottom-0 w-full max-w-md bg-gradient-to-t from-background-light via-background-light to-transparent dark:from-background-dark dark:via-background-dark pt-8 pb-8 px-6 z-20">
+<div class="fixed bottom-0 z-20 w-full max-w-md px-6 pt-8 pb-8 bg-gradient-to-t from-background-light via-background-light to-transparent dark:from-background-dark dark:via-background-dark">
 <button class="w-full h-14 bg-primary hover:bg-orange-600 text-white font-bold text-lg rounded-full shadow-lg shadow-orange-500/30 flex items-center justify-center gap-2 transition-all transform active:scale-[0.98]">
                 Continue
                 <span class="material-symbols-outlined" style="font-size: 20px;">arrow_forward</span>
