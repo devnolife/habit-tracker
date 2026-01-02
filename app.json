@@ -1,41 +1,30 @@
 {
   "expo": {
-    "name": "Habit Tracker",
-    "slug": "habit-tracker",
+    "name": "habitTrackerNew",
+    "slug": "habitTrackerNew",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "scheme": "habittracker",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#f48c25"
+      "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.devnolife.habittracker"
+      "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#f48c25"
+        "backgroundColor": "#ffffff"
       },
-      "package": "com.devnolife.habittracker"
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false
     },
     "web": {
-      "bundler": "metro",
-      "output": "static",
       "favicon": "./assets/favicon.png"
-    },
-    "plugins": [
-      "expo-router",
-      "expo-font",
-      "expo-asset"
-    ],
-    "experiments": {
-      "typedRoutes": true
     }
   }
 }
