@@ -73,43 +73,42 @@ const MEALS_DATA: Record<string, Meal> = {
   }
 };
 
-// Circular Progress Component
+// Circular Progress Component - Simple version without SVG
 const CircularProgress = ({ progress, size, strokeWidth, remaining }: {
   progress: number;
   size: number;
   strokeWidth: number;
   remaining: number;
 }) => {
-  const radius = (size - strokeWidth) / 2;
-  const circumference = radius * 2 * Math.PI;
-  const strokeDashoffset = circumference - (progress / 100) * circumference;
-
   return (
-    <View className="items-center justify-center" style={{ width: size, height: size }}>
-      <Svg width={size} height={size} style={{ transform: [{ rotate: "-90deg" }] }}>
-        {/* Background Circle */}
-        <Circle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          stroke="#e5e7eb"
-          strokeWidth={strokeWidth}
-          fill="transparent"
-        />
-        {/* Progress Circle */}
-        <Circle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          stroke={COLORS.primary}
-          strokeWidth={strokeWidth}
-          fill="transparent"
-          strokeDasharray={`${circumference}`}
-          strokeDashoffset={strokeDashoffset}
-          strokeLinecap="round"
-        />
-      </Svg>
-      <View className="absolute items-center justify-center">
+    <View
+      className="items-center justify-center rounded-full border-8 border-gray-200"
+      style={{
+        width: size,
+        height: size,
+        borderColor: '#e5e7eb',
+        position: 'relative',
+      }}
+    >
+      {/* Progress indicator - simplified */}
+      <View
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          borderRadius: size / 2,
+          borderWidth: strokeWidth,
+          borderColor: COLORS.primary,
+          borderTopColor: progress > 25 ? COLORS.primary : 'transparent',
+          borderRightColor: progress > 50 ? COLORS.primary : 'transparent',
+          borderBottomColor: progress > 75 ? COLORS.primary : 'transparent',
+          borderLeftColor: 'transparent',
+          transform: [{ rotate: '-45deg' }],
+        }}
+      />
+      <View className="items-center justify-center">
         <Text className="text-xs font-medium text-slate-500">Remaining</Text>
         <Text className="text-4xl font-extrabold text-slate-900 tracking-tight">{remaining}</Text>
         <Text className="text-xs font-semibold text-slate-500 mt-0.5">kcal</Text>
