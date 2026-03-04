@@ -1,35 +1,50 @@
 import { Tabs } from "expo-router";
-import { View } from "react-native";
+import { View, Text, StyleSheet, Platform } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useThemeContext } from "@/lib/ThemeContext";
 
 export default function TabLayout() {
+  const { theme } = useThemeContext();
+
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: "#f48c25",
+        tabBarActiveTintColor: theme.primary,
         tabBarInactiveTintColor: "#9CA3AF",
         tabBarStyle: {
-          backgroundColor: "#FFFFFF",
-          borderTopWidth: 0,
-          elevation: 10,
-          height: 80,
-          paddingBottom: 12,
-          paddingTop: 8,
           position: "absolute",
-          left: 16,
-          right: 16,
-          bottom: 16,
-          borderRadius: 24,
-          shadowColor: "#000",
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.1,
-          shadowRadius: 12,
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: 80,
+          backgroundColor: "#FFFFFF",
+          borderTopLeftRadius: 24,
+          borderTopRightRadius: 24,
+          borderBottomLeftRadius: 0,
+          borderBottomRightRadius: 0,
+          borderTopWidth: 0,
+          paddingBottom: Platform.OS === "ios" ? 20 : 10,
+          paddingTop: 10,
+          ...Platform.select({
+            ios: {
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 10 },
+              shadowOpacity: 0.1,
+              shadowRadius: 20,
+            },
+            android: {
+              elevation: 10,
+            },
+          }),
         },
-        tabBarShowLabel: true,
+        tabBarItemStyle: {
+          paddingVertical: 10,
+        },
         tabBarLabelStyle: {
           fontSize: 11,
           fontWeight: "600",
+          marginTop: 4,
         },
       }}
     >
@@ -38,7 +53,7 @@ export default function TabLayout() {
         options={{
           title: "Home",
           tabBarIcon: ({ color, focused }) => (
-            <View className={focused ? "bg-orange-100 p-2 rounded-xl" : ""}>
+            <View style={[styles.iconWrap, focused && { backgroundColor: `${theme.primary}15` }]}>
               <MaterialCommunityIcons name="home" size={24} color={color} />
             </View>
           ),
@@ -49,7 +64,7 @@ export default function TabLayout() {
         options={{
           title: "Sholat",
           tabBarIcon: ({ color, focused }) => (
-            <View className={focused ? "bg-orange-100 p-2 rounded-xl" : ""}>
+            <View style={[styles.iconWrap, focused && { backgroundColor: `${theme.primary}15` }]}>
               <MaterialCommunityIcons name="mosque" size={24} color={color} />
             </View>
           ),
@@ -58,9 +73,9 @@ export default function TabLayout() {
       <Tabs.Screen
         name="nutrition"
         options={{
-          title: "Makanan",
+          title: "Makan",
           tabBarIcon: ({ color, focused }) => (
-            <View className={focused ? "bg-orange-100 p-2 rounded-xl" : ""}>
+            <View style={[styles.iconWrap, focused && { backgroundColor: `${theme.primary}15` }]}>
               <MaterialCommunityIcons name="food-apple" size={24} color={color} />
             </View>
           ),
@@ -71,7 +86,7 @@ export default function TabLayout() {
         options={{
           title: "Kerja",
           tabBarIcon: ({ color, focused }) => (
-            <View className={focused ? "bg-orange-100 p-2 rounded-xl" : ""}>
+            <View style={[styles.iconWrap, focused && { backgroundColor: `${theme.primary}15` }]}>
               <MaterialCommunityIcons name="briefcase" size={24} color={color} />
             </View>
           ),
@@ -80,9 +95,9 @@ export default function TabLayout() {
       <Tabs.Screen
         name="expense"
         options={{
-          title: "Keuangan",
+          title: "Uang",
           tabBarIcon: ({ color, focused }) => (
-            <View className={focused ? "bg-orange-100 p-2 rounded-xl" : ""}>
+            <View style={[styles.iconWrap, focused && { backgroundColor: `${theme.primary}15` }]}>
               <MaterialCommunityIcons name="wallet" size={24} color={color} />
             </View>
           ),
@@ -91,3 +106,13 @@ export default function TabLayout() {
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  iconWrap: {
+    width: 44,
+    height: 32,
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});
