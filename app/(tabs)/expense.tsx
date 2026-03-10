@@ -4,10 +4,13 @@ import {
   ScrollView,
   TouchableOpacity,
   StyleSheet,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useState } from 'react';
+import { useRouter } from 'expo-router';
 import { useThemeContext } from '@/lib/ThemeContext';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 
@@ -86,6 +89,23 @@ const formatCurrency = (amount: number) => {
 
 export default function ExpenseScreen() {
   const { theme } = useThemeContext();
+  const router = useRouter();
+
+  const MONTHS = [
+    'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
+  ];
+  const [monthIndex, setMonthIndex] = useState(7); // Agustus
+  const [year, setYear] = useState(2023);
+
+  const handlePrevMonth = () => {
+    if (monthIndex === 0) { setMonthIndex(11); setYear((y) => y - 1); }
+    else { setMonthIndex((i) => i - 1); }
+  };
+  const handleNextMonth = () => {
+    if (monthIndex === 11) { setMonthIndex(0); setYear((y) => y + 1); }
+    else { setMonthIndex((i) => i + 1); }
+  };
 
   const TransactionItem = ({
     item,
@@ -189,6 +209,7 @@ export default function ExpenseScreen() {
             }}
           >
             <TouchableOpacity
+              onPress={() => router.back()}
               style={{
                 width: 40,
                 height: 40,
@@ -207,6 +228,11 @@ export default function ExpenseScreen() {
               Keuangan
             </Text>
             <TouchableOpacity
+              onPress={() => Alert.alert('Menu', 'Pilih opsi:', [
+                { text: 'Pengaturan Budget', onPress: () => router.push('/settings' as any) },
+                { text: 'Export Laporan', onPress: () => Alert.alert('Export', 'Fitur export laporan sedang dalam pengembangan.') },
+                { text: 'Batal', style: 'cancel' },
+              ])}
               style={{
                 width: 40,
                 height: 40,
@@ -238,7 +264,7 @@ export default function ExpenseScreen() {
                 marginBottom: 24,
               }}
             >
-              <TouchableOpacity style={{ padding: 4, borderRadius: 999 }}>
+              <TouchableOpacity onPress={handlePrevMonth} style={{ padding: 4, borderRadius: 999 }}>
                 <MaterialCommunityIcons
                   name="chevron-left"
                   size={20}
@@ -269,7 +295,7 @@ export default function ExpenseScreen() {
                 <Text
                   style={{ fontSize: 14, fontWeight: '700', color: '#1f2937' }}
                 >
-                  Agustus 2023
+                  {MONTHS[monthIndex]} {year}
                 </Text>
                 <MaterialCommunityIcons
                   name="menu-down"
@@ -277,7 +303,7 @@ export default function ExpenseScreen() {
                   color="#9ca3af"
                 />
               </View>
-              <TouchableOpacity style={{ padding: 4, borderRadius: 999 }}>
+              <TouchableOpacity onPress={handleNextMonth} style={{ padding: 4, borderRadius: 999 }}>
                 <MaterialCommunityIcons
                   name="chevron-right"
                   size={20}
@@ -461,6 +487,7 @@ export default function ExpenseScreen() {
               }}
             >
               <TouchableOpacity
+                onPress={() => router.push('/expense-actions/add-expense' as any)}
                 style={[
                   styles.actionButton,
                   {
@@ -500,6 +527,7 @@ export default function ExpenseScreen() {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
+                onPress={() => router.push('/expense-actions/add-income' as any)}
                 style={[
                   styles.actionButton,
                   {
@@ -742,7 +770,7 @@ export default function ExpenseScreen() {
                 >
                   Rincian Kategori
                 </Text>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => Alert.alert('Rincian Kategori', 'Menampilkan semua kategori pengeluaran dan pemasukan secara detail.')}>
                   <Text
                     style={{
                       fontSize: 14,
@@ -864,6 +892,12 @@ export default function ExpenseScreen() {
                 </Text>
                 <View style={{ flexDirection: 'row', gap: 8 }}>
                   <TouchableOpacity
+                    onPress={() => Alert.alert('Filter', 'Pilih filter:', [
+                      { text: 'Semua', onPress: () => {} },
+                      { text: 'Pengeluaran Saja', onPress: () => {} },
+                      { text: 'Pemasukan Saja', onPress: () => {} },
+                      { text: 'Batal', style: 'cancel' },
+                    ])}
                     style={[
                       styles.filterButton,
                       {
@@ -882,6 +916,7 @@ export default function ExpenseScreen() {
                     />
                   </TouchableOpacity>
                   <TouchableOpacity
+                    onPress={() => Alert.alert('Cari Transaksi', 'Fitur pencarian transaksi akan segera hadir.')}
                     style={[
                       styles.filterButton,
                       {

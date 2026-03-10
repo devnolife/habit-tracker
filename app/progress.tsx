@@ -4,6 +4,7 @@ import {
   ScrollView,
   TouchableOpacity,
   StyleSheet,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -238,6 +239,7 @@ export default function ProgressScreen() {
               style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}
             >
               <TouchableOpacity
+                onPress={() => Alert.alert('Notifikasi', 'Belum ada notifikasi baru.')}
                 style={[
                   styles.headerButton,
                   {
@@ -324,6 +326,12 @@ export default function ProgressScreen() {
                 </TouchableOpacity>
               ))}
               <TouchableOpacity
+                onPress={() => Alert.alert('Pilih Rentang', 'Pilih rentang tanggal kustom:', [
+                  { text: 'Minggu Ini', onPress: () => setSelectedRange('Mingguan') },
+                  { text: 'Bulan Ini', onPress: () => setSelectedRange('Bulanan') },
+                  { text: '3 Bulan Terakhir', onPress: () => setSelectedRange('3 Bulan') },
+                  { text: 'Batal', style: 'cancel' },
+                ])}
                 style={[
                   styles.rangeChip,
                   {
@@ -437,7 +445,14 @@ export default function ProgressScreen() {
                 >
                   Rincian Kategori
                 </Text>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => Alert.alert('Kategori', 'Pilih kategori:', [
+                  { text: 'Semua Kategori', onPress: () => {} },
+                  { text: 'Ibadah', onPress: () => {} },
+                  { text: 'Kerja', onPress: () => {} },
+                  { text: 'Nutrisi', onPress: () => {} },
+                  { text: 'Keuangan', onPress: () => {} },
+                  { text: 'Batal', style: 'cancel' },
+                ])}>
                   <MaterialCommunityIcons
                     name="dots-horizontal"
                     size={24}
@@ -570,6 +585,7 @@ export default function ProgressScreen() {
                 contentContainerStyle={{ gap: 8 }}
               >
                 <TouchableOpacity
+                  onPress={() => router.push('/(tabs)/work' as any)}
                   style={[
                     styles.actionChip,
                     {
@@ -601,6 +617,7 @@ export default function ProgressScreen() {
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
+                  onPress={() => router.push('/(tabs)/nutrition' as any)}
                   style={[
                     styles.actionChip,
                     {
@@ -753,6 +770,12 @@ export default function ProgressScreen() {
             }}
           >
             <TouchableOpacity
+              onPress={() => Alert.alert('Bagikan Progres', 'Bagikan pencapaian Anda ke:', [
+                { text: 'WhatsApp', onPress: () => Alert.alert('Info', 'Membuka WhatsApp...') },
+                { text: 'Instagram Story', onPress: () => Alert.alert('Info', 'Membuat story...') },
+                { text: 'Salin Link', onPress: () => Alert.alert('Berhasil', 'Link berhasil disalin!') },
+                { text: 'Batal', style: 'cancel' },
+              ])}
               style={[
                 styles.shareButton,
                 {

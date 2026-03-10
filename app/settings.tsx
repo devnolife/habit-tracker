@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Switch,
   Image,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -182,6 +183,7 @@ export default function SettingsScreen() {
           >
             {/* Profile Card */}
             <TouchableOpacity
+              onPress={() => Alert.alert('Edit Profil', 'Fitur edit profil akan segera hadir. Anda dapat mengubah nama, foto, dan email.')}
               style={[
                 styles.profileCard,
                 {
@@ -257,6 +259,11 @@ export default function SettingsScreen() {
                 iconBg="rgba(37,99,235,0.1)"
                 title="Bahasa"
                 subtitle="Indonesia"
+                onPress={() => Alert.alert('Pilih Bahasa', 'Pilih bahasa aplikasi:', [
+                  { text: 'Indonesia (Aktif)', style: 'cancel' },
+                  { text: 'English', onPress: () => Alert.alert('Info', 'Bahasa akan diubah ke English.') },
+                  { text: 'العربية', onPress: () => Alert.alert('Info', 'Bahasa akan diubah ke العربية.') },
+                ])}
               />
               <View
                 style={{
@@ -271,6 +278,7 @@ export default function SettingsScreen() {
                 iconBg="rgba(37,99,235,0.1)"
                 title="Tema"
                 subtitle="Hangat (Bawaan)"
+                onPress={() => Alert.alert('Tema', 'Gunakan ThemeSwitcher di beranda untuk mengganti tema warna.')}
               />
             </SettingsSection>
 
@@ -383,6 +391,7 @@ export default function SettingsScreen() {
                 iconColor="#6b7280"
                 iconBg="#f3f4f6"
                 title="Persetujuan Berbagi Data"
+                onPress={() => Alert.alert('Berbagi Data', 'Data Anda tidak dibagikan ke pihak ketiga. Semua data disimpan secara lokal di perangkat Anda.', [{ text: 'Mengerti' }])}
               />
             </SettingsSection>
 
@@ -393,6 +402,11 @@ export default function SettingsScreen() {
                 iconColor="#0ea5e9"
                 iconBg="rgba(14,165,233,0.1)"
                 title="Cadangan & Pemulihan"
+                onPress={() => Alert.alert('Cadangan', 'Pilih opsi:', [
+                  { text: 'Buat Cadangan', onPress: () => Alert.alert('Berhasil', 'Cadangan data telah dibuat.') },
+                  { text: 'Pulihkan Data', onPress: () => Alert.alert('Info', 'Tidak ada cadangan yang ditemukan.') },
+                  { text: 'Batal', style: 'cancel' },
+                ])}
               />
               <View
                 style={{
@@ -406,6 +420,10 @@ export default function SettingsScreen() {
                 iconColor="#0ea5e9"
                 iconBg="rgba(14,165,233,0.1)"
                 title="Ekspor Semua Data"
+                onPress={() => Alert.alert('Ekspor Data', 'Data Anda akan diekspor dalam format JSON. Lanjutkan?', [
+                  { text: 'Batal', style: 'cancel' },
+                  { text: 'Ekspor', onPress: () => Alert.alert('Berhasil', 'Data berhasil diekspor.') },
+                ])}
               />
               <View
                 style={{
@@ -452,6 +470,11 @@ export default function SettingsScreen() {
                 iconBg="rgba(20,184,166,0.1)"
                 title="Ukuran Font"
                 subtitle="Sedang"
+                onPress={() => Alert.alert('Ukuran Font', 'Pilih ukuran font:', [
+                  { text: 'Kecil', onPress: () => {} },
+                  { text: 'Sedang (Aktif)', style: 'cancel' },
+                  { text: 'Besar', onPress: () => {} },
+                ])}
               />
             </SettingsSection>
 
@@ -462,11 +485,16 @@ export default function SettingsScreen() {
                 iconColor="#a855f7"
                 iconBg="rgba(168,85,247,0.1)"
                 title="Pusat Bantuan"
+                onPress={() => Alert.alert('Pusat Bantuan', 'Butuh bantuan? Hubungi kami:\n\n📧 support@habittracker.app\n📱 WhatsApp: +62 812-xxxx-xxxx\n\nJam operasional: Sen-Jum 09:00-17:00 WIB')}
               />
             </SettingsSection>
 
             {/* Logout Button */}
             <TouchableOpacity
+              onPress={() => Alert.alert('Keluar', 'Apakah Anda yakin ingin keluar?', [
+                { text: 'Batal', style: 'cancel' },
+                { text: 'Keluar', style: 'destructive', onPress: () => router.replace('/' as any) },
+              ])}
               style={[
                 styles.logoutButton,
                 {

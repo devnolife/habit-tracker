@@ -4,12 +4,14 @@ import {
   ScrollView,
   TouchableOpacity,
   StyleSheet,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { Circle as SvgCircle } from 'react-native-svg';
 import { useState } from 'react';
+import { useRouter } from 'expo-router';
 import { useThemeContext } from '@/lib/ThemeContext';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 
@@ -125,8 +127,29 @@ const TimerCircle = ({
 
 export default function WorkScreen() {
   const { theme } = useThemeContext();
+  const router = useRouter();
   const [activeFilter, setActiveFilter] = useState('All');
   const [isTimerRunning, setIsTimerRunning] = useState(true);
+  const [timerMinutes, setTimerMinutes] = useState(25);
+  const [timerSeconds, setTimerSeconds] = useState(0);
+
+  const handleRestart = () => {
+    setTimerSeconds(0);
+    setIsTimerRunning(false);
+  };
+
+  const handleSkip = () => {
+    Alert.alert('Lewati Sesi', 'Lanjut ke sesi istirahat?', [
+      { text: 'Batal', style: 'cancel' },
+      { text: 'Ya, Lewati', onPress: () => { setTimerSeconds(0); setIsTimerRunning(false); } },
+    ]);
+  };
+
+  const handlePreset = (mins: number) => {
+    setTimerMinutes(mins);
+    setTimerSeconds(0);
+    setIsTimerRunning(false);
+  };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -199,6 +222,7 @@ export default function WorkScreen() {
                 </Text>
               </View>
               <TouchableOpacity
+                onPress={() => router.push('/settings' as any)}
                 style={[
                   styles.iconButton,
                   { padding: 10, borderRadius: 12, backgroundColor: '#fff' },
@@ -389,6 +413,7 @@ export default function WorkScreen() {
                   }}
                 >
                   <TouchableOpacity
+                    onPress={handleRestart}
                     style={[
                       styles.controlButton,
                       {
@@ -428,6 +453,7 @@ export default function WorkScreen() {
                     />
                   </TouchableOpacity>
                   <TouchableOpacity
+                    onPress={handleSkip}
                     style={[
                       styles.controlButton,
                       {
@@ -453,13 +479,14 @@ export default function WorkScreen() {
                   {[15, 25, 45, 60].map((mins) => (
                     <TouchableOpacity
                       key={mins}
+                      onPress={() => handlePreset(mins)}
                       style={{
                         paddingHorizontal: 16,
                         paddingVertical: 8,
                         borderRadius: 999,
                         backgroundColor:
-                          mins === 25 ? `${theme.primary}15` : '#f3f4f6',
-                        borderWidth: mins === 25 ? 1 : 0,
+                          mins === timerMinutes ? `${theme.primary}15` : '#f3f4f6',
+                        borderWidth: mins === timerMinutes ? 1 : 0,
                         borderColor: `${theme.primary}30`,
                       }}
                     >
@@ -467,7 +494,7 @@ export default function WorkScreen() {
                         style={{
                           fontSize: 14,
                           fontWeight: '600',
-                          color: mins === 25 ? theme.primary : '#6b7280',
+                          color: mins === timerMinutes ? theme.primary : '#6b7280',
                         }}
                       >
                         {mins}m
@@ -533,6 +560,7 @@ export default function WorkScreen() {
                   Tugas Hari Ini
                 </Text>
                 <TouchableOpacity
+                  onPress={() => router.push('/work-actions/add-task' as any)}
                   style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}
                 >
                   <MaterialCommunityIcons
@@ -720,7 +748,7 @@ export default function WorkScreen() {
                 >
                   Analitik Mingguan
                 </Text>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => router.push('/work-actions/analytics' as any)}>
                   <Text
                     style={{
                       fontSize: 14,
