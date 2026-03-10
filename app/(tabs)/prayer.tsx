@@ -12,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useState } from 'react';
+import { useRouter } from 'expo-router';
 import { useThemeContext } from '@/lib/ThemeContext';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 
@@ -20,44 +21,44 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 // Prayer data
 const prayers = [
   {
-    name: 'Fajr',
+    name: 'Subuh',
     arabic: 'الفجر',
-    time: '04:45 AM',
-    adhan: '04:30 AM',
-    iqamah: '04:40 AM',
+    time: '04:45',
+    adhan: '04:30',
+    iqamah: '04:40',
     completed: true,
   },
   {
-    name: 'Dhuhr',
+    name: 'Dzuhur',
     arabic: 'الظهر',
-    time: '12:05 PM',
-    adhan: '11:55 AM',
-    iqamah: '12:15 PM',
+    time: '12:05',
+    adhan: '11:55',
+    iqamah: '12:15',
     completed: false,
     isNext: true,
   },
   {
-    name: 'Asr',
+    name: 'Ashar',
     arabic: 'العصر',
-    time: '03:20 PM',
-    adhan: '03:10 PM',
-    iqamah: '03:25 PM',
+    time: '15:20',
+    adhan: '15:10',
+    iqamah: '15:25',
     completed: false,
   },
   {
     name: 'Maghrib',
     arabic: 'المغرب',
-    time: '06:10 PM',
-    adhan: '06:05 PM',
-    iqamah: '06:15 PM',
+    time: '18:10',
+    adhan: '18:05',
+    iqamah: '18:15',
     completed: false,
   },
   {
-    name: 'Isha',
+    name: 'Isya',
     arabic: 'العشاء',
-    time: '07:25 PM',
-    adhan: '07:20 PM',
-    iqamah: '07:30 PM',
+    time: '19:25',
+    adhan: '19:20',
+    iqamah: '19:30',
     completed: false,
   },
 ];
@@ -82,34 +83,65 @@ const calendarDays = [
 
 // Features data (from Figma design)
 const FEATURES = [
-  { icon: 'calendar-month', label: 'Islamic Calendar', color: '#098E8F' },
-  { icon: 'book-open-page-variant', label: 'Islamic Guide', color: '#098E8F' },
-  { icon: 'calculator-variant', label: 'Zakat Calculator', color: '#098E8F' },
-  { icon: 'hand-heart', label: 'Donation Muslim', color: '#BB630B' },
-  { icon: 'clock-time-five', label: 'Prayer Times', color: '#098E8F' },
+  { icon: 'calendar-month', label: 'Kalender Islam', color: '#098E8F', route: '/prayer-actions/jadwal' },
+  { icon: 'book-open-page-variant', label: 'Panduan Islam', color: '#098E8F', route: '/prayer-actions/doa' },
+  { icon: 'calculator-variant', label: 'Kalkulator Zakat', color: '#098E8F', route: '/prayer-actions/zakat' },
+  { icon: 'hand-heart', label: 'Donasi Muslim', color: '#BB630B', route: '/prayer-actions/donasi' },
+  { icon: 'clock-time-five', label: 'Waktu Sholat', color: '#098E8F', route: '/prayer-actions/jadwal' },
 ];
 
 // News / Today Updates data (from Figma design)
 const NEWS_ITEMS = [
   {
     id: '1',
-    title: 'The Importance of Sincerity in Worship',
+    title: 'Pentingnya Keikhlasan dalam Beribadah',
     author: 'Ustaz Ahmad Fauzi',
-    views: '89k',
-    timeAgo: '1 hour ago',
+    views: '89rb',
+    timeAgo: '1 jam lalu',
   },
   {
     id: '2',
-    title: 'Strengthening Family Bonds Through Islam',
+    title: 'Mempererat Ikatan Keluarga Melalui Islam',
     author: 'Ustaz Malik Ridwan',
-    views: '89k',
-    timeAgo: '1 hour ago',
+    views: '89rb',
+    timeAgo: '1 jam lalu',
   },
 ];
 
 export default function PrayerScreen() {
   const { theme } = useThemeContext();
+  const router = useRouter();
   const [expandedPrayer, setExpandedPrayer] = useState<string | null>('Dhuhr');
+
+  const ISLAMIC_MONTHS = [
+    'Muharram', 'Safar', 'Rabi\'ul Awal', 'Rabi\'ul Akhir',
+    'Jumadil Awal', 'Jumadil Akhir', 'Rajab', 'Sya\'ban',
+    'Ramadhan', 'Syawal', 'Dzulqa\'dah', 'Dzulhijjah',
+  ];
+  const [calendarMonthIndex, setCalendarMonthIndex] = useState(8); // Ramadhan default
+  const [calendarYear, setCalendarYear] = useState(1445);
+
+  const handlePrevMonth = () => {
+    if (calendarMonthIndex === 0) {
+      setCalendarMonthIndex(11);
+      setCalendarYear((y) => y - 1);
+    } else {
+      setCalendarMonthIndex((i) => i - 1);
+    }
+  };
+
+  const handleNextMonth = () => {
+    if (calendarMonthIndex === 11) {
+      setCalendarMonthIndex(0);
+      setCalendarYear((y) => y + 1);
+    } else {
+      setCalendarMonthIndex((i) => i + 1);
+    }
+  };
+
+  const handleFeaturePress = (feature: (typeof FEATURES)[0]) => {
+    router.push(feature.route as any);
+  };
 
   // Prayer Card Component (original)
   const PrayerCard = ({ prayer }: { prayer: (typeof prayers)[0] }) => {
@@ -196,7 +228,7 @@ export default function PrayerScreen() {
                   fontWeight: isNext ? '600' : '400',
                 }}
               >
-                {prayer.time} {isNext && '(Next)'}
+                {prayer.time} {isNext && '(Berikutnya)'}
               </Text>
             </View>
           </View>
@@ -218,7 +250,7 @@ export default function PrayerScreen() {
                     color: theme.primary,
                   }}
                 >
-                  Done
+                  Selesai
                 </Text>
               </View>
             )}
@@ -249,7 +281,7 @@ export default function PrayerScreen() {
                   borderRadius: 8,
                 }}
               >
-                <Text style={{ fontSize: 12, color: '#9ca3af' }}>Adhan</Text>
+                <Text style={{ fontSize: 12, color: '#9ca3af' }}>Adzan</Text>
                 <Text
                   style={{ fontSize: 14, fontWeight: '500', color: '#111' }}
                 >
@@ -275,7 +307,7 @@ export default function PrayerScreen() {
 
             {isNext && (
               <TextInput
-                placeholder="Add notes..."
+                placeholder="Tambahkan catatan..."
                 placeholderTextColor="#9ca3af"
                 style={{
                   marginTop: 16,
@@ -319,7 +351,7 @@ export default function PrayerScreen() {
                       color: theme.primary,
                     }}
                   >
-                    Individual
+                    Sendiri
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -332,7 +364,7 @@ export default function PrayerScreen() {
                       color: '#6b7280',
                     }}
                   >
-                    Jamaah
+                    Berjamaah
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -375,6 +407,7 @@ export default function PrayerScreen() {
                 style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}
               >
                 <TouchableOpacity
+                  onPress={() => router.push('/prayer-setup/notifications' as any)}
                   style={{
                     padding: 8,
                     backgroundColor: 'rgba(255,255,255,0.5)',
@@ -388,6 +421,7 @@ export default function PrayerScreen() {
                   />
                 </TouchableOpacity>
                 <TouchableOpacity
+                  onPress={() => router.push('/prayer-setup' as any)}
                   style={{
                     padding: 8,
                     backgroundColor: 'rgba(255,255,255,0.5)',
@@ -407,7 +441,7 @@ export default function PrayerScreen() {
               <Text
                 style={{ fontSize: 28, fontWeight: '700', letterSpacing: -0.5 }}
               >
-                Prayer Tracker
+                Pelacak Sholat
               </Text>
               <Text
                 style={{
@@ -466,7 +500,7 @@ export default function PrayerScreen() {
               <Text
                 style={{ fontSize: 12, color: '#61896f', fontWeight: '500' }}
               >
-                Next Prayer - Dhuhr
+                Sholat Berikutnya - Dzuhur
               </Text>
               <Text
                 style={{
@@ -497,12 +531,12 @@ export default function PrayerScreen() {
                   }}
                   numberOfLines={1}
                 >
-                  Al-Firdaus Grand Mosque
+                  Masjid Agung Al-Firdaus
                 </Text>
               </View>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={() => router.push('/prayer-actions/qibla' as any)}>
                 <Text style={{ fontSize: 12, color: '#9ca3af', marginTop: 4 }}>
-                  Direct to location →
+                  Arahkan ke lokasi →
                 </Text>
               </TouchableOpacity>
             </View>
@@ -534,7 +568,7 @@ export default function PrayerScreen() {
           >
             <View>
               <Text style={{ fontSize: 12, color: '#61896f' }}>Streak</Text>
-              <Text style={{ fontSize: 20, fontWeight: '700' }}>12 Days</Text>
+              <Text style={{ fontSize: 20, fontWeight: '700' }}>12 Hari</Text>
             </View>
             <View
               style={{
@@ -564,7 +598,7 @@ export default function PrayerScreen() {
             ]}
           >
             <View>
-              <Text style={{ fontSize: 12, color: '#61896f' }}>Completion</Text>
+              <Text style={{ fontSize: 12, color: '#61896f' }}>Pencapaian</Text>
               <Text
                 style={{
                   fontSize: 20,
@@ -603,7 +637,7 @@ export default function PrayerScreen() {
             paddingLeft: 4,
           }}
         >
-          Today's Prayers
+          Sholat Hari Ini
         </Text>
         {prayers.map((prayer) => (
           <PrayerCard key={prayer.name} prayer={prayer} />
@@ -645,7 +679,7 @@ export default function PrayerScreen() {
               }}
             >
               <Text style={{ fontSize: 18, fontWeight: '700' }}>
-                Qibla Direction
+                Arah Kiblat
               </Text>
               <View
                 style={{
@@ -662,7 +696,7 @@ export default function PrayerScreen() {
                     color: theme.primary,
                   }}
                 >
-                  Live
+                  Langsung
                 </Text>
               </View>
             </View>
@@ -685,7 +719,7 @@ export default function PrayerScreen() {
             <View style={styles.kaabaBadge}>
               <Text style={{ fontSize: 16 }}>🕋</Text>
               <Text style={{ fontSize: 13, color: '#61896f' }}>
-                Your distance to the Kaaba is 9,638km
+                Jarak Anda ke Ka'bah adalah 9.638 km
               </Text>
             </View>
           </View>
@@ -701,7 +735,7 @@ export default function PrayerScreen() {
               textAlign: 'center',
             }}
           >
-            All Features
+            Semua Fitur
           </Text>
           <View style={styles.featureRow}>
             {FEATURES.map((feature, index) => (
@@ -709,6 +743,7 @@ export default function PrayerScreen() {
                 key={index}
                 style={styles.featureCard}
                 activeOpacity={0.7}
+                onPress={() => handleFeaturePress(feature)}
               >
                 <View
                   style={[
@@ -751,10 +786,11 @@ export default function PrayerScreen() {
             }}
           >
             <Text style={{ fontSize: 18, fontWeight: '700' }}>
-              Ramadhan 1445
+              {ISLAMIC_MONTHS[calendarMonthIndex]} {calendarYear}
             </Text>
             <View style={{ flexDirection: 'row', gap: 8 }}>
               <TouchableOpacity
+                onPress={handlePrevMonth}
                 style={{
                   width: 32,
                   height: 32,
@@ -770,6 +806,7 @@ export default function PrayerScreen() {
                 />
               </TouchableOpacity>
               <TouchableOpacity
+                onPress={handleNextMonth}
                 style={{
                   width: 32,
                   height: 32,
@@ -902,9 +939,11 @@ export default function PrayerScreen() {
               />
             </View>
             <View>
-              <Text style={{ fontSize: 14, fontWeight: '700' }}>Daily Dua</Text>
+              <Text style={{ fontSize: 14, fontWeight: '700' }}>
+                Doa Harian
+              </Text>
               <Text style={{ fontSize: 10, color: '#9ca3af' }}>
-                Essential supplications
+                Kumpulan doa penting
               </Text>
             </View>
           </TouchableOpacity>
@@ -939,9 +978,9 @@ export default function PrayerScreen() {
               />
             </View>
             <View>
-              <Text style={{ fontSize: 14, fontWeight: '700' }}>Dhikr</Text>
+              <Text style={{ fontSize: 14, fontWeight: '700' }}>Dzikir</Text>
               <Text style={{ fontSize: 10, color: '#9ca3af' }}>
-                Digital Counter
+                Penghitung Digital
               </Text>
             </View>
           </TouchableOpacity>
@@ -950,7 +989,7 @@ export default function PrayerScreen() {
         {/* ── NEW: Today Updates / News Section (from Figma) ── */}
         <View style={{ marginTop: 28 }}>
           <Text style={{ fontSize: 18, fontWeight: '700', marginBottom: 16 }}>
-            Today Updates
+            Pembaruan Hari Ini
           </Text>
           <View style={{ gap: 24 }}>
             {NEWS_ITEMS.map((item) => (
@@ -977,7 +1016,7 @@ export default function PrayerScreen() {
                     style={{ fontSize: 12, color: '#9ca3af' }}
                     numberOfLines={1}
                   >
-                    {item.author} - {item.views} x watching - {item.timeAgo}
+                    {item.author} - {item.views} x ditonton - {item.timeAgo}
                   </Text>
                 </View>
               </TouchableOpacity>

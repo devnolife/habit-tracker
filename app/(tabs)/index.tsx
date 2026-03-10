@@ -152,8 +152,8 @@ export default function HomeScreen() {
             {/* ─── Prayer Times Carousel ─── */}
             <View style={styles.sectionWrap}>
               <SectionHeader
-                title="Prayer Times"
-                actionLabel="See All"
+                title="Waktu Sholat"
+                actionLabel="Lihat Semua"
                 actionColor={theme.primary}
                 onAction={() => navigateToTab('prayer')}
               />
@@ -233,8 +233,8 @@ export default function HomeScreen() {
                   </View>
                   <Text style={styles.insightsText}>
                     {allCompleted
-                      ? 'MasyaAllah! All prayers completed today! 🌟'
-                      : `Keep it up! ${stats.done}/${stats.total} prayers done.`}
+                      ? 'MasyaAllah! Semua sholat hari ini sudah selesai! 🌟'
+                      : `Semangat! ${stats.done}/${stats.total} sholat sudah dilakukan.`}
                   </Text>
                 </View>
                 <ProgressRing
@@ -248,8 +248,8 @@ export default function HomeScreen() {
             {/* ─── Recent Activity ─── */}
             <View style={styles.activitySection}>
               <SectionHeader
-                title="Recent Activity"
-                actionLabel="View All"
+                title="Aktivitas Terbaru"
+                actionLabel="Lihat Semua"
                 actionColor={theme.primary}
                 onAction={() => navigateTo('/progress')}
               />
@@ -315,7 +315,7 @@ function HeaderSection({
   return (
     <View style={styles.headerContainer}>
       <View style={styles.headerLeft}>
-        <Text style={styles.headerDate}>14 Ramadan 1445 H • 24 March 2024</Text>
+        <Text style={styles.headerDate}>14 Ramadan 1445 H • 24 Maret 2024</Text>
         <Text style={styles.headerGreeting}>Assalamualaikum,{'\n'}Yusuf</Text>
 
         {/* Weather Pill */}
@@ -378,11 +378,11 @@ const styles = StyleSheet.create({
     color: '#8a7560',
   },
   headerGreeting: {
-    fontSize: 24,
+    fontSize: 32,
     fontWeight: '700',
     color: '#181411',
     marginTop: 4,
-    lineHeight: 32,
+    lineHeight: 40,
   },
 
   // Weather pill
@@ -488,12 +488,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    marginTop: 16,
+    marginTop: 12,
   },
 
   // ── Daily insights ──
   insightsCard: {
-    borderRadius: 16,
+    borderRadius: 20,
     padding: 20,
     flexDirection: 'row',
     alignItems: 'center',
@@ -537,7 +537,7 @@ const styles = StyleSheet.create({
   activityList: {
     padding: 8,
     backgroundColor: '#fff',
-    borderRadius: 16,
+    borderRadius: 20,
     borderWidth: 1,
     borderColor: '#f3f4f6',
     marginTop: 8,

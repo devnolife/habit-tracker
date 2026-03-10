@@ -193,7 +193,7 @@ export default function ProgressScreen() {
   const router = useRouter();
   const [selectedRange, setSelectedRange] = useState('This Week');
 
-  const ranges = ['This Week', 'Last Week', 'Month'];
+  const ranges = ['Minggu Ini', 'Minggu Lalu', 'Bulan'];
 
   return (
     <View style={{ flex: 1 }}>
@@ -226,12 +226,12 @@ export default function ProgressScreen() {
                   letterSpacing: -0.5,
                 }}
               >
-                Progress & Insights
+                Progres & Wawasan
               </Text>
               <Text
                 style={{ fontSize: 12, fontWeight: '500', color: '#6b7280' }}
               >
-                Keep up the good work!
+                Terus semangat!
               </Text>
             </View>
             <View
@@ -383,7 +383,7 @@ export default function ProgressScreen() {
                     letterSpacing: 0.5,
                   }}
                 >
-                  Total Score
+                  Skor Total
                 </Text>
               </View>
               <Text
@@ -407,7 +407,7 @@ export default function ProgressScreen() {
                 <Text
                   style={{ fontSize: 14, fontWeight: '500', color: '#6b7280' }}
                 >
-                  +124 pts from last week
+                  +124 poin dari minggu lalu
                 </Text>
               </View>
             </View>
@@ -435,7 +435,7 @@ export default function ProgressScreen() {
                 <Text
                   style={{ fontSize: 18, fontWeight: '700', color: '#181411' }}
                 >
-                  Category Breakdown
+                  Rincian Kategori
                 </Text>
                 <TouchableOpacity>
                   <MaterialCommunityIcons
@@ -448,25 +448,25 @@ export default function ProgressScreen() {
               <View style={{ flexDirection: 'row', gap: 12 }}>
                 <CategoryBar
                   icon="mosque"
-                  label="Prayer"
+                  label="Sholat"
                   color="#10b981"
                   percentage={48}
                 />
                 <CategoryBar
                   icon="briefcase"
-                  label="Work"
+                  label="Kerja"
                   color="#3b82f6"
                   percentage={35}
                 />
                 <CategoryBar
                   icon="wallet"
-                  label="Expense"
+                  label="Pengeluaran"
                   color="#ef4444"
                   percentage={28}
                 />
                 <CategoryBar
                   icon="silverware-fork-knife"
-                  label="Food"
+                  label="Makanan"
                   color="#84cc16"
                   percentage={42}
                 />
@@ -486,35 +486,35 @@ export default function ProgressScreen() {
                 icon="mosque"
                 iconBg="rgba(16,185,129,0.1)"
                 iconColor="#10b981"
-                label="Prayer Streak"
-                value="14 Days"
-                subtitle="92% On-time prayers"
-                badge={{ text: 'High', color: '#16a34a', bg: '#f0fdf4' }}
+                label="Streak Sholat"
+                value="14 Hari"
+                subtitle="92% Sholat tepat waktu"
+                badge={{ text: 'Tinggi', color: '#16a34a', bg: '#f0fdf4' }}
               />
               <MetricCard
                 icon="timer"
                 iconBg="rgba(59,130,246,0.1)"
                 iconColor="#3b82f6"
-                label="Focus Score"
+                label="Skor Fokus"
                 value="6.5/10"
-                subtitle="32 Tasks completed"
-                badge={{ text: 'Avg', color: '#f97316', bg: '#fff7ed' }}
+                subtitle="32 Tugas selesai"
+                badge={{ text: 'Cukup', color: '#f97316', bg: '#fff7ed' }}
               />
               <MetricCard
                 icon="piggy-bank"
                 iconBg="rgba(239,68,68,0.1)"
                 iconColor="#ef4444"
-                label="Saved"
-                value="$120"
-                subtitle="-5% vs budget"
+                label="Hemat"
+                value="Rp 120rb"
+                subtitle="-5% vs anggaran"
               />
               <MetricCard
                 icon="water"
                 iconBg="rgba(132,204,22,0.1)"
                 iconColor="#84cc16"
-                label="Water Intake"
+                label="Asupan Air"
                 value="1.8 L"
-                badge={{ text: 'Good', color: '#16a34a', bg: '#f0fdf4' }}
+                badge={{ text: 'Baik', color: '#16a34a', bg: '#f0fdf4' }}
               />
             </View>
 
@@ -536,7 +536,7 @@ export default function ProgressScreen() {
                 <Text
                   style={{ fontSize: 18, fontWeight: '700', color: '#181411' }}
                 >
-                  AI Insights
+                  Wawasan AI
                 </Text>
               </View>
               <View
@@ -556,11 +556,11 @@ export default function ProgressScreen() {
                   style={{ fontSize: 14, color: '#374151', lineHeight: 22 }}
                 >
                   <Text style={{ fontWeight: '700', color: PRIMARY }}>
-                    Great job on Prayer!
+                    Hebat untuk Sholat!
                   </Text>{' '}
-                  You haven't missed a prayer in 14 days. However, your{' '}
-                  <Text style={{ fontWeight: '600' }}>Work Focus</Text> dipped
-                  on Wednesday. Try using the Pomodoro timer tomorrow morning.
+                  Anda tidak melewatkan sholat selama 14 hari. Namun,{' '}
+                  <Text style={{ fontWeight: '600' }}>Fokus Kerja</Text> menurun
+                  pada hari Rabu. Coba gunakan timer Pomodoro besok pagi.
                 </Text>
               </View>
               <ScrollView
@@ -597,7 +597,7 @@ export default function ProgressScreen() {
                       color: '#374151',
                     }}
                   >
-                    Set Pomodoro
+                    Atur Pomodoro
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -628,7 +628,7 @@ export default function ProgressScreen() {
                       color: '#374151',
                     }}
                   >
-                    Log Water
+                    Catat Air
                   </Text>
                 </TouchableOpacity>
               </ScrollView>
@@ -659,7 +659,7 @@ export default function ProgressScreen() {
                     letterSpacing: 0.5,
                   }}
                 >
-                  Anonymous Leaderboard
+                  Papan Peringkat Anonim
                 </Text>
                 <Text
                   style={{
@@ -669,10 +669,10 @@ export default function ProgressScreen() {
                     marginTop: 4,
                   }}
                 >
-                  Top 15% this week
+                  15% Teratas minggu ini
                 </Text>
                 <Text style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>
-                  You're ahead of 840 users
+                  Anda unggul dari 840 pengguna
                 </Text>
               </View>
               <View
@@ -715,7 +715,7 @@ export default function ProgressScreen() {
                   marginBottom: 12,
                 }}
               >
-                Consistency Heatmap
+                Peta Konsistensi
               </Text>
               <View
                 style={{
@@ -772,7 +772,7 @@ export default function ProgressScreen() {
                 color="#fff"
               />
               <Text style={{ fontSize: 18, fontWeight: '700', color: '#fff' }}>
-                Share Progress
+                Bagikan Progres
               </Text>
             </TouchableOpacity>
           </View>

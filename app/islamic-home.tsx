@@ -28,38 +28,38 @@ const COLORS = {
 
 // ─── Feature Data ────────────────────────────────────────────────
 const FEATURES = [
-  { icon: '🗓', label: 'Islamic Calendar', color: COLORS.primary },
-  { icon: '📖', label: 'Islamic Guide', color: COLORS.primary },
-  { icon: '🧮', label: 'Zakat Calculator', color: COLORS.primary },
-  { icon: '🤲', label: 'Donation Muslim', color: COLORS.secondary },
-  { icon: '🕌', label: 'Prayer Times', color: COLORS.primary },
+  { icon: '🗓', label: 'Kalender Islam', color: COLORS.primary },
+  { icon: '📖', label: 'Panduan Islam', color: COLORS.primary },
+  { icon: '🧮', label: 'Kalkulator Zakat', color: COLORS.primary },
+  { icon: '🤲', label: 'Donasi Muslim', color: COLORS.secondary },
+  { icon: '🕌', label: 'Waktu Sholat', color: COLORS.primary },
 ];
 
 // ─── News Data ───────────────────────────────────────────────────
 const NEWS_ITEMS = [
   {
     id: '1',
-    title: 'The Importance of Sincerity in Worship',
+    title: 'Pentingnya Keikhlasan dalam Beribadah',
     author: 'Ustaz Ahmad Fauzi',
-    views: '89k',
-    timeAgo: '1 hour ago',
+    views: '89rb',
+    timeAgo: '1 jam lalu',
   },
   {
     id: '2',
-    title: 'Strengthening Family Bonds Through Islam',
+    title: 'Mempererat Ikatan Keluarga Melalui Islam',
     author: 'Ustaz Malik Ridwan',
-    views: '89k',
-    timeAgo: '1 hour ago',
+    views: '89rb',
+    timeAgo: '1 jam lalu',
   },
 ];
 
 // ─── Nav Items ───────────────────────────────────────────────────
 const NAV_ITEMS = [
-  { key: 'news', label: 'News', icon: '📰', hasDot: true },
-  { key: 'mosque', label: 'Mosque', icon: '🕌', hasDot: false },
-  { key: 'compass', label: 'Compass', icon: '🧭', hasDot: false },
-  { key: 'pray', label: 'Pray', icon: '🤲', hasDot: false },
-  { key: 'settings', label: 'Settings', icon: '⚙️', hasDot: false },
+  { key: 'news', label: 'Berita', icon: '📰', hasDot: true },
+  { key: 'mosque', label: 'Masjid', icon: '🕌', hasDot: false },
+  { key: 'compass', label: 'Kompas', icon: '🧭', hasDot: false },
+  { key: 'pray', label: 'Sholat', icon: '🤲', hasDot: false },
+  { key: 'settings', label: 'Pengaturan', icon: '⚙️', hasDot: false },
 ];
 
 // ─── Sub-components ──────────────────────────────────────────────
@@ -91,7 +91,7 @@ function HeadingSection() {
           <View style={styles.headingDateCol}>
             <Text style={styles.islamicDate}>9 Ramadhan 1444H</Text>
             <Text style={styles.locationText}>
-              Jakarta, Indonesia - Fajr 2 hour 9 min left
+              Jakarta, Indonesia - Subuh 2 jam 9 menit lagi
             </Text>
           </View>
         </View>
@@ -111,10 +111,10 @@ function HeadingSection() {
             <View style={styles.mosqueNameRow}>
               <Text style={styles.mosquePin}>📍</Text>
               <Text style={styles.mosqueName} numberOfLines={1}>
-                Al-Firdaus Grand Mosque
+                Masjid Agung Al-Firdaus
               </Text>
             </View>
-            <Text style={styles.directLink}>Direct to location →</Text>
+            <Text style={styles.directLink}>Arahkan ke lokasi →</Text>
           </View>
         </View>
       </View>
@@ -139,7 +139,7 @@ function InfoBadge() {
     <View style={styles.infoBadge}>
       <Text style={styles.infoBadgeIcon}>🕋</Text>
       <Text style={styles.infoBadgeText}>
-        Your distance to the Kaaba is 9,638km
+        Jarak Anda ke Ka'bah adalah 9.638 km
       </Text>
     </View>
   );
@@ -169,7 +169,7 @@ function FeatureCard({
 function FeaturesSection() {
   return (
     <View style={styles.section}>
-      <Text style={styles.sectionTitle}>All Features</Text>
+      <Text style={styles.sectionTitle}>Semua Fitur</Text>
       <View style={styles.featureRow}>
         {FEATURES.map((f, i) => (
           <FeatureCard key={i} icon={f.icon} label={f.label} color={f.color} />
@@ -198,7 +198,7 @@ function NewsCard({
           {title}
         </Text>
         <Text style={styles.newsMeta} numberOfLines={1}>
-          {author} - {views} x watching - {timeAgo}
+          {author} - {views} x ditonton - {timeAgo}
         </Text>
       </View>
     </TouchableOpacity>
@@ -208,7 +208,7 @@ function NewsCard({
 function NewsSection() {
   return (
     <View style={styles.section}>
-      <Text style={styles.sectionTitleAlt}>Today Updates</Text>
+      <Text style={styles.sectionTitleAlt}>Pembaruan Hari Ini</Text>
       <View style={styles.newsList}>
         {NEWS_ITEMS.map((item) => (
           <NewsCard

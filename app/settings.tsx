@@ -10,10 +10,12 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const PRIMARY = '#2563EB';
+const ONBOARDING_KEY = '@habit_tracker_onboarding_complete';
 
 // Settings Item Component
 const SettingsItem = ({
@@ -120,6 +122,15 @@ export default function SettingsScreen() {
   const [faceId, setFaceId] = useState(true);
   const [highContrast, setHighContrast] = useState(false);
 
+  const resetOnboarding = useCallback(async () => {
+    try {
+      await AsyncStorage.removeItem(ONBOARDING_KEY);
+      router.replace('/');
+    } catch (e) {
+      console.log('Error resetting onboarding:', e);
+    }
+  }, [router]);
+
   return (
     <View style={{ flex: 1 }}>
       <LinearGradient
@@ -159,7 +170,7 @@ export default function SettingsScreen() {
               />
             </TouchableOpacity>
             <Text style={{ fontSize: 18, fontWeight: '700', color: '#181411' }}>
-              Settings
+              Pengaturan
             </Text>
             <View style={{ width: 40 }} />
           </View>
@@ -239,13 +250,13 @@ export default function SettingsScreen() {
             </TouchableOpacity>
 
             {/* General */}
-            <SettingsSection title="General">
+            <SettingsSection title="Umum">
               <SettingsItem
                 icon="translate"
                 iconColor={PRIMARY}
                 iconBg="rgba(37,99,235,0.1)"
-                title="Language"
-                subtitle="English"
+                title="Bahasa"
+                subtitle="Indonesia"
               />
               <View
                 style={{
@@ -258,18 +269,18 @@ export default function SettingsScreen() {
                 icon="palette"
                 iconColor={PRIMARY}
                 iconBg="rgba(37,99,235,0.1)"
-                title="Theme"
-                subtitle="Warm (Default)"
+                title="Tema"
+                subtitle="Hangat (Bawaan)"
               />
             </SettingsSection>
 
             {/* Notifications */}
-            <SettingsSection title="Notifications">
+            <SettingsSection title="Notifikasi">
               <SettingsItem
                 icon="mosque"
                 iconColor="#6366f1"
                 iconBg="rgba(99,102,241,0.1)"
-                title="Prayer Times"
+                title="Waktu Sholat"
                 rightElement={
                   <Switch
                     value={prayerNotif}
@@ -290,7 +301,7 @@ export default function SettingsScreen() {
                 icon="briefcase-clock"
                 iconColor="#3b82f6"
                 iconBg="rgba(59,130,246,0.1)"
-                title="Work & Focus"
+                title="Kerja & Fokus"
                 rightElement={
                   <Switch
                     value={workNotif}
@@ -311,7 +322,7 @@ export default function SettingsScreen() {
                 icon="cash-multiple"
                 iconColor="#10b981"
                 iconBg="rgba(16,185,129,0.1)"
-                title="Expenses"
+                title="Pengeluaran"
                 rightElement={
                   <Switch
                     value={expenseNotif}
@@ -332,7 +343,7 @@ export default function SettingsScreen() {
                 icon="silverware-fork-knife"
                 iconColor="#f43f5e"
                 iconBg="rgba(244,63,94,0.1)"
-                title="Food & Fasting"
+                title="Makanan & Puasa"
                 rightElement={
                   <Switch
                     value={foodNotif}
@@ -345,12 +356,12 @@ export default function SettingsScreen() {
             </SettingsSection>
 
             {/* Privacy & Security */}
-            <SettingsSection title="Privacy & Security">
+            <SettingsSection title="Privasi & Keamanan">
               <SettingsItem
                 icon="face-recognition"
                 iconColor="#6b7280"
                 iconBg="#f3f4f6"
-                title="Face ID Lock"
+                title="Kunci Face ID"
                 rightElement={
                   <Switch
                     value={faceId}
@@ -371,17 +382,17 @@ export default function SettingsScreen() {
                 icon="share-variant"
                 iconColor="#6b7280"
                 iconBg="#f3f4f6"
-                title="Data Sharing Consent"
+                title="Persetujuan Berbagi Data"
               />
             </SettingsSection>
 
             {/* Data Management */}
-            <SettingsSection title="Data Management">
+            <SettingsSection title="Manajemen Data">
               <SettingsItem
                 icon="cloud-upload"
                 iconColor="#0ea5e9"
                 iconBg="rgba(14,165,233,0.1)"
-                title="Backup & Restore"
+                title="Cadangan & Pemulihan"
               />
               <View
                 style={{
@@ -394,17 +405,31 @@ export default function SettingsScreen() {
                 icon="download"
                 iconColor="#0ea5e9"
                 iconBg="rgba(14,165,233,0.1)"
-                title="Export All Data"
+                title="Ekspor Semua Data"
+              />
+              <View
+                style={{
+                  height: 1,
+                  backgroundColor: '#f3f4f6',
+                  marginLeft: 64,
+                }}
+              />
+              <SettingsItem
+                icon="restart"
+                iconColor="#f59e0b"
+                iconBg="rgba(245,158,11,0.1)"
+                title="Lihat Onboarding Ulang"
+                onPress={resetOnboarding}
               />
             </SettingsSection>
 
             {/* Accessibility */}
-            <SettingsSection title="Accessibility">
+            <SettingsSection title="Aksesibilitas">
               <SettingsItem
                 icon="contrast-circle"
                 iconColor="#14b8a6"
                 iconBg="rgba(20,184,166,0.1)"
-                title="High Contrast"
+                title="Kontras Tinggi"
                 rightElement={
                   <Switch
                     value={highContrast}
@@ -425,18 +450,18 @@ export default function SettingsScreen() {
                 icon="format-size"
                 iconColor="#14b8a6"
                 iconBg="rgba(20,184,166,0.1)"
-                title="Font Size"
-                subtitle="Medium"
+                title="Ukuran Font"
+                subtitle="Sedang"
               />
             </SettingsSection>
 
             {/* Support */}
-            <SettingsSection title="Support">
+            <SettingsSection title="Bantuan">
               <SettingsItem
                 icon="help-circle"
                 iconColor="#a855f7"
                 iconBg="rgba(168,85,247,0.1)"
-                title="Help Center"
+                title="Pusat Bantuan"
               />
             </SettingsSection>
 
@@ -458,7 +483,7 @@ export default function SettingsScreen() {
               <Text
                 style={{ fontSize: 16, fontWeight: '700', color: '#ef4444' }}
               >
-                Log Out
+                Keluar
               </Text>
             </TouchableOpacity>
 
@@ -471,7 +496,7 @@ export default function SettingsScreen() {
                 marginBottom: 24,
               }}
             >
-              App Version v1.0.2
+              Versi Aplikasi v1.0.2
             </Text>
           </ScrollView>
         </SafeAreaView>

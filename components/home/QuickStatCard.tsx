@@ -79,7 +79,7 @@ export function QuickStatCard({
       <View style={styles.decorativeContainer}>
         <MaterialCommunityIcons
           name={decorativeIcon}
-          size={80}
+          size={90}
           color={colors.decorative}
         />
       </View>
@@ -107,17 +107,17 @@ export function QuickStatCard({
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 16,
-    padding: 16,
+    borderRadius: 20,
+    padding: 20,
     marginBottom: 16,
+    minHeight: 150,
     overflow: 'hidden',
     position: 'relative',
-    // Shadow
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.03,
-    shadowRadius: 8,
-    elevation: 2,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 12,
+    elevation: 3,
   },
 
   // Decorative icon
@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: -10,
     bottom: -10,
-    opacity: 0.1,
+    opacity: 0.12,
   },
 
   // Header
@@ -135,24 +135,25 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   iconContainer: {
-    backgroundColor: 'rgba(255,255,255,0.5)',
-    padding: 6,
-    borderRadius: 8,
+    backgroundColor: 'rgba(255,255,255,0.6)',
+    padding: 8,
+    borderRadius: 10,
   },
   label: {
-    marginLeft: 8,
-    fontSize: 14,
+    marginLeft: 10,
+    fontSize: 15,
     fontWeight: '600',
   },
 
   // Value
   value: {
-    fontSize: 22,
+    fontSize: 38,
     fontWeight: '700',
     color: '#181411',
+    marginTop: 8,
   },
   unit: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: '500',
   },
 });

@@ -54,7 +54,7 @@ export function ActivePrayerCard({
       style={[
         styles.container,
         {
-          borderColor: `${theme.primary}30`,
+          borderColor: 'rgba(255,255,255,0.8)',
         },
       ]}
     >
@@ -97,7 +97,7 @@ export function ActivePrayerCard({
       {/* ── Progress bar ── */}
       <View style={styles.progressSection}>
         <View style={styles.progressLabelRow}>
-          <Text style={styles.progressLabel}>Time Remaining</Text>
+          <Text style={styles.progressLabel}>Sisa Waktu</Text>
           <Text style={styles.progressLabel}>{timeProgress}%</Text>
         </View>
         <View style={styles.progressTrack}>
@@ -128,7 +128,7 @@ export function ActivePrayerCard({
             color="#15803D"
           />
           <Text style={styles.markDoneText}>
-            {prayer.done ? 'Done ✓' : 'Mark Done'}
+            {prayer.done ? 'Selesai ✓' : 'Tandai Selesai'}
           </Text>
         </TouchableOpacity>
 
@@ -157,11 +157,10 @@ const styles = StyleSheet.create({
     width: 300,
     marginRight: 16,
     backgroundColor: '#fff',
-    borderRadius: 16,
+    borderRadius: 20,
     padding: 20,
     overflow: 'hidden',
-    borderWidth: 2,
-    // Shadow
+    borderWidth: 1,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 12 },
     shadowOpacity: 0.15,

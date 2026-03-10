@@ -56,7 +56,7 @@ export function UpcomingPrayerCard({
 
         <View style={styles.timeContainer}>
           <Text style={styles.prayerTime}>{prayer.time}</Text>
-          <Text style={styles.upcomingLabel}>Upcoming</Text>
+          <Text style={styles.upcomingLabel}>Akan datang</Text>
         </View>
       </View>
 
@@ -68,7 +68,7 @@ export function UpcomingPrayerCard({
           style={styles.alertTextTouchable}
         >
           <Text style={styles.alertText}>
-            {prayer.bellOn ? 'Alerts on' : 'Turn on alerts'}
+            {prayer.bellOn ? 'Pengingat aktif' : 'Aktifkan pengingat'}
           </Text>
         </TouchableOpacity>
 
@@ -97,12 +97,11 @@ const styles = StyleSheet.create({
     width: 300,
     marginRight: 16,
     backgroundColor: 'rgba(255,255,255,0.6)',
-    borderRadius: 16,
+    borderRadius: 20,
     padding: 20,
     overflow: 'hidden',
     borderWidth: 1,
     borderColor: '#fff',
-    // Shadow
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.08,
