@@ -6,6 +6,9 @@
  * Usage:
  *   <ProgressRing progress={75} size={48} color="#3B82F6" />
  *   <ProgressRing progress={100} size={64} color="#22C55E" icon="check" />
+ *   <ProgressRing progress={60} size={140} color="#3B82F6">
+ *     <Text>Custom content</Text>
+ *   </ProgressRing>
  */
 
 import React from 'react';
@@ -22,7 +25,7 @@ interface ProgressRingProps {
   color: string;
   /** Width of the ring stroke. */
   strokeWidth?: number;
-  /** Optional icon name to render in the center. */
+  /** Optional icon name to render in the center (ignored when children provided). */
   icon?: keyof typeof MaterialCommunityIcons.glyphMap;
   /** Size of the center icon. Defaults to `size * 0.375`. */
   iconSize?: number;
@@ -30,6 +33,8 @@ interface ProgressRingProps {
   iconColor?: string;
   /** Opacity of the background (unfilled) track. Hex suffix, e.g. "30". */
   trackOpacity?: string;
+  /** Custom content to render in the center. Overrides icon. */
+  children?: React.ReactNode;
 }
 
 export function ProgressRing({
@@ -41,6 +46,7 @@ export function ProgressRing({
   iconSize,
   iconColor,
   trackOpacity = '30',
+  children,
 }: ProgressRingProps) {
   const clampedProgress = Math.min(100, Math.max(0, progress));
   const radius = (size - strokeWidth) / 2;
@@ -88,12 +94,14 @@ export function ProgressRing({
         />
       </Svg>
 
-      {/* Center icon */}
-      <MaterialCommunityIcons
-        name={icon}
-        size={resolvedIconSize}
-        color={resolvedIconColor}
-      />
+      {/* Center content: children override icon */}
+      {children ?? (
+        <MaterialCommunityIcons
+          name={icon}
+          size={resolvedIconSize}
+          color={resolvedIconColor}
+        />
+      )}
     </View>
   );
 }

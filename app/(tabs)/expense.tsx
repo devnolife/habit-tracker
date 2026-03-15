@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
-  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -14,8 +13,10 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'expo-router';
 import { useThemeContext } from '@/lib/ThemeContext';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
+import { LoadingScreen, SectionHeader, EmptyState } from '@/components/ui';
 import { getMonthlyFinance, removeTransaction, formatCurrency } from '@/services';
 import { getCurrentMonth } from '@/lib/utils';
+import { TEXT, GRAY } from '@/config/colors';
 import type { MonthlyFinance, Transaction, ExpenseCategory } from '@/types';
 
 // Category icon mapping
@@ -223,11 +224,7 @@ export default function ExpenseScreen() {
   };
 
   if (loading) {
-    return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <ActivityIndicator size="large" color={theme.primary} />
-      </View>
-    );
+    return <LoadingScreen color={theme.primary} />;
   }
 
   return (
@@ -797,30 +794,16 @@ export default function ExpenseScreen() {
 
             {/* Category Breakdown */}
             <View style={{ paddingHorizontal: 24, marginBottom: 8 }}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}
-              >
-                <Text
-                  style={{ fontSize: 18, fontWeight: '700', color: '#181411' }}
-                >
-                  Rincian Kategori
-                </Text>
-                <TouchableOpacity onPress={() => Alert.alert('Rincian Kategori', 'Menampilkan semua kategori pengeluaran dan pemasukan secara detail.')}>
-                  <Text
-                    style={{
-                      fontSize: 14,
-                      fontWeight: '700',
-                      color: theme.primary,
-                    }}
-                  >
-                    Lihat Semua
-                  </Text>
-                </TouchableOpacity>
-              </View>
+              <SectionHeader
+                title="Rincian Kategori"
+                right={
+                  <TouchableOpacity onPress={() => Alert.alert('Rincian Kategori', 'Menampilkan semua kategori pengeluaran dan pemasukan secara detail.')}>
+                    <Text style={{ fontSize: 14, fontWeight: '700', color: theme.primary }}>
+                      Lihat Semua
+                    </Text>
+                  </TouchableOpacity>
+                }
+              />
             </View>
 
             <View style={{ paddingHorizontal: 24, marginBottom: 32 }}>
@@ -923,64 +906,30 @@ export default function ExpenseScreen() {
 
             {/* Transaction List */}
             <View style={{ paddingHorizontal: 24, marginBottom: 16 }}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}
-              >
-                <Text
-                  style={{ fontSize: 18, fontWeight: '700', color: '#181411' }}
-                >
-                  Transaksi Terbaru
-                </Text>
-                <View style={{ flexDirection: 'row', gap: 8 }}>
-                  <TouchableOpacity
-                    onPress={() => Alert.alert('Filter', 'Pilih filter:', [
-                      { text: 'Semua', onPress: () => { } },
-                      { text: 'Pengeluaran Saja', onPress: () => { } },
-                      { text: 'Pemasukan Saja', onPress: () => { } },
-                      { text: 'Batal', style: 'cancel' },
-                    ])}
-                    style={[
-                      styles.filterButton,
-                      {
-                        padding: 6,
-                        backgroundColor: '#fff',
-                        borderRadius: 8,
-                        borderWidth: 1,
-                        borderColor: '#f5f5f4',
-                      },
-                    ]}
-                  >
-                    <MaterialCommunityIcons
-                      name="filter-variant"
-                      size={18}
-                      color="#6b7280"
-                    />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => Alert.alert('Cari Transaksi', 'Fitur pencarian transaksi akan segera hadir.')}
-                    style={[
-                      styles.filterButton,
-                      {
-                        padding: 6,
-                        backgroundColor: '#fff',
-                        borderRadius: 8,
-                        borderWidth: 1,
-                        borderColor: '#f5f5f4',
-                      },
-                    ]}
-                  >
-                    <MaterialCommunityIcons
-                      name="magnify"
-                      size={18}
-                      color="#6b7280"
-                    />
-                  </TouchableOpacity>
-                </View>
-              </View>
+              <SectionHeader
+                title="Transaksi Terbaru"
+                right={
+                  <View style={{ flexDirection: 'row', gap: 8 }}>
+                    <TouchableOpacity
+                      onPress={() => Alert.alert('Filter', 'Pilih filter:', [
+                        { text: 'Semua', onPress: () => { } },
+                        { text: 'Pengeluaran Saja', onPress: () => { } },
+                        { text: 'Pemasukan Saja', onPress: () => { } },
+                        { text: 'Batal', style: 'cancel' },
+                      ])}
+                      style={[styles.filterButton, { padding: 6, backgroundColor: '#fff', borderRadius: 8, borderWidth: 1, borderColor: GRAY[100] }]}
+                    >
+                      <MaterialCommunityIcons name="filter-variant" size={18} color={TEXT.secondary} />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => Alert.alert('Cari Transaksi', 'Fitur pencarian transaksi akan segera hadir.')}
+                      style={[styles.filterButton, { padding: 6, backgroundColor: '#fff', borderRadius: 8, borderWidth: 1, borderColor: GRAY[100] }]}
+                    >
+                      <MaterialCommunityIcons name="magnify" size={18} color={TEXT.secondary} />
+                    </TouchableOpacity>
+                  </View>
+                }
+              />
             </View>
 
             <View style={{ paddingHorizontal: 24 }}>

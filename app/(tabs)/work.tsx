@@ -5,16 +5,15 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
-  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import Svg, { Circle as SvgCircle } from 'react-native-svg';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'expo-router';
 import { useThemeContext } from '@/lib/ThemeContext';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
+import { ProgressRing, ScreenHeader, StatCard, SectionHeader, HeaderIconButton, LoadingScreen, EmptyState } from '@/components/ui';
 import {
   getWorkSessions,
   getPomodoroState,
@@ -24,6 +23,7 @@ import {
 } from '@/services';
 import { getTodayString, formatDate } from '@/lib/utils';
 import { APP_CONFIG } from '@/config';
+import { TEXT, GRAY } from '@/config/colors';
 import type { WorkSession, PomodoroState } from '@/types';
 
 // Task data - will be loaded from service
@@ -38,77 +38,6 @@ interface TaskDisplay {
 }
 
 const projectFilters = ['Semua', 'HabitTracker', 'Freelance', 'Pribadi'];
-
-// Timer Circle Component
-const TimerCircle = ({
-  progress,
-  size,
-  strokeWidth,
-  timeRemaining,
-  color,
-}: {
-  progress: number;
-  size: number;
-  strokeWidth: number;
-  timeRemaining: string;
-  color: string;
-}) => {
-  const radius = (size - strokeWidth) / 2;
-  const circumference = radius * 2 * Math.PI;
-  const strokeDashoffset = circumference - (progress / 100) * circumference;
-
-  return (
-    <View
-      style={{
-        width: size,
-        height: size,
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-    >
-      <Svg
-        width={size}
-        height={size}
-        style={{ position: 'absolute', transform: [{ rotate: '-90deg' }] }}
-      >
-        <SvgCircle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          fill="none"
-          stroke={`${color}20`}
-          strokeWidth={strokeWidth}
-        />
-        <SvgCircle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          fill="none"
-          stroke={color}
-          strokeWidth={strokeWidth}
-          strokeDasharray={`${circumference} ${circumference}`}
-          strokeDashoffset={strokeDashoffset}
-          strokeLinecap="round"
-        />
-      </Svg>
-      <View style={{ alignItems: 'center' }}>
-        <Text
-          style={{
-            fontSize: 40,
-            fontWeight: '800',
-            color: '#111',
-            letterSpacing: -1,
-          }}
-        >
-          {timeRemaining}
-        </Text>
-        <Text style={{ fontSize: 14, fontWeight: '600', color: '#6b7280' }}>
-          Sesi Fokus
-        </Text>
-      </View>
-    </View>
-  );
-};
 
 export default function WorkScreen() {
   const { theme } = useThemeContext();
@@ -281,11 +210,7 @@ export default function WorkScreen() {
   };
 
   if (loading) {
-    return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <ActivityIndicator size="large" color={theme.primary} />
-      </View>
-    );
+    return <LoadingScreen color={theme.primary} />;
   }
 
   return (
@@ -296,70 +221,44 @@ export default function WorkScreen() {
       >
         <SafeAreaView style={{ flex: 1 }} edges={['top']}>
           {/* Header */}
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              paddingHorizontal: 24,
-              paddingVertical: 16,
-            }}
-          >
-            <View>
-              <Text style={{ fontSize: 14, color: '#6b7280' }}>
-                {todayFormatted.split(',').slice(0, 1)}
-              </Text>
-              <Text style={{ fontSize: 24, fontWeight: '700', color: '#111' }}>
-                Pelacak Kerja
-              </Text>
-            </View>
-            <View
-              style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}
-            >
-              <View
-                style={{
-                  backgroundColor: `${theme.primary}15`,
-                  paddingHorizontal: 12,
-                  paddingVertical: 8,
-                  borderRadius: 999,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  gap: 6,
-                }}
-              >
+          <ScreenHeader
+            title="Pelacak Kerja"
+            subtitle={todayFormatted.split(',').slice(0, 1).join('')}
+            right={
+              <>
                 <View
                   style={{
-                    width: 8,
-                    height: 8,
-                    borderRadius: 4,
-                    backgroundColor: theme.primary,
-                  }}
-                />
-                <Text
-                  style={{
-                    fontSize: 12,
-                    fontWeight: '700',
-                    color: theme.primary,
+                    backgroundColor: `${theme.primary}15`,
+                    paddingHorizontal: 12,
+                    paddingVertical: 8,
+                    borderRadius: 999,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: 6,
                   }}
                 >
-                  Mode Fokus
-                </Text>
-              </View>
-              <TouchableOpacity
-                onPress={() => router.push('/settings' as any)}
-                style={[
-                  styles.iconButton,
-                  { padding: 10, borderRadius: 12, backgroundColor: '#fff' },
-                ]}
-              >
-                <MaterialCommunityIcons
-                  name="cog-outline"
-                  size={22}
-                  color="#374151"
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
+                  <View
+                    style={{
+                      width: 8,
+                      height: 8,
+                      borderRadius: 4,
+                      backgroundColor: theme.primary,
+                    }}
+                  />
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      fontWeight: '700',
+                      color: theme.primary,
+                    }}
+                  >
+                    Mode Fokus
+                  </Text>
+                </View>
+                <HeaderIconButton icon="cog-outline" onPress={() => router.push('/settings' as any)} />
+              </>
+            }
+          />
 
           <ScrollView
             style={{ flex: 1 }}
@@ -375,135 +274,26 @@ export default function WorkScreen() {
                 marginBottom: 24,
               }}
             >
-              <View
-                style={[
-                  styles.statCard,
-                  {
-                    flex: 1,
-                    backgroundColor: '#fff',
-                    borderRadius: 16,
-                    padding: 16,
-                  },
-                ]}
-              >
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    gap: 8,
-                    marginBottom: 8,
-                  }}
-                >
-                  <MaterialCommunityIcons
-                    name="clock-outline"
-                    size={20}
-                    color="#3b82f6"
-                  />
-                  <Text style={{ fontSize: 12, color: '#6b7280' }}>
-                    Jam Tercatat
-                  </Text>
-                </View>
-                <Text
-                  style={{ fontSize: 24, fontWeight: '700', color: '#111' }}
-                >
-                  {totalFocusHours.toFixed(1)}{' '}
-                  <Text
-                    style={{
-                      fontSize: 14,
-                      fontWeight: '500',
-                      color: '#6b7280',
-                    }}
-                  >
-                    jam
-                  </Text>
-                </Text>
-              </View>
-              <View
-                style={[
-                  styles.statCard,
-                  {
-                    flex: 1,
-                    backgroundColor: '#fff',
-                    borderRadius: 16,
-                    padding: 16,
-                  },
-                ]}
-              >
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    gap: 8,
-                    marginBottom: 8,
-                  }}
-                >
-                  <MaterialCommunityIcons
-                    name="check-circle-outline"
-                    size={20}
-                    color="#22c55e"
-                  />
-                  <Text style={{ fontSize: 12, color: '#6b7280' }}>
-                    Tugas Selesai
-                  </Text>
-                </View>
-                <Text
-                  style={{ fontSize: 24, fontWeight: '700', color: '#111' }}
-                >
-                  {completedTasks}{' '}
-                  <Text
-                    style={{
-                      fontSize: 14,
-                      fontWeight: '500',
-                      color: '#6b7280',
-                    }}
-                  >
-                    / {tasks.length}
-                  </Text>
-                </Text>
-              </View>
-              <View
-                style={[
-                  styles.statCard,
-                  {
-                    flex: 1,
-                    backgroundColor: '#fff',
-                    borderRadius: 16,
-                    padding: 16,
-                  },
-                ]}
-              >
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    gap: 8,
-                    marginBottom: 8,
-                  }}
-                >
-                  <MaterialCommunityIcons
-                    name="fire"
-                    size={20}
-                    color="#f97316"
-                  />
-                  <Text style={{ fontSize: 12, color: '#6b7280' }}>
-                    Skor Fokus
-                  </Text>
-                </View>
-                <Text
-                  style={{ fontSize: 24, fontWeight: '700', color: '#111' }}
-                >
-                  {focusScore}
-                  <Text
-                    style={{
-                      fontSize: 14,
-                      fontWeight: '500',
-                      color: '#6b7280',
-                    }}
-                  >
-                    %
-                  </Text>
-                </Text>
-              </View>
+              <StatCard
+                icon="clock-outline"
+                iconColor="#3b82f6"
+                label="Jam Tercatat"
+                value={totalFocusHours.toFixed(1)}
+                unit="jam"
+              />
+              <StatCard
+                icon="check-circle-outline"
+                iconColor="#22c55e"
+                label="Tugas Selesai"
+                value={`${completedTasks} / ${tasks.length}`}
+              />
+              <StatCard
+                icon="fire"
+                iconColor="#f97316"
+                label="Skor Fokus"
+                value={focusScore}
+                unit="%"
+              />
             </View>
 
             {/* Hero Timer */}
@@ -519,13 +309,22 @@ export default function WorkScreen() {
                   },
                 ]}
               >
-                <TimerCircle
+                <ProgressRing
                   progress={timerProgress}
                   size={200}
                   strokeWidth={12}
-                  timeRemaining={`${String(timerMinutes).padStart(2, '0')}:${String(timerSeconds).padStart(2, '0')}`}
                   color={theme.primary}
-                />
+                  trackOpacity="20"
+                >
+                  <View style={{ alignItems: 'center' }}>
+                    <Text style={{ fontSize: 40, fontWeight: '800', color: TEXT.primary, letterSpacing: -1 }}>
+                      {`${String(timerMinutes).padStart(2, '0')}:${String(timerSeconds).padStart(2, '0')}`}
+                    </Text>
+                    <Text style={{ fontSize: 14, fontWeight: '600', color: TEXT.secondary }}>
+                      Sesi Fokus
+                    </Text>
+                  </View>
+                </ProgressRing>
 
                 {/* Timer Controls */}
                 <View
@@ -673,50 +472,27 @@ export default function WorkScreen() {
 
             {/* Task List */}
             <View style={{ paddingHorizontal: 24 }}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  marginBottom: 16,
-                }}
-              >
-                <Text
-                  style={{ fontSize: 18, fontWeight: '700', color: '#111' }}
-                >
-                  Tugas Hari Ini
-                </Text>
-                <TouchableOpacity
-                  onPress={() => router.push('/work-actions/add-task' as any)}
-                  style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}
-                >
-                  <MaterialCommunityIcons
-                    name="plus"
-                    size={18}
-                    color={theme.primary}
-                  />
-                  <Text
-                    style={{
-                      fontSize: 14,
-                      fontWeight: '700',
-                      color: theme.primary,
-                    }}
+              <SectionHeader
+                title="Tugas Hari Ini"
+                right={
+                  <TouchableOpacity
+                    onPress={() => router.push('/work-actions/add-task' as any)}
+                    style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}
                   >
-                    Tambah Tugas
-                  </Text>
-                </TouchableOpacity>
-              </View>
+                    <MaterialCommunityIcons name="plus" size={18} color={theme.primary} />
+                    <Text style={{ fontSize: 14, fontWeight: '700', color: theme.primary }}>
+                      Tambah Tugas
+                    </Text>
+                  </TouchableOpacity>
+                }
+              />
 
               {tasks.length === 0 ? (
-                <View style={{ alignItems: 'center', paddingVertical: 32 }}>
-                  <MaterialCommunityIcons name="briefcase-outline" size={48} color="#d1d5db" />
-                  <Text style={{ fontSize: 16, color: '#9ca3af', marginTop: 12 }}>
-                    Belum ada sesi hari ini
-                  </Text>
-                  <Text style={{ fontSize: 14, color: '#d1d5db', marginTop: 4 }}>
-                    Mulai timer untuk merekam sesi
-                  </Text>
-                </View>
+                <EmptyState
+                  icon="briefcase-outline"
+                  title="Belum ada sesi hari ini"
+                  subtitle="Mulai timer untuk merekam sesi"
+                />
               ) : tasks.map((task) => {
                 const priorityStyle = getPriorityColor(task.priority);
                 return (
@@ -873,31 +649,16 @@ export default function WorkScreen() {
 
             {/* Productivity Analytics */}
             <View style={{ paddingHorizontal: 24, marginTop: 24 }}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  marginBottom: 16,
-                }}
-              >
-                <Text
-                  style={{ fontSize: 18, fontWeight: '700', color: '#111' }}
-                >
-                  Analitik Mingguan
-                </Text>
-                <TouchableOpacity onPress={() => router.push('/work-actions/analytics' as any)}>
-                  <Text
-                    style={{
-                      fontSize: 14,
-                      fontWeight: '600',
-                      color: theme.primary,
-                    }}
-                  >
-                    Detail
-                  </Text>
-                </TouchableOpacity>
-              </View>
+              <SectionHeader
+                title="Analitik Mingguan"
+                right={
+                  <TouchableOpacity onPress={() => router.push('/work-actions/analytics' as any)}>
+                    <Text style={{ fontSize: 14, fontWeight: '600', color: theme.primary }}>
+                      Detail
+                    </Text>
+                  </TouchableOpacity>
+                }
+              />
 
               <View
                 style={[
@@ -1008,24 +769,6 @@ export default function WorkScreen() {
 }
 
 const styles = StyleSheet.create({
-  iconButton: {
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 4,
-    elevation: 2,
-    borderWidth: 1,
-    borderColor: '#f5f5f4',
-  },
-  statCard: {
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    elevation: 2,
-    borderWidth: 1,
-    borderColor: '#f5f5f4',
-  },
   timerCard: {
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 8 },

@@ -5,93 +5,21 @@ import {
   TouchableOpacity,
   StyleSheet,
   Switch,
-  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import Svg, { Circle as SvgCircle } from 'react-native-svg';
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'expo-router';
 import { useThemeContext } from '@/lib/ThemeContext';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
+import { ProgressRing, ScreenHeader, SectionHeader, HeaderIconButton, LoadingScreen, EmptyState } from '@/components/ui';
 import { getDailyNutrition, removeMeal } from '@/services';
 import { getTodayString, formatDate } from '@/lib/utils';
+import { TEXT, GRAY } from '@/config/colors';
 import type { DailyNutrition, Meal, MealType } from '@/types';
 
-// Circular Progress Component
-const CircularProgress = ({
-  progress,
-  size,
-  strokeWidth,
-  remaining,
-  color,
-}: {
-  progress: number;
-  size: number;
-  strokeWidth: number;
-  remaining: number;
-  color: string;
-}) => {
-  const radius = (size - strokeWidth) / 2;
-  const circumference = radius * 2 * Math.PI;
-  const strokeDashoffset = circumference - (progress / 100) * circumference;
 
-  return (
-    <View
-      style={{
-        width: size,
-        height: size,
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-    >
-      <Svg
-        width={size}
-        height={size}
-        style={{ position: 'absolute', transform: [{ rotate: '-90deg' }] }}
-      >
-        <SvgCircle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          fill="none"
-          stroke="#e5e7eb"
-          strokeWidth={strokeWidth}
-        />
-        <SvgCircle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          fill="none"
-          stroke={color}
-          strokeWidth={strokeWidth}
-          strokeDasharray={`${circumference} ${circumference}`}
-          strokeDashoffset={strokeDashoffset}
-          strokeLinecap="round"
-        />
-      </Svg>
-      <View style={{ alignItems: 'center' }}>
-        <Text style={{ fontSize: 12, fontWeight: '500', color: '#6b7280' }}>
-          Sisa
-        </Text>
-        <Text
-          style={{
-            fontSize: 36,
-            fontWeight: '800',
-            color: '#111',
-            letterSpacing: -1,
-          }}
-        >
-          {remaining}
-        </Text>
-        <Text style={{ fontSize: 12, fontWeight: '600', color: '#6b7280' }}>
-          kkal
-        </Text>
-      </View>
-    </View>
-  );
-};
 
 // Macro Bar Component
 const MacroBar = ({
@@ -247,11 +175,7 @@ export default function NutritionScreen() {
   const todayFormatted = formatDate(new Date());
 
   if (loading) {
-    return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <ActivityIndicator size="large" color={theme.primary} />
-      </View>
-    );
+    return <LoadingScreen color={theme.primary} />;
   }
 
   return (
@@ -262,53 +186,16 @@ export default function NutritionScreen() {
       >
         <SafeAreaView style={{ flex: 1 }} edges={['top']}>
           {/* Header */}
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              paddingHorizontal: 24,
-              paddingTop: 16,
-              paddingBottom: 8,
-            }}
-          >
-            <View>
-              <Text style={{ fontSize: 14, color: '#6b7280' }}>
-                {todayFormatted.split(',').slice(0, 1)}
-              </Text>
-              <Text style={{ fontSize: 24, fontWeight: '700', color: '#111' }}>
-                Nutrisi
-              </Text>
-            </View>
-            <View style={{ flexDirection: 'row', gap: 12 }}>
-              <TouchableOpacity
-                onPress={() => router.push('/nutrition-actions/calendar' as any)}
-                style={[
-                  styles.headerButton,
-                  { padding: 10, borderRadius: 12, backgroundColor: '#fff' },
-                ]}
-              >
-                <MaterialCommunityIcons
-                  name="calendar-month"
-                  size={22}
-                  color="#374151"
-                />
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => router.push('/nutrition-actions/analytics' as any)}
-                style={[
-                  styles.headerButton,
-                  { padding: 10, borderRadius: 12, backgroundColor: '#fff' },
-                ]}
-              >
-                <MaterialCommunityIcons
-                  name="chart-line"
-                  size={22}
-                  color="#374151"
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
+          <ScreenHeader
+            title="Nutrisi"
+            subtitle={todayFormatted.split(',').slice(0, 1).join('')}
+            right={
+              <>
+                <HeaderIconButton icon="calendar-month" onPress={() => router.push('/nutrition-actions/calendar' as any)} />
+                <HeaderIconButton icon="chart-line" onPress={() => router.push('/nutrition-actions/analytics' as any)} />
+              </>
+            }
+          />
 
           <ScrollView
             style={{ flex: 1 }}
@@ -331,13 +218,19 @@ export default function NutritionScreen() {
                   }}
                 >
                   {/* Left: Circular Progress */}
-                  <CircularProgress
+                  <ProgressRing
                     progress={progress}
                     size={140}
                     strokeWidth={12}
-                    remaining={remainingCalories}
                     color={theme.primary}
-                  />
+                    trackOpacity="20"
+                  >
+                    <View style={{ alignItems: 'center' }}>
+                      <Text style={{ fontSize: 12, fontWeight: '500', color: TEXT.secondary }}>Sisa</Text>
+                      <Text style={{ fontSize: 36, fontWeight: '800', color: TEXT.primary, letterSpacing: -1 }}>{remainingCalories}</Text>
+                      <Text style={{ fontSize: 12, fontWeight: '600', color: TEXT.secondary }}>kkal</Text>
+                    </View>
+                  </ProgressRing>
 
                   {/* Right: Macros */}
                   <View style={{ flex: 1, marginLeft: 24 }}>
@@ -345,7 +238,7 @@ export default function NutritionScreen() {
                       style={{
                         fontSize: 14,
                         fontWeight: '700',
-                        color: '#111',
+                        color: TEXT.primary,
                         marginBottom: 16,
                       }}
                     >
@@ -567,34 +460,16 @@ export default function NutritionScreen() {
               const sectionCalories = getMealTypeCalories(section.type);
               return (
                 <View key={section.type} style={{ paddingHorizontal: 24, marginTop: 24 }}>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      marginBottom: 12,
-                    }}
-                  >
-                    <View
-                      style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}
-                    >
-                      <MaterialCommunityIcons
-                        name={section.icon}
-                        size={20}
-                        color={section.color}
-                      />
-                      <Text
-                        style={{ fontSize: 18, fontWeight: '700', color: '#111' }}
-                      >
-                        {section.label}
+                  <SectionHeader
+                    title={section.label}
+                    icon={section.icon}
+                    iconColor={section.color}
+                    right={
+                      <Text style={{ fontSize: 14, fontWeight: '500', color: TEXT.secondary }}>
+                        {sectionCalories} kkal
                       </Text>
-                    </View>
-                    <Text
-                      style={{ fontSize: 14, fontWeight: '500', color: '#6b7280' }}
-                    >
-                      {sectionCalories} kkal
-                    </Text>
-                  </View>
+                    }
+                  />
 
                   <View
                     style={[

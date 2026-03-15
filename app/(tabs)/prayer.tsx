@@ -7,7 +7,6 @@ import {
   TextInput,
   Image,
   Dimensions,
-  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -16,8 +15,10 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'expo-router';
 import { useThemeContext } from '@/lib/ThemeContext';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
+import { LoadingScreen, SectionHeader } from '@/components/ui';
 import { getPrayers, togglePrayer } from '@/services';
 import { getTodayString } from '@/lib/utils';
+import { TEXT, GRAY } from '@/config/colors';
 import type { Prayer, PrayerName } from '@/types';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -147,11 +148,7 @@ export default function PrayerScreen() {
   });
 
   if (loading) {
-    return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#f6f8f6' }}>
-        <ActivityIndicator size="large" color={theme.primary} />
-      </View>
-    );
+    return <LoadingScreen color={theme.primary} />;
   }
 
   const ISLAMIC_MONTHS = [
@@ -671,16 +668,7 @@ export default function PrayerScreen() {
         </View>
 
         {/* Today's Prayers (original) */}
-        <Text
-          style={{
-            fontSize: 18,
-            fontWeight: '700',
-            marginBottom: 12,
-            paddingLeft: 4,
-          }}
-        >
-          Sholat Hari Ini
-        </Text>
+        <SectionHeader title="Sholat Hari Ini" />
         {prayers.map((prayer) => (
           <PrayerCard key={prayer.name} prayer={prayer} />
         ))}
