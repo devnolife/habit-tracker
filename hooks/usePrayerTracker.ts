@@ -20,10 +20,12 @@
  *   } = usePrayerTracker();
  */
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { Alert } from 'react-native';
 import type { HomePrayer } from '@/types';
 import { INITIAL_PRAYERS } from '@/constants';
+import { getPrayers, togglePrayer as togglePrayerService } from '@/services';
+import { getTodayString } from '@/lib/utils';
 
 // ─────────────────────────────────────────────
 // Types
@@ -64,21 +66,52 @@ export interface UsePrayerTrackerReturn {
 
 export function usePrayerTracker(): UsePrayerTrackerReturn {
   const [prayers, setPrayers] = useState<HomePrayer[]>(INITIAL_PRAYERS);
+  const today = getTodayString();
+
+  // Load from service on mount
+  useEffect(() => {
+    (async () => {
+      const servicePrayers = await getPrayers(today);
+      // Merge service data into HomePrayer format
+      const merged = INITIAL_PRAYERS.map((initial) => {
+        const found = servicePrayers.find(
+          (sp) => sp.name === initial.name,
+        );
+        return found
+          ? { ...initial, done: found.completed, time: found.time }
+          : initial;
+      });
+      setPrayers(merged);
+    })();
+  }, [today]);
 
   // ── Toggle done ──────────────────────────
   const toggleDone = useCallback((id: string) => {
-    setPrayers((prev) =>
-      prev.map((p) => {
-        if (p.id !== id) return p;
+    setPrayers((prev) => {
+      const prayer = prev.find((p) => p.id === id);
+      if (!prayer) return prev;
 
-        const newDone = !p.done;
-        if (newDone) {
-          Alert.alert('Alhamdulillah! ✅', `${p.name} prayer marked as done.`);
-        }
-        return { ...p, done: newDone };
-      }),
-    );
-  }, []);
+      const newDone = !prayer.done;
+      if (newDone) {
+        Alert.alert('Alhamdulillah! ✅', `${prayer.name} prayer marked as done.`);
+      }
+
+      // Persist to service
+      const prayerNameMap: Record<string, string> = {
+        fajr: 'Subuh',
+        dhuhr: 'Dzuhur',
+        asr: 'Ashar',
+        maghrib: 'Maghrib',
+        isya: 'Isya',
+      };
+      const serviceName = prayerNameMap[id] || prayer.name;
+      togglePrayerService(today, serviceName as any);
+
+      return prev.map((p) =>
+        p.id === id ? { ...p, done: newDone } : p,
+      );
+    });
+  }, [today]);
 
   // ── Toggle bell ──────────────────────────
   const toggleBell = useCallback((id: string) => {

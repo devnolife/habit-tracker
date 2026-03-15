@@ -5,79 +5,31 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'expo-router';
 import { useThemeContext } from '@/lib/ThemeContext';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
+import { getMonthlyFinance, removeTransaction, formatCurrency } from '@/services';
+import { getCurrentMonth } from '@/lib/utils';
+import type { MonthlyFinance, Transaction, ExpenseCategory } from '@/types';
 
-// Category data
-const categories = [
-  {
-    name: 'Makanan & Minuman',
-    icon: 'food',
-    color: '#f97316',
-    bgColor: '#fff7ed',
-    amount: '3.150k',
-    percent: 60,
-  },
-  {
-    name: 'Transportasi',
-    icon: 'car',
-    color: '#3b82f6',
-    bgColor: '#eff6ff',
-    amount: '850k',
-    percent: 30,
-  },
-];
+// Category icon mapping
+const CATEGORY_ICONS: Record<ExpenseCategory, { icon: string; color: string; bgColor: string }> = {
+  Makanan: { icon: 'food', color: '#f97316', bgColor: '#fff7ed' },
+  Transport: { icon: 'car', color: '#3b82f6', bgColor: '#eff6ff' },
+  Belanja: { icon: 'cart', color: '#a855f7', bgColor: '#faf5ff' },
+  Tagihan: { icon: 'receipt', color: '#ef4444', bgColor: '#fef2f2' },
+  Hiburan: { icon: 'gamepad-variant', color: '#ec4899', bgColor: '#fdf2f8' },
+  Kesehatan: { icon: 'hospital-box', color: '#22c55e', bgColor: '#f0fdf4' },
+  Lainnya: { icon: 'dots-horizontal-circle', color: '#6b7280', bgColor: '#f3f4f6' },
+};
 
-// Transaction data
-const todayTransactions = [
-  {
-    title: 'Nasi Padang Siang',
-    time: '12:30',
-    method: 'QRIS',
-    amount: -45000,
-    icon: 'food',
-    iconColor: '#f97316',
-    iconBg: 'rgba(244,140,37,0.1)',
-  },
-  {
-    title: 'Gojek ke Kantor',
-    time: '08:15',
-    method: 'Gopay',
-    amount: -22000,
-    icon: 'taxi',
-    iconColor: '#3b82f6',
-    iconBg: '#eff6ff',
-  },
-];
-
-const yesterdayTransactions = [
-  {
-    title: 'Proyek Freelance',
-    time: '16:00',
-    method: 'Transfer',
-    amount: 2500000,
-    icon: 'cash',
-    iconColor: '#22c55e',
-    iconBg: '#f0fdf4',
-  },
-  {
-    title: 'Belanja Bulanan',
-    time: '19:30',
-    method: 'Debit',
-    amount: -450000,
-    icon: 'cart',
-    iconColor: '#a855f7',
-    iconBg: '#faf5ff',
-  },
-];
-
-const formatCurrency = (amount: number) => {
+const formatDisplayCurrency = (amount: number) => {
   const absAmount = Math.abs(amount);
   if (absAmount >= 1000000) {
     return `Rp ${(absAmount / 1000000).toFixed(1)}jt`;
@@ -90,13 +42,29 @@ const formatCurrency = (amount: number) => {
 export default function ExpenseScreen() {
   const { theme } = useThemeContext();
   const router = useRouter();
+  const [finance, setFinance] = useState<MonthlyFinance | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const MONTHS = [
     'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
     'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
   ];
-  const [monthIndex, setMonthIndex] = useState(7); // Agustus
-  const [year, setYear] = useState(2023);
+  const now = new Date();
+  const [monthIndex, setMonthIndex] = useState(now.getMonth());
+  const [year, setYear] = useState(now.getFullYear());
+
+  const currentMonthKey = `${year}-${String(monthIndex + 1).padStart(2, '0')}`;
+
+  const loadFinance = useCallback(async () => {
+    setLoading(true);
+    const data = await getMonthlyFinance(currentMonthKey);
+    setFinance(data);
+    setLoading(false);
+  }, [currentMonthKey]);
+
+  useEffect(() => {
+    loadFinance();
+  }, [loadFinance]);
 
   const handlePrevMonth = () => {
     if (monthIndex === 0) { setMonthIndex(11); setYear((y) => y - 1); }
@@ -107,10 +75,73 @@ export default function ExpenseScreen() {
     else { setMonthIndex((i) => i + 1); }
   };
 
+  const handleRemoveTransaction = useCallback(async (txId: string) => {
+    Alert.alert('Hapus Transaksi', 'Yakin ingin menghapus transaksi ini?', [
+      { text: 'Batal', style: 'cancel' },
+      {
+        text: 'Hapus',
+        style: 'destructive',
+        onPress: async () => {
+          const updated = await removeTransaction(currentMonthKey, txId);
+          setFinance(updated);
+        },
+      },
+    ]);
+  }, [currentMonthKey]);
+
+  const totalExpense = finance?.expense ?? 0;
+  const totalIncome = finance?.income ?? 0;
+  const transactions = finance?.transactions ?? [];
+  const budgets = finance?.budgets ?? [];
+
+  // Group transactions by date
+  const todayStr = new Date().toISOString().split('T')[0];
+  const yesterdayDate = new Date();
+  yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+  const yesterdayStr = yesterdayDate.toISOString().split('T')[0];
+
+  const todayTxs = transactions.filter((t) => t.date === todayStr);
+  const yesterdayTxs = transactions.filter((t) => t.date === yesterdayStr);
+  const olderTxs = transactions.filter((t) => t.date !== todayStr && t.date !== yesterdayStr);
+
+  // Build category breakdown from transactions
+  const categoryBreakdown = Object.entries(
+    transactions
+      .filter((t) => t.type === 'expense')
+      .reduce((acc, t) => {
+        acc[t.category] = (acc[t.category] || 0) + t.amount;
+        return acc;
+      }, {} as Record<string, number>)
+  ).map(([category, amount]) => ({
+    name: category,
+    ...(CATEGORY_ICONS[category as ExpenseCategory] || CATEGORY_ICONS.Lainnya),
+    amount: formatDisplayCurrency(amount),
+    percent: totalExpense > 0 ? Math.round((amount / totalExpense) * 100) : 0,
+  }));
+
+  // Budget progress
+  const totalBudgetLimit = budgets.reduce((sum, b) => sum + b.limit, 0);
+  const budgetUsedPercent = totalBudgetLimit > 0 ? Math.round((totalExpense / totalBudgetLimit) * 100) : 0;
+  const budgetRemaining = Math.max(0, totalBudgetLimit - totalExpense);
+
+  const mapTransactionToItem = (t: Transaction) => {
+    const catInfo = CATEGORY_ICONS[t.category] || CATEGORY_ICONS.Lainnya;
+    return {
+      id: t.id,
+      title: t.name,
+      time: t.time,
+      method: t.notes || (t.type === 'income' ? 'Transfer' : 'QRIS'),
+      amount: t.type === 'income' ? t.amount : -t.amount,
+      icon: catInfo.icon,
+      iconColor: catInfo.color,
+      iconBg: catInfo.bgColor,
+    };
+  };
+
   const TransactionItem = ({
     item,
   }: {
-    item: (typeof todayTransactions)[0];
+    item: ReturnType<typeof mapTransactionToItem>;
   }) => {
     const isIncome = item.amount > 0;
     return (
@@ -185,11 +216,19 @@ export default function ExpenseScreen() {
             color: isIncome ? '#22c55e' : '#ef4444',
           }}
         >
-          {isIncome ? '+' : '-'} {formatCurrency(item.amount)}
+          {isIncome ? '+' : '-'} {formatDisplayCurrency(item.amount)}
         </Text>
       </View>
     );
   };
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <ActivityIndicator size="large" color={theme.primary} />
+      </View>
+    );
+  }
 
   return (
     <View style={{ flex: 1 }}>
@@ -387,7 +426,7 @@ export default function ExpenseScreen() {
                         letterSpacing: -1,
                       }}
                     >
-                      Rp 5.250.000
+                      {formatCurrency(totalExpense)}
                     </Text>
                   </View>
                   <View
@@ -436,7 +475,7 @@ export default function ExpenseScreen() {
                         color: 'rgba(255,255,255,0.7)',
                       }}
                     >
-                      75% Terpakai
+                      {budgetUsedPercent}% Terpakai
                     </Text>
                   </View>
                   <View
@@ -450,7 +489,7 @@ export default function ExpenseScreen() {
                     <View
                       style={{
                         height: '100%',
-                        width: '75%',
+                        width: `${Math.min(budgetUsedPercent, 100)}%`,
                         backgroundColor: '#fff',
                         borderRadius: 999,
                       }}
@@ -469,7 +508,7 @@ export default function ExpenseScreen() {
                     >
                       Sisa:{' '}
                       <Text style={{ fontWeight: '700', color: '#fff' }}>
-                        Rp 1.750.000
+                        {formatCurrency(budgetRemaining)}
                       </Text>
                     </Text>
                   </View>
@@ -791,11 +830,17 @@ export default function ExpenseScreen() {
                   { backgroundColor: '#fff', borderRadius: 24, padding: 20 },
                 ]}
               >
-                {categories.map((cat, index) => (
+                {categoryBreakdown.length === 0 ? (
+                  <View style={{ alignItems: 'center', paddingVertical: 24 }}>
+                    <Text style={{ fontSize: 14, color: '#9ca3af' }}>
+                      Belum ada pengeluaran
+                    </Text>
+                  </View>
+                ) : categoryBreakdown.map((cat, index) => (
                   <View
                     key={cat.name}
                     style={{
-                      marginBottom: index < categories.length - 1 ? 16 : 0,
+                      marginBottom: index < categoryBreakdown.length - 1 ? 16 : 0,
                     }}
                   >
                     <View
@@ -893,9 +938,9 @@ export default function ExpenseScreen() {
                 <View style={{ flexDirection: 'row', gap: 8 }}>
                   <TouchableOpacity
                     onPress={() => Alert.alert('Filter', 'Pilih filter:', [
-                      { text: 'Semua', onPress: () => {} },
-                      { text: 'Pengeluaran Saja', onPress: () => {} },
-                      { text: 'Pemasukan Saja', onPress: () => {} },
+                      { text: 'Semua', onPress: () => { } },
+                      { text: 'Pengeluaran Saja', onPress: () => { } },
+                      { text: 'Pemasukan Saja', onPress: () => { } },
                       { text: 'Batal', style: 'cancel' },
                     ])}
                     style={[
@@ -951,8 +996,12 @@ export default function ExpenseScreen() {
               >
                 Hari Ini
               </Text>
-              {todayTransactions.map((item, index) => (
-                <TransactionItem key={index} item={item} />
+              {todayTxs.length === 0 ? (
+                <Text style={{ fontSize: 14, color: '#d1d5db', marginBottom: 12 }}>
+                  Belum ada transaksi hari ini
+                </Text>
+              ) : todayTxs.map((tx) => (
+                <TransactionItem key={tx.id} item={mapTransactionToItem(tx)} />
               ))}
             </View>
 
@@ -969,8 +1018,12 @@ export default function ExpenseScreen() {
               >
                 Kemarin
               </Text>
-              {yesterdayTransactions.map((item, index) => (
-                <TransactionItem key={index} item={item} />
+              {yesterdayTxs.length === 0 ? (
+                <Text style={{ fontSize: 14, color: '#d1d5db', marginBottom: 12 }}>
+                  Tidak ada transaksi kemarin
+                </Text>
+              ) : yesterdayTxs.map((tx) => (
+                <TransactionItem key={tx.id} item={mapTransactionToItem(tx)} />
               ))}
             </View>
           </ScrollView>

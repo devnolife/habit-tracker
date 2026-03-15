@@ -5,52 +5,37 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { Circle as SvgCircle } from 'react-native-svg';
-import { useState } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'expo-router';
 import { useThemeContext } from '@/lib/ThemeContext';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
+import {
+  getWorkSessions,
+  getPomodoroState,
+  savePomodoroState,
+  startSession,
+  completeSession,
+} from '@/services';
+import { getTodayString, formatDate } from '@/lib/utils';
+import { APP_CONFIG } from '@/config';
+import type { WorkSession, PomodoroState } from '@/types';
 
-// Task data
-const tasks = [
-  {
-    id: 1,
-    title: 'Review desain UI',
-    project: 'HabitTracker',
-    time: '09:00 - 11:00',
-    completed: true,
-    priority: 'high',
-  },
-  {
-    id: 2,
-    title: 'Integrasi API waktu sholat',
-    project: 'HabitTracker',
-    time: '11:30 - 13:00',
-    completed: true,
-    priority: 'high',
-  },
-  {
-    id: 3,
-    title: 'Perbaiki bug grafik pengeluaran',
-    project: 'HabitTracker',
-    time: '14:00 - 15:30',
-    completed: false,
-    priority: 'medium',
-    isActive: true,
-  },
-  {
-    id: 4,
-    title: 'Tulis dokumentasi',
-    project: 'HabitTracker',
-    time: '16:00 - 17:00',
-    completed: false,
-    priority: 'low',
-  },
-];
+// Task data - will be loaded from service
+interface TaskDisplay {
+  id: string;
+  title: string;
+  project: string;
+  time: string;
+  completed: boolean;
+  priority: 'high' | 'medium' | 'low';
+  isActive?: boolean;
+}
 
 const projectFilters = ['Semua', 'HabitTracker', 'Freelance', 'Pribadi'];
 
@@ -128,28 +113,159 @@ const TimerCircle = ({
 export default function WorkScreen() {
   const { theme } = useThemeContext();
   const router = useRouter();
-  const [activeFilter, setActiveFilter] = useState('All');
-  const [isTimerRunning, setIsTimerRunning] = useState(true);
-  const [timerMinutes, setTimerMinutes] = useState(25);
-  const [timerSeconds, setTimerSeconds] = useState(0);
+  const [activeFilter, setActiveFilter] = useState('Semua');
+  const [pomodoroState, setPomodoroState] = useState<PomodoroState | null>(null);
+  const [sessions, setSessions] = useState<WorkSession[]>([]);
+  const [loading, setLoading] = useState(true);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const today = getTodayString();
 
-  const handleRestart = () => {
-    setTimerSeconds(0);
-    setIsTimerRunning(false);
-  };
+  // Load data from service
+  const loadData = useCallback(async () => {
+    const [sessionsData, pomState] = await Promise.all([
+      getWorkSessions(today),
+      getPomodoroState(),
+    ]);
+    setSessions(sessionsData);
+    setPomodoroState(pomState);
+    setLoading(false);
+  }, [today]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
+  // Timer countdown
+  useEffect(() => {
+    if (pomodoroState?.isRunning && pomodoroState.timeRemaining > 0) {
+      timerRef.current = setInterval(() => {
+        setPomodoroState((prev) => {
+          if (!prev || prev.timeRemaining <= 1) {
+            if (timerRef.current) clearInterval(timerRef.current);
+            const newState = {
+              ...prev!,
+              isRunning: false,
+              timeRemaining: 0,
+              sessionsCompleted: prev!.currentSession === 'focus'
+                ? prev!.sessionsCompleted + 1
+                : prev!.sessionsCompleted,
+            };
+            savePomodoroState(newState);
+            Alert.alert(
+              'Sesi Selesai! ✅',
+              prev!.currentSession === 'focus'
+                ? 'Waktu istirahat!'
+                : 'Kembali fokus!',
+            );
+            return newState;
+          }
+          const newState = { ...prev, timeRemaining: prev.timeRemaining - 1 };
+          return newState;
+        });
+      }, 1000);
+    }
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [pomodoroState?.isRunning]);
+
+  const isTimerRunning = pomodoroState?.isRunning ?? false;
+  const timeRemaining = pomodoroState?.timeRemaining ?? APP_CONFIG.work.defaultFocusDuration * 60;
+  const timerMinutes = Math.floor(timeRemaining / 60);
+  const timerSeconds = timeRemaining % 60;
+  const currentSessionType = pomodoroState?.currentSession ?? 'focus';
+  const totalDuration = currentSessionType === 'focus'
+    ? APP_CONFIG.work.defaultFocusDuration * 60
+    : currentSessionType === 'break'
+      ? APP_CONFIG.work.defaultBreakDuration * 60
+      : APP_CONFIG.work.longBreakDuration * 60;
+  const timerProgress = totalDuration > 0 ? ((totalDuration - timeRemaining) / totalDuration) * 100 : 0;
+
+  const handleToggleTimer = useCallback(async () => {
+    if (!pomodoroState) return;
+    const newState = { ...pomodoroState, isRunning: !pomodoroState.isRunning };
+    if (!pomodoroState.isRunning && pomodoroState.timeRemaining === 0) {
+      // Reset and start new session
+      newState.timeRemaining = APP_CONFIG.work.defaultFocusDuration * 60;
+      newState.currentSession = 'focus';
+      newState.isRunning = true;
+    }
+    setPomodoroState(newState);
+    await savePomodoroState(newState);
+    if (newState.isRunning) {
+      await startSession(today, newState.currentSession, newState.currentTask);
+      const updatedSessions = await getWorkSessions(today);
+      setSessions(updatedSessions);
+    }
+  }, [pomodoroState, today]);
+
+  const handleRestart = useCallback(async () => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    const newState: PomodoroState = {
+      isRunning: false,
+      currentSession: 'focus',
+      timeRemaining: APP_CONFIG.work.defaultFocusDuration * 60,
+      sessionsCompleted: pomodoroState?.sessionsCompleted ?? 0,
+    };
+    setPomodoroState(newState);
+    await savePomodoroState(newState);
+  }, [pomodoroState]);
 
   const handleSkip = () => {
     Alert.alert('Lewati Sesi', 'Lanjut ke sesi istirahat?', [
       { text: 'Batal', style: 'cancel' },
-      { text: 'Ya, Lewati', onPress: () => { setTimerSeconds(0); setIsTimerRunning(false); } },
+      {
+        text: 'Ya, Lewati',
+        onPress: async () => {
+          if (timerRef.current) clearInterval(timerRef.current);
+          const nextSession = currentSessionType === 'focus' ? 'break' : 'focus';
+          const duration = nextSession === 'focus'
+            ? APP_CONFIG.work.defaultFocusDuration
+            : APP_CONFIG.work.defaultBreakDuration;
+          const newState: PomodoroState = {
+            isRunning: false,
+            currentSession: nextSession,
+            timeRemaining: duration * 60,
+            sessionsCompleted: currentSessionType === 'focus'
+              ? (pomodoroState?.sessionsCompleted ?? 0) + 1
+              : pomodoroState?.sessionsCompleted ?? 0,
+          };
+          setPomodoroState(newState);
+          await savePomodoroState(newState);
+        },
+      },
     ]);
   };
 
-  const handlePreset = (mins: number) => {
-    setTimerMinutes(mins);
-    setTimerSeconds(0);
-    setIsTimerRunning(false);
+  const handlePreset = async (mins: number) => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    const newState: PomodoroState = {
+      isRunning: false,
+      currentSession: 'focus',
+      timeRemaining: mins * 60,
+      sessionsCompleted: pomodoroState?.sessionsCompleted ?? 0,
+    };
+    setPomodoroState(newState);
+    await savePomodoroState(newState);
   };
+
+  // Convert sessions to display tasks
+  const tasks: TaskDisplay[] = sessions.map((s) => ({
+    id: s.id,
+    title: s.task || `Sesi ${s.type === 'focus' ? 'Fokus' : 'Istirahat'}`,
+    project: 'HabitTracker',
+    time: `${new Date(s.startTime).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}${s.endTime ? ' - ' + new Date(s.endTime).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : ''}`,
+    completed: s.completed,
+    priority: s.type === 'focus' ? 'high' : 'low',
+    isActive: !s.completed && s.type === 'focus',
+  }));
+
+  const completedSessions = sessions.filter((s) => s.completed && s.type === 'focus');
+  const totalFocusHours = completedSessions.reduce((sum, s) => sum + s.duration, 0) / 60;
+  const completedTasks = tasks.filter((t) => t.completed).length;
+  const focusScore = tasks.length > 0 ? Math.round((completedTasks / tasks.length) * 100) : 0;
+
+  const todayFormatted = formatDate(new Date());
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -163,6 +279,14 @@ export default function WorkScreen() {
         return { bg: '#f3f4f6', text: '#6b7280' };
     }
   };
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <ActivityIndicator size="large" color={theme.primary} />
+      </View>
+    );
+  }
 
   return (
     <View style={{ flex: 1 }}>
@@ -183,7 +307,7 @@ export default function WorkScreen() {
           >
             <View>
               <Text style={{ fontSize: 14, color: '#6b7280' }}>
-                Senin, 25 Maret
+                {todayFormatted.split(',').slice(0, 1)}
               </Text>
               <Text style={{ fontSize: 24, fontWeight: '700', color: '#111' }}>
                 Pelacak Kerja
@@ -282,7 +406,7 @@ export default function WorkScreen() {
                 <Text
                   style={{ fontSize: 24, fontWeight: '700', color: '#111' }}
                 >
-                  6.5{' '}
+                  {totalFocusHours.toFixed(1)}{' '}
                   <Text
                     style={{
                       fontSize: 14,
@@ -325,7 +449,7 @@ export default function WorkScreen() {
                 <Text
                   style={{ fontSize: 24, fontWeight: '700', color: '#111' }}
                 >
-                  8{' '}
+                  {completedTasks}{' '}
                   <Text
                     style={{
                       fontSize: 14,
@@ -333,7 +457,7 @@ export default function WorkScreen() {
                       color: '#6b7280',
                     }}
                   >
-                    / 12
+                    / {tasks.length}
                   </Text>
                 </Text>
               </View>
@@ -368,7 +492,7 @@ export default function WorkScreen() {
                 <Text
                   style={{ fontSize: 24, fontWeight: '700', color: '#111' }}
                 >
-                  85
+                  {focusScore}
                   <Text
                     style={{
                       fontSize: 14,
@@ -396,10 +520,10 @@ export default function WorkScreen() {
                 ]}
               >
                 <TimerCircle
-                  progress={65}
+                  progress={timerProgress}
                   size={200}
                   strokeWidth={12}
-                  timeRemaining="18:32"
+                  timeRemaining={`${String(timerMinutes).padStart(2, '0')}:${String(timerSeconds).padStart(2, '0')}`}
                   color={theme.primary}
                 />
 
@@ -433,7 +557,7 @@ export default function WorkScreen() {
                     />
                   </TouchableOpacity>
                   <TouchableOpacity
-                    onPress={() => setIsTimerRunning(!isTimerRunning)}
+                    onPress={handleToggleTimer}
                     style={[
                       styles.playButton,
                       {
@@ -476,31 +600,34 @@ export default function WorkScreen() {
 
                 {/* Timer Presets */}
                 <View style={{ flexDirection: 'row', gap: 12, marginTop: 24 }}>
-                  {[15, 25, 45, 60].map((mins) => (
-                    <TouchableOpacity
-                      key={mins}
-                      onPress={() => handlePreset(mins)}
-                      style={{
-                        paddingHorizontal: 16,
-                        paddingVertical: 8,
-                        borderRadius: 999,
-                        backgroundColor:
-                          mins === timerMinutes ? `${theme.primary}15` : '#f3f4f6',
-                        borderWidth: mins === timerMinutes ? 1 : 0,
-                        borderColor: `${theme.primary}30`,
-                      }}
-                    >
-                      <Text
+                  {[15, 25, 45, 60].map((mins) => {
+                    const isSelected = Math.ceil(timeRemaining / 60) === mins && !isTimerRunning;
+                    return (
+                      <TouchableOpacity
+                        key={mins}
+                        onPress={() => handlePreset(mins)}
                         style={{
-                          fontSize: 14,
-                          fontWeight: '600',
-                          color: mins === timerMinutes ? theme.primary : '#6b7280',
+                          paddingHorizontal: 16,
+                          paddingVertical: 8,
+                          borderRadius: 999,
+                          backgroundColor:
+                            isSelected ? `${theme.primary}15` : '#f3f4f6',
+                          borderWidth: isSelected ? 1 : 0,
+                          borderColor: `${theme.primary}30`,
                         }}
                       >
-                        {mins}m
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
+                        <Text
+                          style={{
+                            fontSize: 14,
+                            fontWeight: '600',
+                            color: isSelected ? theme.primary : '#6b7280',
+                          }}
+                        >
+                          {mins}m
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
                 </View>
               </View>
             </View>
@@ -580,7 +707,17 @@ export default function WorkScreen() {
                 </TouchableOpacity>
               </View>
 
-              {tasks.map((task) => {
+              {tasks.length === 0 ? (
+                <View style={{ alignItems: 'center', paddingVertical: 32 }}>
+                  <MaterialCommunityIcons name="briefcase-outline" size={48} color="#d1d5db" />
+                  <Text style={{ fontSize: 16, color: '#9ca3af', marginTop: 12 }}>
+                    Belum ada sesi hari ini
+                  </Text>
+                  <Text style={{ fontSize: 14, color: '#d1d5db', marginTop: 4 }}>
+                    Mulai timer untuk merekam sesi
+                  </Text>
+                </View>
+              ) : tasks.map((task) => {
                 const priorityStyle = getPriorityColor(task.priority);
                 return (
                   <View
@@ -730,7 +867,8 @@ export default function WorkScreen() {
                     </View>
                   </View>
                 );
-              })}
+              })
+              }
             </View>
 
             {/* Productivity Analytics */}

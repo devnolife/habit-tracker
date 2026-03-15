@@ -7,79 +7,58 @@ import {
   TextInput,
   Image,
   Dimensions,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'expo-router';
 import { useThemeContext } from '@/lib/ThemeContext';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
+import { getPrayers, togglePrayer } from '@/services';
+import { getTodayString } from '@/lib/utils';
+import type { Prayer, PrayerName } from '@/types';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-// Prayer data
-const prayers = [
-  {
-    name: 'Subuh',
-    arabic: 'الفجر',
-    time: '04:45',
-    adhan: '04:30',
-    iqamah: '04:40',
-    completed: true,
-  },
-  {
-    name: 'Dzuhur',
-    arabic: 'الظهر',
-    time: '12:05',
-    adhan: '11:55',
-    iqamah: '12:15',
-    completed: false,
-    isNext: true,
-  },
-  {
-    name: 'Ashar',
-    arabic: 'العصر',
-    time: '15:20',
-    adhan: '15:10',
-    iqamah: '15:25',
-    completed: false,
-  },
-  {
-    name: 'Maghrib',
-    arabic: 'المغرب',
-    time: '18:10',
-    adhan: '18:05',
-    iqamah: '18:15',
-    completed: false,
-  },
-  {
-    name: 'Isya',
-    arabic: 'العشاء',
-    time: '19:25',
-    adhan: '19:20',
-    iqamah: '19:30',
-    completed: false,
-  },
-];
+// Arabic names mapping
+const ARABIC_NAMES: Record<PrayerName, string> = {
+  Subuh: 'الفجر',
+  Dzuhur: 'الظهر',
+  Ashar: 'العصر',
+  Maghrib: 'المغرب',
+  Isya: 'العشاء',
+};
 
-// Calendar days with prayer dots
-const calendarDays = [
-  { day: 1, prayers: [1, 1, 1, 1, 1] },
-  { day: 2, prayers: [1, 1, 0, 1, 1] },
-  { day: 3, prayers: [1, 1, 1, 1, 1] },
-  { day: 4, prayers: [1, 1, 1, 1, 1] },
-  { day: 5, prayers: [1, 1, 1, 1, 1] },
-  { day: 6, prayers: [1, 1, 1, 0, 1] },
-  { day: 7, prayers: [1, 1, 1, 1, 1] },
-  { day: 8, prayers: [1, 1, 1, 1, 1] },
-  { day: 9, prayers: [1, 1, 1, 1, 1] },
-  { day: 10, prayers: [1, 1, 1, 1, 1] },
-  { day: 11, prayers: [1, 1, 1, 1, 1] },
-  { day: 12, prayers: [1, 1, 1, 1, 1] },
-  { day: 13, prayers: [1, 1, 1, 1, 1] },
-  { day: 14, prayers: [1, 0, 0, 0, 0], isToday: true },
-];
+// Adhan/Iqamah offset in minutes (approximate)
+const PRAYER_DETAILS: Record<PrayerName, { adhanOffset: number; iqamahOffset: number }> = {
+  Subuh: { adhanOffset: -15, iqamahOffset: -5 },
+  Dzuhur: { adhanOffset: -10, iqamahOffset: 10 },
+  Ashar: { adhanOffset: -10, iqamahOffset: 5 },
+  Maghrib: { adhanOffset: -5, iqamahOffset: 5 },
+  Isya: { adhanOffset: -5, iqamahOffset: 5 },
+};
+
+function addMinutesToTime(time: string, minutes: number): string {
+  const [h, m] = time.split(':').map(Number);
+  const total = h * 60 + m + minutes;
+  const newH = Math.floor(((total % 1440) + 1440) % 1440 / 60);
+  const newM = ((total % 1440) + 1440) % 1440 % 60;
+  return `${String(newH).padStart(2, '0')}:${String(newM).padStart(2, '0')}`;
+}
+
+interface PrayerDisplay {
+  name: PrayerName;
+  arabic: string;
+  time: string;
+  adhan: string;
+  iqamah: string;
+  completed: boolean;
+  isNext: boolean;
+}
+
+// Calendar days will be built dynamically from today's data
 
 // Features data (from Figma design)
 const FEATURES = [
@@ -111,7 +90,69 @@ const NEWS_ITEMS = [
 export default function PrayerScreen() {
   const { theme } = useThemeContext();
   const router = useRouter();
-  const [expandedPrayer, setExpandedPrayer] = useState<string | null>('Dhuhr');
+  const [expandedPrayer, setExpandedPrayer] = useState<string | null>('Dzuhur');
+  const [prayerData, setPrayerData] = useState<Prayer[]>([]);
+  const [loading, setLoading] = useState(true);
+  const today = getTodayString();
+
+  // Load prayers from service
+  const loadPrayers = useCallback(async () => {
+    const data = await getPrayers(today);
+    setPrayerData(data);
+    setLoading(false);
+  }, [today]);
+
+  useEffect(() => {
+    loadPrayers();
+  }, [loadPrayers]);
+
+  // Handle prayer toggle
+  const handleTogglePrayer = useCallback(async (name: PrayerName) => {
+    const updated = await togglePrayer(today, name);
+    setPrayerData(updated);
+  }, [today]);
+
+  // Convert service data to display format
+  const prayers: PrayerDisplay[] = prayerData.map((p) => {
+    const details = PRAYER_DETAILS[p.name];
+    return {
+      name: p.name,
+      arabic: ARABIC_NAMES[p.name],
+      time: p.time,
+      adhan: addMinutesToTime(p.time, details.adhanOffset),
+      iqamah: addMinutesToTime(p.time, details.iqamahOffset),
+      completed: p.completed,
+      isNext: false,
+    };
+  });
+
+  // Mark the first uncompleted prayer as next
+  const nextIdx = prayers.findIndex((p) => !p.completed);
+  if (nextIdx >= 0) prayers[nextIdx].isNext = true;
+
+  const completedCount = prayers.filter((p) => p.completed).length;
+  const streakDays = completedCount === 5 ? 1 : 0; // simplified streak
+
+  // Build calendar days from today's prayer data
+  const todayDate = new Date();
+  const currentDay = todayDate.getDate();
+  const calendarDays = Array.from({ length: currentDay }, (_, i) => {
+    const day = i + 1;
+    const isToday = day === currentDay;
+    // For today, use real data; for past days, show all completed as placeholder
+    const prayerDots = isToday
+      ? prayerData.map((p) => (p.completed ? 1 : 0))
+      : [1, 1, 1, 1, 1];
+    return { day, prayers: prayerDots, isToday };
+  });
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#f6f8f6' }}>
+        <ActivityIndicator size="large" color={theme.primary} />
+      </View>
+    );
+  }
 
   const ISLAMIC_MONTHS = [
     'Muharram', 'Safar', 'Rabi\'ul Awal', 'Rabi\'ul Akhir',
@@ -143,8 +184,8 @@ export default function PrayerScreen() {
     router.push(feature.route as any);
   };
 
-  // Prayer Card Component (original)
-  const PrayerCard = ({ prayer }: { prayer: (typeof prayers)[0] }) => {
+  // Prayer Card Component
+  const PrayerCard = ({ prayer }: { prayer: PrayerDisplay }) => {
     const isCompleted = prayer.completed;
     const isNext = prayer.isNext;
     const expanded = expandedPrayer === prayer.name;
@@ -176,7 +217,8 @@ export default function PrayerScreen() {
           }}
         >
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
-            <View
+            <TouchableOpacity
+              onPress={() => handleTogglePrayer(prayer.name)}
               style={{
                 width: 32,
                 height: 32,
@@ -188,19 +230,19 @@ export default function PrayerScreen() {
                 justifyContent: 'center',
                 ...(isCompleted
                   ? {
-                      shadowColor: theme.primary,
-                      shadowOffset: { width: 0, height: 4 },
-                      shadowOpacity: 0.3,
-                      shadowRadius: 8,
-                      elevation: 4,
-                    }
+                    shadowColor: theme.primary,
+                    shadowOffset: { width: 0, height: 4 },
+                    shadowOpacity: 0.3,
+                    shadowRadius: 8,
+                    elevation: 4,
+                  }
                   : {}),
               }}
             >
               {isCompleted && (
                 <MaterialCommunityIcons name="check" size={18} color="#fff" />
               )}
-            </View>
+            </TouchableOpacity>
 
             <View>
               <View
@@ -500,7 +542,7 @@ export default function PrayerScreen() {
               <Text
                 style={{ fontSize: 12, color: '#61896f', fontWeight: '500' }}
               >
-                Sholat Berikutnya - Dzuhur
+                Sholat Berikutnya - {nextIdx >= 0 ? prayers[nextIdx].name : 'Selesai'}
               </Text>
               <Text
                 style={{
@@ -568,7 +610,7 @@ export default function PrayerScreen() {
           >
             <View>
               <Text style={{ fontSize: 12, color: '#61896f' }}>Streak</Text>
-              <Text style={{ fontSize: 20, fontWeight: '700' }}>12 Hari</Text>
+              <Text style={{ fontSize: 20, fontWeight: '700' }}>{completedCount === 5 ? '1 Hari' : '0 Hari'}</Text>
             </View>
             <View
               style={{
@@ -606,7 +648,7 @@ export default function PrayerScreen() {
                   color: theme.primary,
                 }}
               >
-                80%
+                {prayers.length > 0 ? Math.round((completedCount / prayers.length) * 100) : 0}%
               </Text>
             </View>
             <View
@@ -870,10 +912,10 @@ export default function PrayerScreen() {
                   borderRadius: 8,
                   ...(item.isToday
                     ? {
-                        backgroundColor: `${theme.primary}08`,
-                        borderWidth: 1,
-                        borderColor: theme.primary,
-                      }
+                      backgroundColor: `${theme.primary}08`,
+                      borderWidth: 1,
+                      borderColor: theme.primary,
+                    }
                     : {}),
                 }}
               >

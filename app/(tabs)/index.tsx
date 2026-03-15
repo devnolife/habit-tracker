@@ -14,7 +14,7 @@
  * dedicated modules to keep this file lean and readable.
  */
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -35,7 +35,9 @@ import { QuickStatCard } from '@/components/home/QuickStatCard';
 import { ActivityItem } from '@/components/home/ActivityItem';
 import { usePrayerTracker } from '@/hooks/usePrayerTracker';
 import { useTabNavigator } from '@/hooks/useTabNavigator';
-import { MOCK_ACTIVITIES, buildHomeStats } from '@/constants';
+import { MOCK_ACTIVITIES } from '@/constants';
+import { getDailyNutrition, getWorkSessions, getMonthlyFinance } from '@/services';
+import { getTodayString, getCurrentMonth, formatShortCurrency } from '@/lib/utils';
 import type { AppTheme } from '@/types';
 
 // ─────────────────────────────────────────────
@@ -118,17 +120,43 @@ export default function HomeScreen() {
     toggleBell,
   } = usePrayerTracker();
 
-  const homeStats = buildHomeStats(stats.done, stats.total);
+  // Real stats from services
+  const [workHours, setWorkHours] = useState(0);
+  const [expenseAmount, setExpenseAmount] = useState('0');
+  const [foodCalories, setFoodCalories] = useState(0);
+
+  useEffect(() => {
+    const loadStats = async () => {
+      const today = getTodayString();
+      const month = getCurrentMonth();
+
+      const [nutrition, sessions, finance] = await Promise.all([
+        getDailyNutrition(today),
+        getWorkSessions(today),
+        getMonthlyFinance(month),
+      ]);
+
+      setFoodCalories(nutrition.totalCalories);
+
+      const focusMins = sessions
+        .filter((s) => s.completed && s.type === 'focus')
+        .reduce((sum, s) => sum + s.duration, 0);
+      setWorkHours(Math.round(focusMins / 60 * 10) / 10);
+
+      setExpenseAmount(formatShortCurrency(finance.expense));
+    };
+    loadStats();
+  }, []);
 
   // Map stat card keys to their display values
   const statValues: Record<string, { value: string; unit: string }> = {
     prayer: {
-      value: `${homeStats.prayer.done}/${homeStats.prayer.total}`,
+      value: `${stats.done}/${stats.total}`,
       unit: 'Done',
     },
-    work: { value: `${homeStats.work.hours}`, unit: 'hrs' },
-    expense: { value: homeStats.expense.amount, unit: 'IDR' },
-    food: { value: homeStats.food.calories.toLocaleString(), unit: 'cal' },
+    work: { value: `${workHours}`, unit: 'hrs' },
+    expense: { value: expenseAmount, unit: 'IDR' },
+    food: { value: foodCalories.toLocaleString(), unit: 'cal' },
   };
 
   return (

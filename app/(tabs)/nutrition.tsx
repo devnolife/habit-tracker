@@ -5,15 +5,19 @@ import {
   TouchableOpacity,
   StyleSheet,
   Switch,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { Circle as SvgCircle } from 'react-native-svg';
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'expo-router';
 import { useThemeContext } from '@/lib/ThemeContext';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
+import { getDailyNutrition, removeMeal } from '@/services';
+import { getTodayString, formatDate } from '@/lib/utils';
+import type { DailyNutrition, Meal, MealType } from '@/types';
 
 // Circular Progress Component
 const CircularProgress = ({
@@ -193,6 +197,30 @@ export default function NutritionScreen() {
   const router = useRouter();
   const [isFasting, setIsFasting] = useState(false);
   const [hydrationGlasses, setHydrationGlasses] = useState(5);
+  const [nutrition, setNutrition] = useState<DailyNutrition | null>(null);
+  const [loading, setLoading] = useState(true);
+  const today = getTodayString();
+
+  const loadNutrition = useCallback(async () => {
+    const data = await getDailyNutrition(today);
+    setNutrition(data);
+    setLoading(false);
+  }, [today]);
+
+  useEffect(() => {
+    loadNutrition();
+  }, [loadNutrition]);
+
+  // Reload when returning from add-food screen
+  useEffect(() => {
+    const unsubscribe = () => { loadNutrition(); };
+    return unsubscribe;
+  }, [loadNutrition]);
+
+  const handleRemoveMeal = useCallback(async (mealId: string) => {
+    const updated = await removeMeal(today, mealId);
+    setNutrition(updated);
+  }, [today]);
 
   const MEAL_SLUG: Record<string, string> = {
     Sarapan: 'sarapan',
@@ -204,10 +232,27 @@ export default function NutritionScreen() {
     router.push(`/nutrition-actions/add-food?meal=${MEAL_SLUG[mealType] ?? 'sarapan'}` as any);
   };
 
-  const totalCalories = 2000;
-  const consumedCalories = 1150;
-  const remainingCalories = totalCalories - consumedCalories;
-  const progress = (consumedCalories / totalCalories) * 100;
+  const totalCalories = nutrition?.goal ?? 2000;
+  const consumedCalories = nutrition?.totalCalories ?? 0;
+  const remainingCalories = Math.max(0, totalCalories - consumedCalories);
+  const progress = totalCalories > 0 ? (consumedCalories / totalCalories) * 100 : 0;
+
+  // Group meals by type
+  const mealsByType = (type: MealType): Meal[] =>
+    nutrition?.meals.filter((m) => m.type === type) ?? [];
+
+  const getMealTypeCalories = (type: MealType): number =>
+    mealsByType(type).reduce((sum, m) => sum + m.calories, 0);
+
+  const todayFormatted = formatDate(new Date());
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <ActivityIndicator size="large" color={theme.primary} />
+      </View>
+    );
+  }
 
   return (
     <View style={{ flex: 1 }}>
@@ -229,7 +274,7 @@ export default function NutritionScreen() {
           >
             <View>
               <Text style={{ fontSize: 14, color: '#6b7280' }}>
-                Senin, 25 Maret
+                {todayFormatted.split(',').slice(0, 1)}
               </Text>
               <Text style={{ fontSize: 24, fontWeight: '700', color: '#111' }}>
                 Nutrisi
@@ -511,252 +556,105 @@ export default function NutritionScreen() {
               </View>
             </View>
 
-            {/* Meal Sections */}
-            {/* Breakfast */}
-            <View style={{ paddingHorizontal: 24, marginTop: 24 }}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  marginBottom: 12,
-                }}
-              >
-                <View
-                  style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}
-                >
-                  <MaterialCommunityIcons
-                    name="weather-sunny"
-                    size={20}
-                    color={theme.primary}
-                  />
-                  <Text
-                    style={{ fontSize: 18, fontWeight: '700', color: '#111' }}
-                  >
-                    Sarapan
-                  </Text>
-                </View>
-                <Text
-                  style={{ fontSize: 14, fontWeight: '500', color: '#6b7280' }}
-                >
-                  450 kkal
-                </Text>
-              </View>
-
-              <View
-                style={[
-                  styles.mealCard,
-                  { backgroundColor: '#fff', borderRadius: 20, padding: 16 },
-                ]}
-              >
-                <FoodItem
-                  name="Oatmeal dengan Madu"
-                  calories={280}
-                  time="07:30"
-                  icon="bowl-mix"
-                  color={theme.primary}
-                />
-                <View style={{ height: 8 }} />
-                <FoodItem
-                  name="Smoothie Hijau"
-                  calories={170}
-                  time="08:00"
-                  icon="glass-cocktail"
-                  color="#22c55e"
-                />
-
-                <TouchableOpacity
-                  onPress={() => handleAddFood('Sarapan')}
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    paddingVertical: 12,
-                    marginTop: 8,
-                    borderTopWidth: 1,
-                    borderTopColor: '#f3f4f6',
-                    gap: 8,
-                  }}
-                >
-                  <MaterialCommunityIcons
-                    name="plus-circle-outline"
-                    size={20}
-                    color={theme.primary}
-                  />
-                  <Text
+            {/* Meal Sections - Dynamic */}
+            {([
+              { type: 'Sarapan' as MealType, icon: 'weather-sunny' as const, color: theme.primary, label: 'Sarapan' },
+              { type: 'Makan Siang' as MealType, icon: 'white-balance-sunny' as const, color: '#f97316', label: 'Makan Siang' },
+              { type: 'Makan Malam' as MealType, icon: 'weather-night' as const, color: '#6366f1', label: 'Makan Malam' },
+              { type: 'Snack' as MealType, icon: 'cookie' as const, color: '#a855f7', label: 'Snack' },
+            ]).map((section) => {
+              const meals = mealsByType(section.type);
+              const sectionCalories = getMealTypeCalories(section.type);
+              return (
+                <View key={section.type} style={{ paddingHorizontal: 24, marginTop: 24 }}>
+                  <View
                     style={{
-                      fontSize: 14,
-                      fontWeight: '700',
-                      color: theme.primary,
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      marginBottom: 12,
                     }}
                   >
-                    Tambah Makanan
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
+                    <View
+                      style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}
+                    >
+                      <MaterialCommunityIcons
+                        name={section.icon}
+                        size={20}
+                        color={section.color}
+                      />
+                      <Text
+                        style={{ fontSize: 18, fontWeight: '700', color: '#111' }}
+                      >
+                        {section.label}
+                      </Text>
+                    </View>
+                    <Text
+                      style={{ fontSize: 14, fontWeight: '500', color: '#6b7280' }}
+                    >
+                      {sectionCalories} kkal
+                    </Text>
+                  </View>
 
-            {/* Lunch */}
-            <View style={{ paddingHorizontal: 24, marginTop: 24 }}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  marginBottom: 12,
-                }}
-              >
-                <View
-                  style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}
-                >
-                  <MaterialCommunityIcons
-                    name="white-balance-sunny"
-                    size={20}
-                    color="#f97316"
-                  />
-                  <Text
-                    style={{ fontSize: 18, fontWeight: '700', color: '#111' }}
+                  <View
+                    style={[
+                      styles.mealCard,
+                      { backgroundColor: '#fff', borderRadius: 20, padding: 16 },
+                    ]}
                   >
-                    Makan Siang
-                  </Text>
+                    {meals.length > 0 ? (
+                      meals.map((meal, idx) => (
+                        <View key={meal.id}>
+                          {idx > 0 && <View style={{ height: 8 }} />}
+                          <FoodItem
+                            name={meal.name}
+                            calories={meal.calories}
+                            time={meal.time}
+                            icon="food"
+                            color={section.color}
+                          />
+                        </View>
+                      ))
+                    ) : (
+                      <View style={{ alignItems: 'center', paddingVertical: 16 }}>
+                        <Text style={{ fontSize: 14, color: '#9ca3af' }}>
+                          Belum ada makanan
+                        </Text>
+                      </View>
+                    )}
+
+                    <TouchableOpacity
+                      onPress={() => handleAddFood(section.label)}
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        paddingVertical: 12,
+                        marginTop: 8,
+                        borderTopWidth: 1,
+                        borderTopColor: '#f3f4f6',
+                        gap: 8,
+                      }}
+                    >
+                      <MaterialCommunityIcons
+                        name="plus-circle-outline"
+                        size={20}
+                        color={theme.primary}
+                      />
+                      <Text
+                        style={{
+                          fontSize: 14,
+                          fontWeight: '700',
+                          color: theme.primary,
+                        }}
+                      >
+                        Tambah Makanan
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
-                <Text
-                  style={{ fontSize: 14, fontWeight: '500', color: '#6b7280' }}
-                >
-                  520 kkal
-                </Text>
-              </View>
-
-              <View
-                style={[
-                  styles.mealCard,
-                  { backgroundColor: '#fff', borderRadius: 20, padding: 16 },
-                ]}
-              >
-                <FoodItem
-                  name="Salad Ayam Panggang"
-                  calories={350}
-                  time="12:30"
-                  icon="food-drumstick"
-                  color="#f97316"
-                />
-                <View style={{ height: 8 }} />
-                <FoodItem
-                  name="Jus Jeruk Segar"
-                  calories={170}
-                  time="12:45"
-                  icon="fruit-citrus"
-                  color="#fb923c"
-                />
-
-                <TouchableOpacity
-                  onPress={() => handleAddFood('Makan Siang')}
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    paddingVertical: 12,
-                    marginTop: 8,
-                    borderTopWidth: 1,
-                    borderTopColor: '#f3f4f6',
-                    gap: 8,
-                  }}
-                >
-                  <MaterialCommunityIcons
-                    name="plus-circle-outline"
-                    size={20}
-                    color={theme.primary}
-                  />
-                  <Text
-                    style={{
-                      fontSize: 14,
-                      fontWeight: '700',
-                      color: theme.primary,
-                    }}
-                  >
-                    Tambah Makanan
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            {/* Dinner */}
-            <View
-              style={{ paddingHorizontal: 24, marginTop: 24, marginBottom: 24 }}
-            >
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  marginBottom: 12,
-                }}
-              >
-                <View
-                  style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}
-                >
-                  <MaterialCommunityIcons
-                    name="weather-night"
-                    size={20}
-                    color="#6366f1"
-                  />
-                  <Text
-                    style={{ fontSize: 18, fontWeight: '700', color: '#111' }}
-                  >
-                    Makan Malam
-                  </Text>
-                </View>
-                <Text
-                  style={{ fontSize: 14, fontWeight: '500', color: '#6b7280' }}
-                >
-                  180 kkal
-                </Text>
-              </View>
-
-              <View
-                style={[
-                  styles.mealCard,
-                  { backgroundColor: '#fff', borderRadius: 20, padding: 16 },
-                ]}
-              >
-                <FoodItem
-                  name="Sup Sayuran"
-                  calories={180}
-                  time="19:00"
-                  icon="pot-steam"
-                  color="#6366f1"
-                />
-
-                <TouchableOpacity
-                  onPress={() => handleAddFood('Makan Malam')}
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    paddingVertical: 12,
-                    marginTop: 8,
-                    borderTopWidth: 1,
-                    borderTopColor: '#f3f4f6',
-                    gap: 8,
-                  }}
-                >
-                  <MaterialCommunityIcons
-                    name="plus-circle-outline"
-                    size={20}
-                    color={theme.primary}
-                  />
-                  <Text
-                    style={{
-                      fontSize: 14,
-                      fontWeight: '700',
-                      color: theme.primary,
-                    }}
-                  >
-                    Tambah Makanan
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
+              );
+            })}
 
             {/* Quick Add Button */}
             <View style={{ paddingHorizontal: 24, marginBottom: 24 }}>
