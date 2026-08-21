@@ -11,12 +11,15 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
 
 const PRIMARY = '#2563EB';
 const ONBOARDING_KEY = '@habit_tracker_onboarding_complete';
+const NOTIF_KEY = '@notification_prefs';
 
 // Settings Item Component
 const SettingsItem = ({
@@ -122,6 +125,99 @@ export default function SettingsScreen() {
   const [foodNotif, setFoodNotif] = useState(true);
   const [faceId, setFaceId] = useState(true);
   const [highContrast, setHighContrast] = useState(false);
+
+  // Load saved notification preferences
+  useEffect(() => {
+    (async () => {
+      const saved = await AsyncStorage.getItem(NOTIF_KEY);
+      if (saved) {
+        const prefs = JSON.parse(saved);
+        setPrayerNotif(prefs.prayer ?? true);
+        setWorkNotif(prefs.work ?? false);
+        setExpenseNotif(prefs.expense ?? true);
+        setFoodNotif(prefs.food ?? true);
+      }
+    })();
+  }, []);
+
+  // Persist notification toggles
+  const updateNotif = useCallback(async (key: string, value: boolean, setter: (v: boolean) => void) => {
+    setter(value);
+    const saved = await AsyncStorage.getItem(NOTIF_KEY);
+    const prefs = saved ? JSON.parse(saved) : {};
+    prefs[key] = value;
+    await AsyncStorage.setItem(NOTIF_KEY, JSON.stringify(prefs));
+  }, []);
+
+  // Export all data as JSON
+  const handleExportData = useCallback(async () => {
+    try {
+      const keys = await AsyncStorage.getAllKeys();
+      const entries = await AsyncStorage.multiGet(keys);
+      const data: Record<string, unknown> = {};
+      entries.forEach(([k, v]) => {
+        if (v) data[k] = JSON.parse(v);
+      });
+      const json = JSON.stringify(data, null, 2);
+      const fileUri = FileSystem.documentDirectory + 'habittracker_backup.json';
+      await FileSystem.writeAsStringAsync(fileUri, json);
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(fileUri);
+      } else {
+        Alert.alert('Berhasil', 'Data diekspor ke: ' + fileUri);
+      }
+    } catch {
+      Alert.alert('Gagal', 'Tidak dapat mengekspor data.');
+    }
+  }, []);
+
+  // Backup data
+  const handleBackup = useCallback(async () => {
+    try {
+      const keys = await AsyncStorage.getAllKeys();
+      const entries = await AsyncStorage.multiGet(keys);
+      const data: Record<string, unknown> = {};
+      entries.forEach(([k, v]) => {
+        if (v) data[k] = JSON.parse(v);
+      });
+      const json = JSON.stringify(data);
+      await AsyncStorage.setItem('@backup_data', json);
+      await AsyncStorage.setItem('@backup_date', new Date().toISOString());
+      Alert.alert('Berhasil', 'Cadangan data telah dibuat.');
+    } catch {
+      Alert.alert('Gagal', 'Tidak dapat membuat cadangan.');
+    }
+  }, []);
+
+  // Restore data
+  const handleRestore = useCallback(async () => {
+    try {
+      const backup = await AsyncStorage.getItem('@backup_data');
+      if (!backup) {
+        Alert.alert('Info', 'Tidak ada cadangan yang ditemukan.');
+        return;
+      }
+      const data = JSON.parse(backup) as Record<string, unknown>;
+      const entries: [string, string][] = Object.entries(data)
+        .filter(([k]) => k !== '@backup_data' && k !== '@backup_date')
+        .map(([k, v]) => [k, JSON.stringify(v)]);
+      await AsyncStorage.multiSet(entries);
+      Alert.alert('Berhasil', 'Data berhasil dipulihkan. Silakan restart aplikasi.');
+    } catch {
+      Alert.alert('Gagal', 'Tidak dapat memulihkan data.');
+    }
+  }, []);
+
+  // Logout - clear session data
+  const handleLogout = useCallback(async () => {
+    try {
+      await AsyncStorage.removeItem(ONBOARDING_KEY);
+      await AsyncStorage.removeItem(NOTIF_KEY);
+      router.replace('/');
+    } catch {
+      Alert.alert('Gagal', 'Tidak dapat keluar.');
+    }
+  }, [router]);
 
   const resetOnboarding = useCallback(async () => {
     try {
@@ -292,7 +388,7 @@ export default function SettingsScreen() {
                 rightElement={
                   <Switch
                     value={prayerNotif}
-                    onValueChange={setPrayerNotif}
+                    onValueChange={(v) => updateNotif('prayer', v, setPrayerNotif)}
                     trackColor={{ false: '#e5e7eb', true: PRIMARY }}
                     thumbColor="#fff"
                   />
@@ -313,7 +409,7 @@ export default function SettingsScreen() {
                 rightElement={
                   <Switch
                     value={workNotif}
-                    onValueChange={setWorkNotif}
+                    onValueChange={(v) => updateNotif('work', v, setWorkNotif)}
                     trackColor={{ false: '#e5e7eb', true: PRIMARY }}
                     thumbColor="#fff"
                   />
@@ -334,7 +430,7 @@ export default function SettingsScreen() {
                 rightElement={
                   <Switch
                     value={expenseNotif}
-                    onValueChange={setExpenseNotif}
+                    onValueChange={(v) => updateNotif('expense', v, setExpenseNotif)}
                     trackColor={{ false: '#e5e7eb', true: PRIMARY }}
                     thumbColor="#fff"
                   />
@@ -355,7 +451,7 @@ export default function SettingsScreen() {
                 rightElement={
                   <Switch
                     value={foodNotif}
-                    onValueChange={setFoodNotif}
+                    onValueChange={(v) => updateNotif('food', v, setFoodNotif)}
                     trackColor={{ false: '#e5e7eb', true: PRIMARY }}
                     thumbColor="#fff"
                   />
@@ -403,8 +499,8 @@ export default function SettingsScreen() {
                 iconBg="rgba(14,165,233,0.1)"
                 title="Cadangan & Pemulihan"
                 onPress={() => Alert.alert('Cadangan', 'Pilih opsi:', [
-                  { text: 'Buat Cadangan', onPress: () => Alert.alert('Berhasil', 'Cadangan data telah dibuat.') },
-                  { text: 'Pulihkan Data', onPress: () => Alert.alert('Info', 'Tidak ada cadangan yang ditemukan.') },
+                  { text: 'Buat Cadangan', onPress: handleBackup },
+                  { text: 'Pulihkan Data', onPress: handleRestore },
                   { text: 'Batal', style: 'cancel' },
                 ])}
               />
@@ -422,7 +518,7 @@ export default function SettingsScreen() {
                 title="Ekspor Semua Data"
                 onPress={() => Alert.alert('Ekspor Data', 'Data Anda akan diekspor dalam format JSON. Lanjutkan?', [
                   { text: 'Batal', style: 'cancel' },
-                  { text: 'Ekspor', onPress: () => Alert.alert('Berhasil', 'Data berhasil diekspor.') },
+                  { text: 'Ekspor', onPress: handleExportData },
                 ])}
               />
               <View
@@ -493,7 +589,7 @@ export default function SettingsScreen() {
             <TouchableOpacity
               onPress={() => Alert.alert('Keluar', 'Apakah Anda yakin ingin keluar?', [
                 { text: 'Batal', style: 'cancel' },
-                { text: 'Keluar', style: 'destructive', onPress: () => router.replace('/' as any) },
+                { text: 'Keluar', style: 'destructive', onPress: handleLogout },
               ])}
               style={[
                 styles.logoutButton,

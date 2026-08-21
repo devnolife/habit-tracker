@@ -3,49 +3,50 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getPrayers } from "@/services";
+import type { PrayerName } from "@/types";
 
 const PRIMARY = "#10b981";
 
-// Generate calendar days for current month
-const generateMonthDays = () => {
-  const days = [];
-  for (let i = 1; i <= 30; i++) {
-    const prayersCompleted = Math.floor(Math.random() * 6); // 0-5 random prayers
-    days.push({
-      date: i,
-      isToday: i === 14,
-      prayersCompleted,
-      totalPrayers: 5,
-    });
-  }
-  return days;
+interface DayData {
+  date: number;
+  isToday: boolean;
+  prayersCompleted: number;
+  totalPrayers: number;
+}
+
+interface PrayerTimeData {
+  id: string;
+  name: string;
+  time: string;
+  adzan: string;
+  iqamah: string;
+  done: boolean;
+}
+
+const ADHAN_OFFSETS: Record<PrayerName, { adzan: number; iqamah: number }> = {
+  Subuh: { adzan: -10, iqamah: 10 },
+  Dzuhur: { adzan: -10, iqamah: 10 },
+  Ashar: { adzan: -10, iqamah: 10 },
+  Maghrib: { adzan: -5, iqamah: 5 },
+  Isya: { adzan: -5, iqamah: 10 },
 };
 
-const MONTH_DAYS = generateMonthDays();
-
-// Prayer times for selected day
-const PRAYER_TIMES = [
-  { id: "subuh", name: "Subuh", time: "04:32", adzan: "04:22", iqamah: "04:42", done: true },
-  { id: "dzuhur", name: "Dzuhur", time: "12:05", adzan: "11:55", iqamah: "12:15", done: true },
-  { id: "ashar", name: "Ashar", time: "15:22", adzan: "15:12", iqamah: "15:32", done: true },
-  { id: "maghrib", name: "Maghrib", time: "18:02", adzan: "17:57", iqamah: "18:07", done: false },
-  { id: "isya", name: "Isya", time: "19:15", adzan: "19:10", iqamah: "19:25", done: false },
-];
-
-// Weekly stats
-const WEEKLY_STATS = [
-  { label: "Minggu Ini", value: 28, total: 35, percentage: 80 },
-  { label: "Bulan Ini", value: 120, total: 150, percentage: 80 },
-  { label: "Streak", value: 12, suffix: "hari" },
-];
+function offsetTime(time: string, minutes: number): string {
+  const [h, m] = time.split(':').map(Number);
+  const total = h * 60 + m + minutes;
+  const newH = Math.floor(((total % 1440) + 1440) % 1440 / 60);
+  const newM = ((total % 1440) + 1440) % 1440 % 60;
+  return `${String(newH).padStart(2, '0')}:${String(newM).padStart(2, '0')}`;
+}
 
 const DayCell = ({
   day,
   isSelected,
   onSelect
 }: {
-  day: typeof MONTH_DAYS[0];
+  day: DayData;
   isSelected: boolean;
   onSelect: () => void;
 }) => {
@@ -81,7 +82,7 @@ const DayCell = ({
   );
 };
 
-const PrayerTimeRow = ({ prayer }: { prayer: typeof PRAYER_TIMES[0] }) => (
+const PrayerTimeRow = ({ prayer }: { prayer: PrayerTimeData }) => (
   <View
     className={`flex-row items-center justify-between p-4 rounded-2xl mb-2 ${prayer.done ? "bg-emerald-50 border border-emerald-100" : "bg-white"
       }`}
@@ -117,11 +118,72 @@ const PrayerTimeRow = ({ prayer }: { prayer: typeof PRAYER_TIMES[0] }) => (
 );
 
 export default function JadwalScreen() {
-  const [selectedDate, setSelectedDate] = useState(14);
+  const now = new Date();
+  const currentDay = now.getDate();
+  const [selectedDate, setSelectedDate] = useState(currentDay);
   const [currentMonth] = useState("Ramadhan 1447 H");
+  const [monthDays, setMonthDays] = useState<DayData[]>([]);
+  const [prayerTimes, setPrayerTimes] = useState<PrayerTimeData[]>([]);
+  const [weeklyStats, setWeeklyStats] = useState<{ label: string; value: number; total?: number; percentage?: number; suffix?: string }[]>([]);
 
-  const selectedDay = MONTH_DAYS.find(d => d.date === selectedDate);
-  const completedToday = PRAYER_TIMES.filter(p => p.done).length;
+  // Load month data from service
+  useEffect(() => {
+    const loadMonth = async () => {
+      const year = now.getFullYear();
+      const month = now.getMonth();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const days: DayData[] = [];
+      let monthCompleted = 0;
+      let monthTotal = 0;
+      let weekCompleted = 0;
+      let weekTotal = 0;
+      const weekStart = currentDay - now.getDay();
+
+      for (let d = 1; d <= Math.min(daysInMonth, currentDay); d++) {
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        const prayers = await getPrayers(dateStr);
+        const completed = prayers.filter((p) => p.completed).length;
+        days.push({ date: d, isToday: d === currentDay, prayersCompleted: completed, totalPrayers: 5 });
+        monthCompleted += completed;
+        monthTotal += 5;
+        if (d >= weekStart) {
+          weekCompleted += completed;
+          weekTotal += 5;
+        }
+      }
+      setMonthDays(days);
+      setWeeklyStats([
+        { label: 'Minggu Ini', value: weekCompleted, total: weekTotal, percentage: weekTotal > 0 ? Math.round((weekCompleted / weekTotal) * 100) : 0 },
+        { label: 'Bulan Ini', value: monthCompleted, total: monthTotal, percentage: monthTotal > 0 ? Math.round((monthCompleted / monthTotal) * 100) : 0 },
+      ]);
+    };
+    loadMonth();
+  }, []);
+
+  // Load selected day prayer times
+  useEffect(() => {
+    const loadDay = async () => {
+      const year = now.getFullYear();
+      const month = now.getMonth();
+      const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(selectedDate).padStart(2, '0')}`;
+      const prayers = await getPrayers(dateStr);
+      setPrayerTimes(prayers.map((p) => {
+        const offsets = ADHAN_OFFSETS[p.name];
+        return {
+          id: p.id,
+          name: p.name,
+          time: p.time,
+          adzan: offsetTime(p.time, offsets.adzan),
+          iqamah: offsetTime(p.time, offsets.iqamah),
+          done: p.completed,
+        };
+      }));
+    };
+    loadDay();
+  }, [selectedDate]);
+
+  const selectedDay = monthDays.find(d => d.date === selectedDate);
+  const completedToday = prayerTimes.filter(p => p.done).length;
 
   return (
     <View className="flex-1 bg-slate-50">
@@ -180,7 +242,7 @@ export default function JadwalScreen() {
                 {[...Array(3)].map((_, i) => (
                   <View key={`empty-${i}`} className="w-[14.28%] py-2" />
                 ))}
-                {MONTH_DAYS.map((day) => (
+                {monthDays.map((day) => (
                   <View key={day.date} className="w-[14.28%]">
                     <DayCell
                       day={day}
@@ -216,7 +278,7 @@ export default function JadwalScreen() {
             className="mt-6"
             contentContainerStyle={{ paddingHorizontal: 24, gap: 12 }}
           >
-            {WEEKLY_STATS.map((stat, index) => (
+            {weeklyStats.map((stat, index) => (
               <View
                 key={index}
                 className="bg-white rounded-2xl p-4 w-32"
@@ -262,7 +324,7 @@ export default function JadwalScreen() {
               )}
             </View>
 
-            {PRAYER_TIMES.map((prayer) => (
+            {prayerTimes.map((prayer) => (
               <PrayerTimeRow key={prayer.id} prayer={prayer} />
             ))}
           </View>

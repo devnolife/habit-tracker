@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   View,
   Text,
@@ -12,6 +13,8 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { Path } from 'react-native-svg';
+import { getPrayerStats, getDailyNutrition, getWorkSessions, getMonthlyFinance } from '@/services';
+import { getTodayString, getCurrentMonth } from '@/lib/utils';
 
 const PRIMARY = '#2563EB';
 
@@ -192,7 +195,76 @@ const HeatmapBar = ({
 
 export default function ProgressScreen() {
   const router = useRouter();
-  const [selectedRange, setSelectedRange] = useState('This Week');
+  const [selectedRange, setSelectedRange] = useState('Minggu Ini');
+
+  // Real data state
+  const [prayerPercent, setPrayerPercent] = useState(0);
+  const [workPercent, setWorkPercent] = useState(0);
+  const [expensePercent, setExpensePercent] = useState(0);
+  const [nutritionPercent, setNutritionPercent] = useState(0);
+  const [prayerStreak, setPrayerStreak] = useState('0 Hari');
+  const [focusScore, setFocusScore] = useState('0/10');
+  const [savedAmount, setSavedAmount] = useState('Rp 0');
+  const [totalScore, setTotalScore] = useState(0);
+
+  React.useEffect(() => {
+    const load = async () => {
+      const today = getTodayString();
+      const month = getCurrentMonth();
+      const now = new Date();
+
+      // Determine date range
+      let daysBack = 7;
+      if (selectedRange === 'Minggu Lalu') daysBack = 14;
+      if (selectedRange === 'Bulan') daysBack = 30;
+
+      const startDate = new Date(now);
+      startDate.setDate(now.getDate() - daysBack + 1);
+      const startStr = startDate.toISOString().split('T')[0];
+
+      // Prayer stats
+      const pStats = await getPrayerStats(startStr, today);
+      setPrayerPercent(pStats.percentage);
+
+      // Count streak (consecutive days with all 5 prayers done)
+      let streak = 0;
+      for (let d = new Date(now); d >= startDate; d.setDate(d.getDate() - 1)) {
+        const dateStr = d.toISOString().split('T')[0];
+        const { getPrayers } = await import('@/services');
+        const prayers = await getPrayers(dateStr);
+        if (prayers.every((p) => p.completed)) {
+          streak++;
+        } else {
+          break;
+        }
+      }
+      setPrayerStreak(`${streak} Hari`);
+
+      // Work stats
+      const sessions = await getWorkSessions(today);
+      const focusMins = sessions.filter((s) => s.completed && s.type === 'focus').reduce((sum, s) => sum + s.duration, 0);
+      const focusHrs = Math.round(focusMins / 60 * 10) / 10;
+      const tasksCompleted = sessions.filter((s) => s.completed).length;
+      setFocusScore(`${Math.min(10, Math.round(focusHrs)).toFixed(1)}/10`);
+      setWorkPercent(Math.min(100, Math.round(focusHrs / 8 * 100)));
+
+      // Expense stats
+      const finance = await getMonthlyFinance(month);
+      const budget = finance.budgets.reduce((s, b) => s + b.limit, 0) || 2000000;
+      const saved = Math.max(0, budget - finance.expense);
+      setSavedAmount(`Rp ${Math.round(saved / 1000)}rb`);
+      setExpensePercent(budget > 0 ? Math.min(100, Math.round((1 - finance.expense / budget) * 100)) : 0);
+
+      // Nutrition stats
+      const nutrition = await getDailyNutrition(today);
+      setNutritionPercent(nutrition.goal > 0 ? Math.min(100, Math.round(nutrition.totalCalories / nutrition.goal * 100)) : 0);
+
+      // Total score
+      const score = Math.round(pStats.percentage * 3 + workPercent * 2 + expensePercent + nutritionPercent * 2);
+      setTotalScore(score);
+    };
+    load();
+  }, [selectedRange]);
 
   const ranges = ['Minggu Ini', 'Minggu Lalu', 'Bulan'];
 
@@ -326,10 +398,10 @@ export default function ProgressScreen() {
                 </TouchableOpacity>
               ))}
               <TouchableOpacity
-                onPress={() => Alert.alert('Pilih Rentang', 'Pilih rentang tanggal kustom:', [
-                  { text: 'Minggu Ini', onPress: () => setSelectedRange('Mingguan') },
-                  { text: 'Bulan Ini', onPress: () => setSelectedRange('Bulanan') },
-                  { text: '3 Bulan Terakhir', onPress: () => setSelectedRange('3 Bulan') },
+                onPress={() => Alert.alert('Pilih Rentang', 'Pilih rentang tanggal:', [
+                  { text: 'Minggu Ini', onPress: () => setSelectedRange('Minggu Ini') },
+                  { text: 'Minggu Lalu', onPress: () => setSelectedRange('Minggu Lalu') },
+                  { text: 'Bulan Ini', onPress: () => setSelectedRange('Bulan') },
                   { text: 'Batal', style: 'cancel' },
                 ])}
                 style={[
@@ -402,7 +474,7 @@ export default function ProgressScreen() {
                   letterSpacing: -2,
                 }}
               >
-                842
+                {totalScore}
               </Text>
               <View
                 style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}
@@ -445,14 +517,7 @@ export default function ProgressScreen() {
                 >
                   Rincian Kategori
                 </Text>
-                <TouchableOpacity onPress={() => Alert.alert('Kategori', 'Pilih kategori:', [
-                  { text: 'Semua Kategori', onPress: () => {} },
-                  { text: 'Ibadah', onPress: () => {} },
-                  { text: 'Kerja', onPress: () => {} },
-                  { text: 'Nutrisi', onPress: () => {} },
-                  { text: 'Keuangan', onPress: () => {} },
-                  { text: 'Batal', style: 'cancel' },
-                ])}>
+                <TouchableOpacity onPress={() => Alert.alert('Kategori', 'Rincian kategori ditampilkan berdasarkan rentang waktu yang dipilih di atas.')}>
                   <MaterialCommunityIcons
                     name="dots-horizontal"
                     size={24}
@@ -465,25 +530,25 @@ export default function ProgressScreen() {
                   icon="mosque"
                   label="Sholat"
                   color="#10b981"
-                  percentage={48}
+                  percentage={prayerPercent}
                 />
                 <CategoryBar
                   icon="briefcase"
                   label="Kerja"
                   color="#3b82f6"
-                  percentage={35}
+                  percentage={workPercent}
                 />
                 <CategoryBar
                   icon="wallet"
                   label="Pengeluaran"
                   color="#ef4444"
-                  percentage={28}
+                  percentage={expensePercent}
                 />
                 <CategoryBar
                   icon="silverware-fork-knife"
                   label="Makanan"
                   color="#84cc16"
-                  percentage={42}
+                  percentage={nutritionPercent}
                 />
               </View>
             </View>
@@ -502,26 +567,26 @@ export default function ProgressScreen() {
                 iconBg="rgba(16,185,129,0.1)"
                 iconColor="#10b981"
                 label="Streak Sholat"
-                value="14 Hari"
-                subtitle="92% Sholat tepat waktu"
-                badge={{ text: 'Tinggi', color: '#16a34a', bg: '#f0fdf4' }}
+                value={prayerStreak}
+                subtitle={`${prayerPercent}% Sholat tepat waktu`}
+                badge={prayerPercent >= 80 ? { text: 'Tinggi', color: '#16a34a', bg: '#f0fdf4' } : prayerPercent >= 50 ? { text: 'Cukup', color: '#f97316', bg: '#fff7ed' } : { text: 'Rendah', color: '#ef4444', bg: '#fef2f2' }}
               />
               <MetricCard
                 icon="timer"
                 iconBg="rgba(59,130,246,0.1)"
                 iconColor="#3b82f6"
                 label="Skor Fokus"
-                value="6.5/10"
-                subtitle="32 Tugas selesai"
-                badge={{ text: 'Cukup', color: '#f97316', bg: '#fff7ed' }}
+                value={focusScore}
+                subtitle={`${workPercent}% target kerja`}
+                badge={workPercent >= 60 ? { text: 'Baik', color: '#16a34a', bg: '#f0fdf4' } : { text: 'Cukup', color: '#f97316', bg: '#fff7ed' }}
               />
               <MetricCard
                 icon="piggy-bank"
                 iconBg="rgba(239,68,68,0.1)"
                 iconColor="#ef4444"
                 label="Hemat"
-                value="Rp 120rb"
-                subtitle="-5% vs anggaran"
+                value={savedAmount}
+                subtitle={`${expensePercent}% sisa anggaran`}
               />
               <MetricCard
                 icon="water"

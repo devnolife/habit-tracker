@@ -134,30 +134,54 @@ export default function PrayerScreen() {
   const completedCount = prayers.filter((p) => p.completed).length;
   const streakDays = completedCount === 5 ? 1 : 0; // simplified streak
 
-  // Build calendar days from today's prayer data
-  const todayDate = new Date();
-  const currentDay = todayDate.getDate();
-  const calendarDays = Array.from({ length: currentDay }, (_, i) => {
-    const day = i + 1;
-    const isToday = day === currentDay;
-    // For today, use real data; for past days, show all completed as placeholder
-    const prayerDots = isToday
-      ? prayerData.map((p) => (p.completed ? 1 : 0))
-      : [1, 1, 1, 1, 1];
-    return { day, prayers: prayerDots, isToday };
-  });
+  const [calendarMonthIndex, setCalendarMonthIndex] = useState(8); // Ramadhan default
+  const [calendarYear, setCalendarYear] = useState(1445);
 
-  if (loading) {
-    return <LoadingScreen color={theme.primary} />;
-  }
+  const [calendarDays, setCalendarDays] = useState<{ day: number; prayers: number[]; isToday: boolean }[]>([]);
+
+  // Load calendar history from service
+  useEffect(() => {
+    const loadCalendarDays = async () => {
+      const todayDate = new Date();
+      const currentDay = todayDate.getDate();
+      const year = todayDate.getFullYear();
+      const month = todayDate.getMonth();
+
+      const days = [];
+      for (let d = 1; d <= currentDay; d++) {
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        const isToday = d === currentDay;
+        if (isToday) {
+          days.push({
+            day: d,
+            prayers: prayerData.map((p) => (p.completed ? 1 : 0)),
+            isToday: true,
+          });
+        } else {
+          const dayPrayers = await getPrayers(dateStr);
+          days.push({
+            day: d,
+            prayers: dayPrayers.map((p) => (p.completed ? 1 : 0)),
+            isToday: false,
+          });
+        }
+      }
+      setCalendarDays(days);
+    };
+    if (!loading) {
+      loadCalendarDays();
+    }
+  }, [loading, prayerData]);
 
   const ISLAMIC_MONTHS = [
     'Muharram', 'Safar', 'Rabi\'ul Awal', 'Rabi\'ul Akhir',
     'Jumadil Awal', 'Jumadil Akhir', 'Rajab', 'Sya\'ban',
     'Ramadhan', 'Syawal', 'Dzulqa\'dah', 'Dzulhijjah',
   ];
-  const [calendarMonthIndex, setCalendarMonthIndex] = useState(8); // Ramadhan default
-  const [calendarYear, setCalendarYear] = useState(1445);
+
+  if (loading) {
+    return <LoadingScreen color={theme.primary} />;
+  }
 
   const handlePrevMonth = () => {
     if (calendarMonthIndex === 0) {

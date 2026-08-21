@@ -56,12 +56,20 @@ export async function togglePrayer(
 
 // Get prayer completion stats
 export async function getPrayerStats(startDate: string, endDate: string) {
-  // Implementation for getting stats over a date range
   let completed = 0;
   let total = 0;
 
-  // Calculate based on date range...
-  return { completed, total, percentage: total > 0 ? (completed / total) * 100 : 0 };
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+    const dateStr = d.toISOString().split("T")[0];
+    const prayers = await getPrayers(dateStr);
+    total += prayers.length;
+    completed += prayers.filter((p) => p.completed).length;
+  }
+
+  return { completed, total, percentage: total > 0 ? Math.round((completed / total) * 100) : 0 };
 }
 
 // Create default prayers for a date

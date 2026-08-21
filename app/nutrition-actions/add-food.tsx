@@ -6,12 +6,16 @@ import {
   StyleSheet,
   TextInput,
   Alert,
+  Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, useLocalSearchParams } from 'expo-router';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { addMeal } from '@/services';
+import { getTodayString } from '@/lib/utils';
+import type { MealType } from '@/types';
 
 const PRIMARY = '#22c55e';
 
@@ -19,6 +23,12 @@ const MEAL_LABELS: Record<string, string> = {
   sarapan: 'Sarapan',
   'makan-siang': 'Makan Siang',
   'makan-malam': 'Makan Malam',
+};
+
+const MEAL_ICONS: Record<string, string> = {
+  sarapan: 'weather-sunny',
+  'makan-siang': 'white-balance-sunny',
+  'makan-malam': 'weather-night',
 };
 
 const POPULAR_FOODS = [
@@ -36,15 +46,35 @@ const POPULAR_FOODS = [
   { id: '12', name: 'Pisang', calories: 89, portion: '1 buah', icon: 'fruit-watermelon', category: 'Buah' },
 ];
 
+const CAT_ICONS: Record<string, string> = {
+  Semua: 'food-apple-outline',
+  Karbohidrat: 'barley',
+  Protein: 'food-steak',
+  Sayuran: 'leaf',
+  Buah: 'fruit-watermelon',
+  Sup: 'bowl-mix',
+};
 const CATEGORIES = ['Semua', 'Karbohidrat', 'Protein', 'Sayuran', 'Buah', 'Sup'];
 
 export default function AddFoodScreen() {
   const { meal } = useLocalSearchParams<{ meal?: string }>();
   const mealLabel = MEAL_LABELS[meal ?? ''] ?? 'Makanan';
+  const mealIcon = MEAL_ICONS[meal ?? ''] ?? 'food';
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Semua');
   const [addedFoods, setAddedFoods] = useState<string[]>([]);
+  const bottomBarAnim = useRef(new Animated.Value(0)).current;
+
+  // Animate bottom bar in/out
+  useEffect(() => {
+    Animated.spring(bottomBarAnim, {
+      toValue: addedFoods.length > 0 ? 1 : 0,
+      useNativeDriver: true,
+      tension: 65,
+      friction: 11,
+    }).start();
+  }, [addedFoods.length, bottomBarAnim]);
 
   const filteredFoods = POPULAR_FOODS.filter((food) => {
     const matchesSearch = food.name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -60,234 +90,445 @@ export default function AddFoodScreen() {
     }
   };
 
-  const handleSave = () => {
+  const totalCalories = POPULAR_FOODS
+    .filter((f) => addedFoods.includes(f.id))
+    .reduce((s, f) => s + f.calories, 0);
+
+  const handleSave = async () => {
     if (addedFoods.length === 0) {
       Alert.alert('Perhatian', 'Pilih minimal satu makanan.');
       return;
     }
-    const selectedNames = POPULAR_FOODS.filter((f) => addedFoods.includes(f.id)).map((f) => f.name);
-    const totalCal = POPULAR_FOODS.filter((f) => addedFoods.includes(f.id)).reduce((s, f) => s + f.calories, 0);
+    const selectedItems = POPULAR_FOODS.filter((f) => addedFoods.includes(f.id));
+    const totalCal = selectedItems.reduce((s, f) => s + f.calories, 0);
+    const now = new Date();
+    const today = getTodayString();
+    const mealTypeMap: Record<string, MealType> = {
+      sarapan: 'Sarapan',
+      'makan-siang': 'Makan Siang',
+      'makan-malam': 'Makan Malam',
+    };
+    const mealType = mealTypeMap[meal ?? ''] ?? 'Snack';
+    await addMeal(today, {
+      name: selectedItems.map((f) => f.name).join(', '),
+      type: mealType,
+      calories: totalCal,
+      items: selectedItems.map((f) => f.name),
+      time: `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`,
+    });
     Alert.alert(
-      'Makanan Ditambahkan! ✅',
-      `${selectedNames.join(', ')}\nTotal: ${totalCal} kkal ditambahkan ke ${mealLabel}.`,
+      'Berhasil!',
+      `${selectedItems.map((f) => f.name).join(', ')}\nTotal: ${totalCal} kkal ditambahkan ke ${mealLabel}.`,
       [{ text: 'OK', onPress: () => router.back() }]
     );
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#f0fdf4' }}>
-      <LinearGradient colors={['#f0fdf4', '#fafafa']} style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: '#f8faf8' }}>
+      <LinearGradient colors={['#f0fdf4', '#f8faf8']} style={{ flex: 1 }}>
         <SafeAreaView style={{ flex: 1 }} edges={['top']}>
-          {/* Header */}
-          <View style={styles.header}>
-            <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-              <MaterialCommunityIcons name="arrow-left" size={24} color="#111" />
+          {/* ── Header ─────────────────────────────── */}
+          <View style={st.header}>
+            <TouchableOpacity onPress={() => router.back()} style={st.backBtn}>
+              <MaterialCommunityIcons name="arrow-left" size={22} color="#374151" />
             </TouchableOpacity>
-            <Text style={styles.headerTitle}>Tambah {mealLabel}</Text>
-            <TouchableOpacity onPress={handleSave} style={[styles.backButton, { backgroundColor: PRIMARY }]}>
-              <MaterialCommunityIcons name="check" size={22} color="#fff" />
-            </TouchableOpacity>
+            <View style={st.headerCenter}>
+              <View style={[st.headerMealIcon, { backgroundColor: `${PRIMARY}15` }]}>
+                <MaterialCommunityIcons name={mealIcon as any} size={16} color={PRIMARY} />
+              </View>
+              <Text style={st.headerTitle}>Tambah {mealLabel}</Text>
+            </View>
+            <View style={{ width: 40 }} />
           </View>
 
-          {/* Search Bar */}
-          <View style={{ paddingHorizontal: 24, marginTop: 4 }}>
-            <View style={styles.searchBar}>
-              <MaterialCommunityIcons name="magnify" size={22} color="#9ca3af" />
+          {/* ── Search bar ─────────────────────────── */}
+          <View style={{ paddingHorizontal: 20, marginTop: 4, marginBottom: 4 }}>
+            <View style={st.searchBar}>
+              <MaterialCommunityIcons name="magnify" size={20} color="#9ca3af" />
               <TextInput
-                style={styles.searchInput}
-                placeholder="Cari makanan..."
-                placeholderTextColor="#9ca3af"
+                style={st.searchInput}
+                placeholder="Cari makanan favorit..."
+                placeholderTextColor="#b0b0b0"
                 value={searchQuery}
                 onChangeText={setSearchQuery}
               />
               {searchQuery.length > 0 && (
                 <TouchableOpacity onPress={() => setSearchQuery('')}>
-                  <MaterialCommunityIcons name="close-circle" size={20} color="#d1d5db" />
+                  <MaterialCommunityIcons name="close-circle" size={18} color="#d1d5db" />
                 </TouchableOpacity>
               )}
             </View>
           </View>
 
-          {/* Category Filter */}
+          {/* ── Category chips ─────────────────────── */}
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ paddingHorizontal: 24, gap: 8, paddingVertical: 12 }}
+            contentContainerStyle={{ paddingHorizontal: 20, gap: 8, paddingVertical: 10 }}
           >
-            {CATEGORIES.map((cat) => (
-              <TouchableOpacity
-                key={cat}
-                onPress={() => setSelectedCategory(cat)}
-                style={[
-                  styles.categoryChip,
-                  selectedCategory === cat && { backgroundColor: PRIMARY, borderColor: PRIMARY },
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.categoryChipText,
-                    selectedCategory === cat && { color: '#fff' },
-                  ]}
+            {CATEGORIES.map((cat) => {
+              const active = selectedCategory === cat;
+              return (
+                <TouchableOpacity
+                  key={cat}
+                  onPress={() => setSelectedCategory(cat)}
+                  activeOpacity={0.8}
                 >
-                  {cat}
-                </Text>
-              </TouchableOpacity>
-            ))}
+                  {active ? (
+                    <LinearGradient
+                      colors={[PRIMARY, '#16a34a']}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 0 }}
+                      style={st.categoryChip}
+                    >
+                      <MaterialCommunityIcons name={CAT_ICONS[cat] as any} size={14} color="#fff" />
+                      <Text style={[st.categoryText, { color: '#fff' }]}>{cat}</Text>
+                    </LinearGradient>
+                  ) : (
+                    <View style={[st.categoryChip, { backgroundColor: '#fff', borderWidth: 1, borderColor: '#e5e7eb' }]}>
+                      <MaterialCommunityIcons name={CAT_ICONS[cat] as any} size={14} color="#9ca3af" />
+                      <Text style={st.categoryText}>{cat}</Text>
+                    </View>
+                  )}
+                </TouchableOpacity>
+              );
+            })}
           </ScrollView>
 
-          {/* Selected count */}
-          {addedFoods.length > 0 && (
-            <View style={styles.selectedBanner}>
-              <Text style={{ fontSize: 13, fontWeight: '600', color: PRIMARY }}>
-                {addedFoods.length} makanan dipilih •{' '}
-                {POPULAR_FOODS.filter((f) => addedFoods.includes(f.id)).reduce((s, f) => s + f.calories, 0)} kkal
-              </Text>
-            </View>
-          )}
-
-          {/* Food List */}
+          {/* ── Food grid ──────────────────────────── */}
           <ScrollView
             style={{ flex: 1 }}
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 100 }}
+            contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: addedFoods.length > 0 ? 120 : 40 }}
           >
+            <Text style={st.sectionLabel}>Populer</Text>
             {filteredFoods.map((food) => {
               const isAdded = addedFoods.includes(food.id);
               return (
                 <TouchableOpacity
                   key={food.id}
                   onPress={() => handleAddFood(food)}
-                  style={[styles.foodCard, isAdded && { borderColor: PRIMARY, borderWidth: 2 }]}
                   activeOpacity={0.7}
+                  style={[st.foodCard, isAdded && st.foodCardSelected]}
                 >
-                  <View style={[styles.foodIcon, { backgroundColor: PRIMARY + '15' }]}>
-                    <MaterialCommunityIcons name={food.icon as any} size={22} color={PRIMARY} />
+                  {/* Icon */}
+                  <View style={[st.foodIcon, { backgroundColor: isAdded ? `${PRIMARY}15` : '#f3f4f6' }]}>
+                    <MaterialCommunityIcons name={food.icon as any} size={22} color={isAdded ? PRIMARY : '#6b7280'} />
                   </View>
+
+                  {/* Info */}
                   <View style={{ flex: 1 }}>
-                    <Text style={styles.foodName}>{food.name}</Text>
-                    <Text style={styles.foodPortion}>{food.portion}</Text>
+                    <Text style={st.foodName}>{food.name}</Text>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 3 }}>
+                      <View style={st.portionBadge}>
+                        <Text style={st.portionText}>{food.portion}</Text>
+                      </View>
+                      <View style={st.catBadge}>
+                        <Text style={st.catBadgeText}>{food.category}</Text>
+                      </View>
+                    </View>
                   </View>
-                  <View style={{ alignItems: 'flex-end' }}>
-                    <Text style={[styles.foodCalories, { color: PRIMARY }]}>{food.calories}</Text>
-                    <Text style={{ fontSize: 11, color: '#9ca3af' }}>kkal</Text>
+
+                  {/* Calories */}
+                  <View style={{ alignItems: 'flex-end', marginRight: 10 }}>
+                    <Text style={[st.foodCal, { color: isAdded ? PRIMARY : '#374151' }]}>{food.calories}</Text>
+                    <Text style={{ fontSize: 10, color: '#b0b0b0', fontWeight: '500' }}>kkal</Text>
                   </View>
-                  <View style={[styles.checkBox, isAdded && { backgroundColor: PRIMARY, borderColor: PRIMARY }]}>
-                    {isAdded && <MaterialCommunityIcons name="check" size={16} color="#fff" />}
+
+                  {/* Checkbox */}
+                  <View style={[st.checkBox, isAdded && st.checkBoxActive]}>
+                    {isAdded && <MaterialCommunityIcons name="check" size={14} color="#fff" />}
                   </View>
                 </TouchableOpacity>
               );
             })}
 
             {filteredFoods.length === 0 && (
-              <View style={{ alignItems: 'center', paddingVertical: 40 }}>
-                <Text style={{ fontSize: 40, marginBottom: 12 }}>🔍</Text>
-                <Text style={{ fontSize: 16, fontWeight: '700', color: '#374151' }}>Tidak ditemukan</Text>
-                <Text style={{ fontSize: 13, color: '#9ca3af', marginTop: 4 }}>Coba kata kunci lain</Text>
+              <View style={st.emptyState}>
+                <View style={st.emptyIcon}>
+                  <MaterialCommunityIcons name="food-off" size={32} color="#d1d5db" />
+                </View>
+                <Text style={st.emptyTitle}>Tidak ditemukan</Text>
+                <Text style={st.emptySub}>Coba kata kunci atau kategori lain</Text>
               </View>
             )}
           </ScrollView>
+
+          {/* ── Bottom action bar ──────────────────── */}
+          <Animated.View
+            style={[
+              st.bottomBar,
+              {
+                transform: [{
+                  translateY: bottomBarAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [120, 0],
+                  }),
+                }],
+                opacity: bottomBarAnim,
+              },
+            ]}
+          >
+            <View style={st.bottomBarInner}>
+              <View>
+                <Text style={st.bottomBarCount}>{addedFoods.length} item dipilih</Text>
+                <Text style={st.bottomBarCal}>{totalCalories} kkal total</Text>
+              </View>
+              <TouchableOpacity onPress={handleSave} activeOpacity={0.85}>
+                <LinearGradient
+                  colors={[PRIMARY, '#16a34a']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={st.saveBtn}
+                >
+                  <MaterialCommunityIcons name="check" size={20} color="#fff" />
+                  <Text style={st.saveBtnText}>Simpan</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            </View>
+          </Animated.View>
         </SafeAreaView>
       </LinearGradient>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const st = StyleSheet.create({
+  // Header
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 24,
-    paddingTop: 16,
+    paddingHorizontal: 20,
+    paddingTop: 12,
     paddingBottom: 8,
   },
-  backButton: {
+  backBtn: {
     width: 40,
     height: 40,
-    borderRadius: 12,
+    borderRadius: 14,
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 3,
-    elevation: 1,
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
+    elevation: 2,
   },
-  headerTitle: { fontSize: 20, fontWeight: '700', color: '#111' },
+  headerCenter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  headerMealIcon: {
+    width: 30,
+    height: 30,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#111827',
+  },
+
+  // Search
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#fff',
-    borderRadius: 14,
-    paddingHorizontal: 14,
-    height: 48,
+    borderRadius: 16,
+    paddingHorizontal: 16,
+    height: 50,
     gap: 10,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.04,
-    shadowRadius: 4,
-    elevation: 1,
+    shadowRadius: 8,
+    elevation: 2,
+    borderWidth: 1,
+    borderColor: '#f3f4f6',
   },
   searchInput: {
     flex: 1,
     fontSize: 15,
-    color: '#111',
+    color: '#111827',
   },
+
+  // Category chips
   categoryChip: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    paddingHorizontal: 14,
+    paddingVertical: 9,
+    borderRadius: 14,
   },
-  categoryChipText: {
+  categoryText: {
     fontSize: 13,
     fontWeight: '600',
     color: '#6b7280',
   },
-  selectedBanner: {
-    marginHorizontal: 24,
-    backgroundColor: PRIMARY + '15',
-    borderRadius: 12,
-    padding: 10,
-    alignItems: 'center',
-    marginBottom: 8,
+
+  // Section label
+  sectionLabel: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#9ca3af',
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
+    marginBottom: 12,
+    marginTop: 4,
   },
+
+  // Food card
   foodCard: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#fff',
-    borderRadius: 16,
+    borderRadius: 18,
     padding: 14,
-    marginBottom: 8,
+    marginBottom: 10,
     gap: 12,
-    borderWidth: 1,
-    borderColor: '#f3f4f6',
+    borderWidth: 1.5,
+    borderColor: '#f0f0f0',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.03,
-    shadowRadius: 3,
+    shadowRadius: 6,
     elevation: 1,
   },
+  foodCardSelected: {
+    borderColor: PRIMARY,
+    backgroundColor: '#f0fdf4',
+    shadowColor: PRIMARY,
+    shadowOpacity: 0.1,
+    elevation: 3,
+  },
   foodIcon: {
-    width: 42,
-    height: 42,
-    borderRadius: 12,
+    width: 46,
+    height: 46,
+    borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  foodName: { fontSize: 15, fontWeight: '600', color: '#111' },
-  foodPortion: { fontSize: 12, color: '#9ca3af', marginTop: 2 },
-  foodCalories: { fontSize: 18, fontWeight: '800' },
+  foodName: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#111827',
+  },
+  portionBadge: {
+    backgroundColor: '#f3f4f6',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  portionText: {
+    fontSize: 11,
+    fontWeight: '500',
+    color: '#6b7280',
+  },
+  catBadge: {
+    backgroundColor: `${PRIMARY}12`,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  catBadgeText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: PRIMARY,
+  },
+  foodCal: {
+    fontSize: 18,
+    fontWeight: '800',
+  },
   checkBox: {
     width: 24,
     height: 24,
-    borderRadius: 7,
+    borderRadius: 8,
     borderWidth: 2,
     borderColor: '#d1d5db',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  checkBoxActive: {
+    backgroundColor: PRIMARY,
+    borderColor: PRIMARY,
+  },
+
+  // Empty state
+  emptyState: {
+    alignItems: 'center',
+    paddingVertical: 48,
+  },
+  emptyIcon: {
+    width: 64,
+    height: 64,
+    borderRadius: 20,
+    backgroundColor: '#f3f4f6',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+  },
+  emptyTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#374151',
+  },
+  emptySub: {
+    fontSize: 13,
+    color: '#9ca3af',
+    marginTop: 4,
+  },
+
+  // Bottom bar
+  bottomBar: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingHorizontal: 20,
+    paddingBottom: 32,
+    paddingTop: 12,
+    backgroundColor: 'rgba(248,250,248,0.96)',
+    borderTopWidth: 1,
+    borderTopColor: '#f0f0f0',
+  },
+  bottomBarInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  bottomBarCount: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#111827',
+  },
+  bottomBarCal: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: PRIMARY,
+    marginTop: 1,
+  },
+  saveBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 24,
+    paddingVertical: 14,
+    borderRadius: 16,
+    shadowColor: PRIMARY,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  saveBtnText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#fff',
   },
 });

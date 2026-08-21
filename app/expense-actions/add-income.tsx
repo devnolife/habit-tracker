@@ -12,6 +12,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { useState } from 'react';
+import { addTransaction } from '@/services';
+import { getCurrentMonth } from '@/lib/utils';
 
 const PRIMARY = '#22c55e';
 
@@ -30,15 +32,30 @@ export default function AddIncomeScreen() {
   const [selectedSource, setSelectedSource] = useState('Gaji');
   const [selectedDate] = useState(new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }));
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!amount.trim()) {
       Alert.alert('Perhatian', 'Jumlah pemasukan tidak boleh kosong.');
       return;
     }
-    const src = INCOME_SOURCES.find((s) => s.label === selectedSource);
+    const parsedAmount = parseInt(amount.replace(/\D/g, ''), 10);
+    if (isNaN(parsedAmount) || parsedAmount <= 0) {
+      Alert.alert('Perhatian', 'Jumlah tidak valid.');
+      return;
+    }
+    const now = new Date();
+    const month = getCurrentMonth();
+    await addTransaction(month, {
+      name: description || selectedSource,
+      category: 'Lainnya',
+      amount: parsedAmount,
+      type: 'income',
+      time: `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`,
+      date: now.toISOString().split('T')[0],
+      notes: description || undefined,
+    });
     Alert.alert(
       'Pemasukan Dicatat! ✅',
-      `${src?.label}: Rp ${parseInt(amount.replace(/\D/g, ''), 10).toLocaleString('id-ID')}\n${description || '(tanpa deskripsi)'}\nTanggal: ${selectedDate}`,
+      `${selectedSource}: Rp ${parsedAmount.toLocaleString('id-ID')}`,
       [{ text: 'OK', onPress: () => router.back() }]
     );
   };

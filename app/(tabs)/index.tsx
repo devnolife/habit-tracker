@@ -35,10 +35,9 @@ import { QuickStatCard } from '@/components/home/QuickStatCard';
 import { ActivityItem } from '@/components/home/ActivityItem';
 import { usePrayerTracker } from '@/hooks/usePrayerTracker';
 import { useTabNavigator } from '@/hooks/useTabNavigator';
-import { MOCK_ACTIVITIES } from '@/constants';
-import { getDailyNutrition, getWorkSessions, getMonthlyFinance } from '@/services';
-import { getTodayString, getCurrentMonth, formatShortCurrency } from '@/lib/utils';
-import type { AppTheme } from '@/types';
+import { getDailyNutrition, getWorkSessions, getMonthlyFinance, getPrayers } from '@/services';
+import { getTodayString, getCurrentMonth, formatShortCurrency, formatRelativeTime } from '@/lib/utils';
+import type { AppTheme, HomeActivity } from '@/types';
 
 // ─────────────────────────────────────────────
 // Quick-stat card configurations
@@ -124,16 +123,18 @@ export default function HomeScreen() {
   const [workHours, setWorkHours] = useState(0);
   const [expenseAmount, setExpenseAmount] = useState('0');
   const [foodCalories, setFoodCalories] = useState(0);
+  const [recentActivities, setRecentActivities] = useState<HomeActivity[]>([]);
 
   useEffect(() => {
     const loadStats = async () => {
       const today = getTodayString();
       const month = getCurrentMonth();
 
-      const [nutrition, sessions, finance] = await Promise.all([
+      const [nutrition, sessions, finance, prayers] = await Promise.all([
         getDailyNutrition(today),
         getWorkSessions(today),
         getMonthlyFinance(month),
+        getPrayers(today),
       ]);
 
       setFoodCalories(nutrition.totalCalories);
@@ -144,6 +145,65 @@ export default function HomeScreen() {
       setWorkHours(Math.round(focusMins / 60 * 10) / 10);
 
       setExpenseAmount(formatShortCurrency(finance.expense));
+
+      // Build real activities from today's data
+      const activities: HomeActivity[] = [];
+
+      // Prayer activities
+      prayers.filter((p) => p.completed && p.completedAt).forEach((p) => {
+        const date = new Date(p.completedAt!);
+        activities.push({
+          title: `Sholat ${p.name}`,
+          category: 'Sholat',
+          time: p.time,
+          ago: formatRelativeTime(date),
+          color: '#22C55E',
+          tab: 'prayer',
+        });
+      });
+
+      // Nutrition activities
+      nutrition.meals.forEach((m) => {
+        activities.push({
+          title: `${m.type} (${m.name})`,
+          category: 'Makanan',
+          time: m.time,
+          ago: formatRelativeTime(new Date(`${today}T${m.time}`)),
+          color: '#FBBF24',
+          tab: 'nutrition',
+        });
+      });
+
+      // Work activities
+      sessions.filter((s) => s.completed).forEach((s) => {
+        activities.push({
+          title: s.task || 'Sesi Kerja Fokus',
+          category: 'Kerja',
+          time: new Date(s.startTime).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+          ago: formatRelativeTime(new Date(s.startTime)),
+          color: '#3B82F6',
+          tab: 'work',
+        });
+      });
+
+      // Expense activities (latest 3)
+      finance.transactions
+        .filter((t) => t.date === today)
+        .slice(-3)
+        .forEach((t) => {
+          activities.push({
+            title: `${t.name} (${t.category})`,
+            category: t.type === 'income' ? 'Pemasukan' : 'Pengeluaran',
+            time: t.time,
+            ago: formatRelativeTime(new Date(`${today}T${t.time}`)),
+            color: t.type === 'income' ? '#22C55E' : '#EF4444',
+            tab: 'expense',
+          });
+        });
+
+      // Sort by time descending and take top 5
+      activities.sort((a, b) => b.time.localeCompare(a.time));
+      setRecentActivities(activities.slice(0, 5));
     };
     loadStats();
   }, []);
@@ -282,14 +342,18 @@ export default function HomeScreen() {
                 onAction={() => navigateTo('/progress')}
               />
               <View style={styles.activityList}>
-                {MOCK_ACTIVITIES.map((activity, index) => (
+                {recentActivities.length > 0 ? recentActivities.map((activity, index) => (
                   <ActivityItem
                     key={`${activity.tab}-${index}`}
                     activity={activity}
                     onPress={() => navigateToTab(activity.tab)}
-                    isLast={index === MOCK_ACTIVITIES.length - 1}
+                    isLast={index === recentActivities.length - 1}
                   />
-                ))}
+                )) : (
+                  <Text style={{ textAlign: 'center', color: '#9ca3af', paddingVertical: 16, fontSize: 14 }}>
+                    Belum ada aktivitas hari ini
+                  </Text>
+                )}
               </View>
             </View>
           </ScrollView>

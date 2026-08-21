@@ -12,6 +12,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { useState } from 'react';
+import { addTransaction } from '@/services';
+import { getCurrentMonth } from '@/lib/utils';
 
 const PRIMARY = '#ef4444';
 
@@ -32,15 +34,31 @@ export default function AddExpenseScreen() {
   const [selectedCategory, setSelectedCategory] = useState('Makanan');
   const [selectedDate] = useState(new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }));
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!amount.trim()) {
       Alert.alert('Perhatian', 'Jumlah pengeluaran tidak boleh kosong.');
       return;
     }
-    const cat = CATEGORIES.find((c) => c.label === selectedCategory);
+    const parsedAmount = parseInt(amount.replace(/\D/g, ''), 10);
+    if (isNaN(parsedAmount) || parsedAmount <= 0) {
+      Alert.alert('Perhatian', 'Jumlah tidak valid.');
+      return;
+    }
+    const now = new Date();
+    const month = getCurrentMonth();
+    const category = selectedCategory as import('@/types').ExpenseCategory;
+    await addTransaction(month, {
+      name: description || selectedCategory,
+      category,
+      amount: parsedAmount,
+      type: 'expense',
+      time: `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`,
+      date: now.toISOString().split('T')[0],
+      notes: description || undefined,
+    });
     Alert.alert(
       'Pengeluaran Dicatat! ✅',
-      `${cat?.label}: Rp ${parseInt(amount.replace(/\D/g, ''), 10).toLocaleString('id-ID')}\n${description || '(tanpa deskripsi)'}\nTanggal: ${selectedDate}`,
+      `${selectedCategory}: Rp ${parsedAmount.toLocaleString('id-ID')}`,
       [{ text: 'OK', onPress: () => router.back() }]
     );
   };
